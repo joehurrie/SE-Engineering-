@@ -1,5 +1,6 @@
 {
     "chat.tools.terminal.autoApprove": {
-        "npx --yes npm@11.21.0": true
+        "npx --yes npm@11.21.0": true,
+        "npm install": true
     }
 }
