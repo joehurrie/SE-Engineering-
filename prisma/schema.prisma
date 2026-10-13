@@ -31,11 +31,24 @@ model SiteContent {
 
 model ElevatorProduct {
   id             Int      @id @default(autoincrement())
-  category       String   // "Home Lift", "Passenger Elevator", "Escalator & Moving Walk", "Panoramic Elevator", "Hospital Elevator", "Freight Elevator & Car Elevator", "Dumbwaiter", "Hydraulic Platform"
+  category       String   // Elevator product category
   title          String
   description    String
   specifications String?
   imageUrl       String
+  galleryImages  String[] @default([])
+  featured       Boolean  @default(false)
+  createdAt      DateTime @default(now())
+}
+
+model SparePartProduct {
+  id             Int      @id @default(autoincrement())
+  slug           String   @unique
+  title          String
+  description    String
+  specifications String?
+  imageUrl       String
+  galleryImages  String[] @default([])
   featured       Boolean  @default(false)
   createdAt      DateTime @default(now())
 }
@@ -52,9 +65,14 @@ model Project {
   id            Int      @id @default(autoincrement())
   projectName   String
   projectType   String
+  description   String   @default("")
   elevatorCount Int
   location      String?
+  latitude      Float?
+  longitude     Float?
   imageUrl      String
+  galleryImages String[] @default([])
+  status        String   @default("COMMISSIONED")
   featured      Boolean  @default(false)
   createdAt     DateTime @default(now())
 }

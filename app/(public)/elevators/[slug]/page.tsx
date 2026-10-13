@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import { slugToCategory } from "@/lib/slugs";
+import ElevatorProductGallery from "@/components/ElevatorProductGallery";
 
 export const dynamic = "force-dynamic";
 
@@ -274,10 +276,11 @@ export default async function ElevatorDetailPage({ params }: Props) {
       { label: "Specifications", value: dbItem?.specifications || "Standard Commercial" },
     ],
     heroImg: dbItem?.imageUrl || staticData?.heroImg || "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&q=80&w=1200",
-    galleryImgs: [
-      dbItem?.imageUrl || staticData?.galleryImgs?.[0] || "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&q=80&w=600",
-      ...(staticData?.galleryImgs?.slice(1) || []),
-    ],
+    galleryImgs: Array.from(new Set([
+      dbItem?.imageUrl,
+      ...(dbItem?.galleryImages || []),
+      ...(staticData?.galleryImgs || []),
+    ].filter((image): image is string => typeof image === "string" && image.trim().length > 0))),
   };
 
   return (
@@ -286,10 +289,13 @@ export default async function ElevatorDetailPage({ params }: Props) {
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
       <section className="min-h-[50vh] min-h-[50svh] min-h-[380px] relative pt-32 pb-16 flex items-center justify-center overflow-hidden border-b border-black bg-black">
         <div className="absolute inset-0 z-0">
-          <img
+          <Image
             src={data.heroImg}
             alt={data.title}
-            className="w-full h-full object-cover brightness-[0.3]"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover brightness-[0.3]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </div>
@@ -338,13 +344,7 @@ export default async function ElevatorDetailPage({ params }: Props) {
               <span className="text-xs font-semibold tracking-widest text-neutral-400 uppercase block font-mono mb-6">
                 Installation Gallery
               </span>
-              <div className="grid grid-cols-2 gap-6">
-                {data.galleryImgs.map((img, idx) => (
-                  <div key={idx} className="h-64 rounded-none overflow-hidden border border-neutral-200 shadow-sm">
-                    <img src={img} alt={`${data.title} gallery ${idx + 1}`} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                  </div>
-                ))}
-              </div>
+              <ElevatorProductGallery images={data.galleryImgs} productName={data.title} />
             </div>
           </div>
 
@@ -364,21 +364,21 @@ export default async function ElevatorDetailPage({ params }: Props) {
               </div>
             </div>
 
-            <div className="bg-black rounded-none p-10 md:p-12 text-white relative overflow-hidden border border-neutral-800">
+            <div className="bg-neutral-100 rounded-none p-10 md:p-12 text-neutral-900 relative overflow-hidden border border-neutral-200">
               <div className="space-y-4 mb-8">
-                <span className="text-xs font-semibold tracking-widest text-blue-400 uppercase block font-mono">
+                <span className="text-xs font-semibold tracking-widest text-blue-700 uppercase block font-mono">
                   Architectural Tenders
                 </span>
-                <h3 className="text-2xl font-bold uppercase tracking-tight text-white">
+                <h3 className="text-2xl font-bold uppercase tracking-tight text-neutral-900">
                   Request Specifications
                 </h3>
-                <p className="text-neutral-400 text-sm leading-relaxed font-light">
+                <p className="text-neutral-600 text-sm leading-relaxed font-light">
                   Consult with our specialized lift engineers for architectural shaft layout drawings and pricing for {data.title}.
                 </p>
               </div>
               <Link
                 href="/contact"
-                className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 rounded-none"
+                className="w-full h-14 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 rounded-none"
               >
                 <span>Request a Consultation</span>
                 <ArrowRight className="w-4 h-4" />

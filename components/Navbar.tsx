@@ -6,14 +6,17 @@ import { usePathname } from "next/navigation";
 import { X, ChevronDown, ArrowRight, Menu } from "lucide-react";
 
 const elevatorItems = [
-  { label: "Home Lift",                      href: "/elevators/home-lift" },
-  { label: "Passenger Elevator",             href: "/elevators/passenger-elevator" },
-  { label: "Escalator & Moving Walk",        href: "/elevators/escalator-moving-walk" },
-  { label: "Panoramic Elevator",             href: "/elevators/panoramic-elevator" },
-  { label: "Hospital Elevator",              href: "/elevators/hospital-elevator" },
-  { label: "Freight Elevator & Car Elevator",href: "/elevators/freight-car-elevator" },
-  { label: "Dumbwaiter",                     href: "/elevators/dumbwaiter" },
-  { label: "Hydraulic Platform",             href: "/elevators/hydraulic-platform" },
+  { label: "All Elevator Products", href: "/elevators" },
+  { label: "Browse Lifts", href: "/elevators?category=lifts" },
+  { label: "Home Lift", href: "/elevators?category=home-lift" },
+  { label: "Passenger Elevator", href: "/elevators?category=passenger-elevator" },
+  { label: "Escalator & Moving Walk", href: "/elevators?category=escalator-moving-walk" },
+  { label: "Panoramic Elevator", href: "/elevators?category=panoramic-elevator" },
+  { label: "Hospital Elevator", href: "/elevators?category=hospital-elevator" },
+  { label: "Freight Elevator & Car Elevator", href: "/elevators?category=freight-car-elevator" },
+  { label: "Dumbwaiter", href: "/elevators?category=dumbwaiter" },
+  { label: "Hydraulic Platform", href: "/elevators?category=hydraulic-platform" },
+  { label: "Spare Parts", href: "/elevators#spare-parts" },
 ];
 
 const serviceItems = [
@@ -30,6 +33,23 @@ function NavbarContent({ pathname }: { pathname: string }) {
 
   const elevatorsRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
+  const elevatorsCloseTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const openElevatorsMenu = () => {
+    if (elevatorsCloseTimeout.current) {
+      clearTimeout(elevatorsCloseTimeout.current);
+      elevatorsCloseTimeout.current = null;
+    }
+    setElevatorsOpen(true);
+  };
+
+  const closeElevatorsMenu = () => {
+    if (elevatorsCloseTimeout.current) clearTimeout(elevatorsCloseTimeout.current);
+    elevatorsCloseTimeout.current = setTimeout(() => {
+      setElevatorsOpen(false);
+      elevatorsCloseTimeout.current = null;
+    }, 220);
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,6 +63,10 @@ function NavbarContent({ pathname }: { pathname: string }) {
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (elevatorsRef.current && !elevatorsRef.current.contains(e.target as Node)) {
+        if (elevatorsCloseTimeout.current) {
+          clearTimeout(elevatorsCloseTimeout.current);
+          elevatorsCloseTimeout.current = null;
+        }
         setElevatorsOpen(false);
       }
       if (servicesRef.current && !servicesRef.current.contains(e.target as Node)) {
@@ -51,6 +75,10 @@ function NavbarContent({ pathname }: { pathname: string }) {
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => () => {
+    if (elevatorsCloseTimeout.current) clearTimeout(elevatorsCloseTimeout.current);
   }, []);
 
   const isActive = (href: string) =>
@@ -98,22 +126,22 @@ function NavbarContent({ pathname }: { pathname: string }) {
             </Link>
 
             <Link
-              href="/about"
+              href="/projects"
               className={`text-sm font-medium transition-colors ${
-                isActive("/about")
+                isActive("/projects")
                   ? "text-blue-500 font-semibold"
                   : "text-neutral-300 hover:text-white"
               }`}
             >
-              About
+              Projects
             </Link>
 
             {/* Elevators Dropdown */}
             <div
               ref={elevatorsRef}
               className="relative"
-              onMouseEnter={() => setElevatorsOpen(true)}
-              onMouseLeave={() => setElevatorsOpen(false)}
+              onMouseEnter={openElevatorsMenu}
+              onMouseLeave={closeElevatorsMenu}
             >
               <div className="flex items-center gap-1 cursor-pointer py-1">
                 <Link
@@ -128,8 +156,9 @@ function NavbarContent({ pathname }: { pathname: string }) {
                 </Link>
                 <button
                   type="button"
-                  onClick={() => setElevatorsOpen(!elevatorsOpen)}
+                  onClick={() => (elevatorsOpen ? closeElevatorsMenu() : openElevatorsMenu())}
                   aria-label="Toggle elevator categories menu"
+                  aria-expanded={elevatorsOpen}
                   className="text-neutral-400 hover:text-white"
                 >
                   <ChevronDown
@@ -141,7 +170,8 @@ function NavbarContent({ pathname }: { pathname: string }) {
               </div>
 
               {elevatorsOpen && (
-                <div className="absolute top-full left-0 mt-2 w-72 bg-[#111111] border border-neutral-800 shadow-2xl p-2 grid grid-cols-1 gap-1 animate-fade-in-up">
+                <div className="absolute left-0 top-full z-50 w-72 pt-2">
+                  <div className="grid grid-cols-1 gap-1 border border-neutral-800 bg-[#111111] p-2 shadow-2xl animate-fade-in-up">
                   <div className="px-3 py-2 border-b border-neutral-800 mb-1">
                     <span className="text-[10px] uppercase tracking-widest text-neutral-400 font-bold">
                       Our Elevator Systems
@@ -164,6 +194,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                     >
                       View All Elevators →
                     </Link>
+                  </div>
                   </div>
                 </div>
               )}
@@ -231,14 +262,14 @@ function NavbarContent({ pathname }: { pathname: string }) {
             </div>
 
             <Link
-              href="/projects"
+              href="/about"
               className={`text-sm font-medium transition-colors ${
-                isActive("/projects")
+                isActive("/about")
                   ? "text-blue-500 font-semibold"
                   : "text-neutral-300 hover:text-white"
               }`}
             >
-              Projects
+              About
             </Link>
 
             <Link
@@ -301,10 +332,10 @@ function NavbarContent({ pathname }: { pathname: string }) {
           <div className="py-8 overflow-y-auto space-y-5 flex flex-col items-center text-center">
             {[
               { label: "Home", href: "/" },
-              { label: "About Us", href: "/about" },
-              { label: "Elevators", href: "/elevators" },
-              { label: "Lift Services", href: "/lift-services" },
               { label: "Projects", href: "/projects" },
+              { label: "Elevators", href: "/elevators" },
+              { label: "Services", href: "/lift-services" },
+              { label: "About", href: "/about" },
               { label: "News", href: "/news" },
               { label: "Contact Us", href: "/contact" },
             ].map((item) => (

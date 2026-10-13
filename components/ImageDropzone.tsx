@@ -32,6 +32,43 @@ const ACCEPTED_TYPES = [
 
 // Accept string for the <input> element (browser file picker)
 const INPUT_ACCEPT = "image/jpeg,image/jpg,image/png,image/webp,image/gif,image/bmp,image/tiff,image/avif,image/heic,image/heif";
+const MAX_UPLOAD_BYTES = 3.5 * 1024 * 1024;
+
+function isAcceptedImage(file: File): boolean {
+  if (ACCEPTED_TYPES.includes(file.type.toLowerCase())) return true;
+  return !file.type && /\.(jpe?g|png|webp|gif|bmp|tiff?|avif|heic|heif)$/i.test(file.name);
+}
+
+async function prepareUpload(file: File): Promise<File> {
+  if (file.size <= MAX_UPLOAD_BYTES) return file;
+
+  let bitmap: ImageBitmap;
+  try {
+    bitmap = await createImageBitmap(file);
+  } catch {
+    throw new Error("This image is too large to upload directly. Please choose a smaller JPEG, PNG, or WebP image.");
+  }
+
+  try {
+    const scale = Math.min(1, 2560 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    const context = canvas.getContext("2d");
+    if (!context) throw new Error("Your browser could not prepare this image for upload.");
+    context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+
+    const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/webp", 0.82));
+    if (!blob || blob.size > MAX_UPLOAD_BYTES) {
+      throw new Error("Image is still too large after optimization. Please choose a smaller image.");
+    }
+
+    const filename = `${file.name.replace(/\.[^.]+$/, "") || "product-photo"}.webp`;
+    return new File([blob], filename, { type: "image/webp" });
+  } finally {
+    bitmap.close();
+  }
+}
 
 export default function ImageDropzone({
   value,
@@ -47,8 +84,8 @@ export default function ImageDropzone({
   const processFile = useCallback(
     async (file: File) => {
       // Client-side type guard
-      if (!ACCEPTED_TYPES.includes(file.type)) {
-        setError("Please upload a JPEG, PNG, or WebP image.");
+      if (!isAcceptedImage(file)) {
+        setError("Please upload a supported image file (JPEG, PNG, WebP, GIF, BMP, TIFF, AVIF, or HEIC).");
         return;
       }
 
@@ -56,17 +93,22 @@ export default function ImageDropzone({
       setUploading(true);
 
       try {
+        const uploadFile = await prepareUpload(file);
         const form = new FormData();
-        form.append("file", file);
+        form.append("file", uploadFile);
 
         const res = await fetch("/api/upload", { method: "POST", body: form });
-        const json = await res.json();
+        const json: { error?: string; url?: unknown } | null = await res.json().catch(() => null);
 
         if (!res.ok) {
-          throw new Error(json.error ?? "Upload failed.");
+          throw new Error(json?.error ?? `Upload failed (HTTP ${res.status}). Please try again.`);
         }
 
-        onChange(json.url as string);
+        if (!json || typeof json.url !== "string" || !json.url) {
+          throw new Error("The upload completed without returning an image URL. Please try again.");
+        }
+
+        onChange(json.url);
       } catch (err: unknown) {
         setError(err instanceof Error ? err.message : "Upload failed. Please try again.");
       } finally {
@@ -167,7 +209,7 @@ export default function ImageDropzone({
           {/* Success badge */}
           <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-green-600 text-white text-[10px] font-bold shadow-sm">
             <CheckCircle className="w-3 h-3" />
-            Uploaded to CDN
+            Image uploaded
           </div>
         </div>
       ) : (
@@ -226,7 +268,7 @@ export default function ImageDropzone({
                   </span>
                 </p>
                 <p className="text-[10px] text-[#CBD5E1] mt-2 font-medium uppercase tracking-wider">
-                  JPG · PNG · WebP · GIF · BMP · AVIF · HEIC · max 10 MB
+                  JPG · PNG · WebP · GIF · BMP · AVIF · HEIC · max 3.5 MB (larger images are optimized)
                 </p>
               </div>
             </div>

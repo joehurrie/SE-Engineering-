@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import prisma from "@/lib/prisma";
-import ProjectsGallery, { ProjectItem } from "@/components/ProjectsGallery";
+import ProjectsGallery from "@/components/ProjectsGallery";
+import GoogleProjectsMap from "@/components/GoogleProjectsMap";
+import { defaultProjects, type ProjectData } from "@/lib/project-data";
 
 export const dynamic = "force-dynamic";
 
@@ -10,83 +13,8 @@ export const metadata: Metadata = {
     "Explore 200+ vertical installations across residential high-rises, commercial headquarters, and private estates in Kenya and East Africa.",
 };
 
-const defaultProjects: ProjectItem[] = [
-  {
-    id: 1,
-    projectName: "Alina Harbor Apartment",
-    category: "Residential",
-    projectType: "Luxury Multi-Family Residential Towers",
-    elevatorCount: 12,
-    location: "Kilimani, Nairobi",
-    img: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=1200",
-    featured: true,
-    year: "2023",
-    status: "Commissioned & Active",
-  },
-  {
-    id: 2,
-    projectName: "Apple Tree Apartments",
-    category: "Commercial",
-    projectType: "Commercial & Residential High-Rise",
-    elevatorCount: 8,
-    location: "Westlands, Nairobi",
-    img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200",
-    featured: true,
-    year: "2022",
-    status: "Commissioned & Active",
-  },
-  {
-    id: 3,
-    projectName: "Urban Oasis Towers",
-    category: "Commercial",
-    projectType: "Mixed High-Speed Elevator & Escalator Systems",
-    elevatorCount: 6,
-    location: "Upper Hill, Nairobi",
-    img: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&q=80&w=1200",
-    featured: true,
-    year: "2023",
-    status: "Commissioned & Active",
-  },
-  {
-    id: 4,
-    projectName: "Zuri Villas Gated Community",
-    category: "Residential",
-    projectType: "Private Residential Glass Home Lifts",
-    elevatorCount: 4,
-    location: "Karen, Nairobi",
-    img: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=80&w=1200",
-    featured: false,
-    year: "2021",
-    status: "Commissioned & Active",
-  },
-  {
-    id: 5,
-    projectName: "Talanta Hela Complex",
-    category: "Public / Transit",
-    projectType: "Heavy-Duty Public Transit Escalator Installation",
-    elevatorCount: 10,
-    location: "Nairobi CBD",
-    img: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&q=80&w=1200",
-    featured: true,
-    year: "2024",
-    status: "Commissioned & Active",
-  },
-  {
-    id: 6,
-    projectName: "Greenpark Executive Offices",
-    category: "Commercial",
-    projectType: "Commercial Passenger Elevator Installation & Maintenance",
-    elevatorCount: 16,
-    location: "Thika Road Corridor",
-    img: "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?auto=format&fit=crop&q=80&w=1200",
-    featured: false,
-    year: "2024",
-    status: "Commissioned & Active",
-  },
-];
-
 export default async function ProjectsPage() {
-  let projectList: ProjectItem[] = defaultProjects;
+  let projectList: ProjectData[] = defaultProjects;
 
   try {
     const dbProjects = await prisma.project.findMany({
@@ -108,12 +36,15 @@ export default async function ProjectsPage() {
           projectName: p.projectName,
           category: cat,
           projectType: p.projectType,
+          description: p.description,
           elevatorCount: p.elevatorCount,
           location: p.location,
+          latitude: p.latitude,
+          longitude: p.longitude,
           img: p.imageUrl,
+          galleryImages: p.galleryImages,
           featured: p.featured,
-          year: "Active",
-          status: "Commissioned & Active",
+          status: p.status,
         };
       });
     }
@@ -128,10 +59,13 @@ export default async function ProjectsPage() {
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
       <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
         <div className="absolute inset-0 z-0">
-          <img
+          <Image
             src={heroImg}
             alt="Alina Harbor Towers Project"
-            className="w-full h-full object-cover brightness-[0.25]"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover brightness-[0.25]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </div>
@@ -153,6 +87,18 @@ export default async function ProjectsPage() {
 
       {/* ── 2. Filter Tabs & Projects Showcase ─────────────────── */}
       <ProjectsGallery initialProjects={projectList} />
+      <GoogleProjectsMap
+        projects={projectList.flatMap((project) => {
+          if (project.latitude === null || project.longitude === null) return [];
+          return [{
+            id: project.id,
+            projectName: project.projectName,
+            location: project.location,
+            latitude: project.latitude,
+            longitude: project.longitude,
+          }];
+        })}
+      />
     </div>
   );
 }

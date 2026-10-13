@@ -4,6 +4,10 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 Copy `.env.example` to `.env.local` and configure `DATABASE_URL` plus a unique `NEXTAUTH_SECRET` of at least 32 characters. Generate a secret with `openssl rand -base64 48`. The server validates both values during startup.
 
+Set `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY` in `.env.local` to enable project map pins. Restrict the browser key to the site’s HTTP referrers and the Google Maps JavaScript API. Project pins require latitude and longitude in the project admin form.
+
+After pulling project schema changes, sync PostgreSQL with `npx prisma db push` and regenerate the Prisma client with `npx prisma generate`. When applying the separate spare-parts catalog for the first time, run `npx prisma db execute --file prisma/migrations/20261013_separate_spare_parts/migration.sql` after `db push` and before regenerating the Prisma client to move existing spare-part records out of the elevator-products table while preserving their IDs and images.
+
 Set `ADMIN_EMAIL` and a unique `ADMIN_PASSWORD` of at least 16 characters before running `node prisma/seed.mjs`. Do not commit environment files or use example values in production. Rotate any credentials that have previously been exposed.
 
 Administrator page middleware verifies the signed session. Admin API handlers also validate the session against the current administrator record in PostgreSQL; every `/api/admin` data endpoint requires authentication.

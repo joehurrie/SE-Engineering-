@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Calendar, ArrowUpRight } from "lucide-react";
 import prisma from "@/lib/prisma";
+import { defaultArticles, type NewsArticleContent } from "@/lib/news-data";
 
 export const dynamic = "force-dynamic";
 
@@ -11,61 +12,8 @@ export const metadata: Metadata = {
     "Latest news, industry insights, and engineering updates from Specialized Engineering Kenya Ltd.",
 };
 
-const defaultArticles = [
-  {
-    slug: "talanta-hela-stadium-escalators",
-    title: "Specialized Engineering Completes Talanta Hela Stadium Escalator Installation",
-    excerpt:
-      "Our team successfully installed and commissioned 10 heavy-duty escalators and moving walks at Talanta Hela Stadium, a landmark East African venue.",
-    publishedAt: "2023-11-15",
-    category: "Project Update",
-    img: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&q=80&w=1200",
-    featured: true,
-  },
-  {
-    slug: "xizi-partnership-expansion",
-    title: "SE Kenya Strengthens XIZI Exclusive Supply Partnership Across East Africa",
-    excerpt:
-      "We are proud to announce an expanded exclusive supply agreement with international manufacturer XIZI, introducing smart regenerative traction drives to Nairobi.",
-    publishedAt: "2023-09-08",
-    category: "Corporate Partnership",
-    img: "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?auto=format&fit=crop&q=80&w=1200",
-    featured: false,
-  },
-  {
-    slug: "200-elevators-milestone",
-    title: "Celebrating 200+ Operational Elevator Installations Across Kenya",
-    excerpt:
-      "A landmark achievement for our engineering corps as we crossed the 200 installation milestone, reflecting 8+ years of developer trust and safety excellence.",
-    publishedAt: "2024-03-20",
-    category: "Corporate Milestone",
-    img: "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&q=80&w=1200",
-    featured: true,
-  },
-  {
-    slug: "hospital-elevator-standards",
-    title: "Medical-Grade Elevator Standards & Bed Transit Requirements in Kenya",
-    excerpt:
-      "A technical appraisal of the rigorous micro-leveling precision and emergency priority dispatch needed for modern healthcare facilities.",
-    publishedAt: "2024-01-12",
-    category: "Engineering Insight",
-    img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=1200",
-    featured: false,
-  },
-  {
-    slug: "elevator-modernization-benefits",
-    title: "5 Key Indicators That Your Commercial Tower Elevator Requires Modernization",
-    excerpt:
-      "Discover how controller retrofits and VVVF drive modernizations reduce energy bills by up to 35% while virtually eliminating erratic floor stoppages.",
-    publishedAt: "2023-07-25",
-    category: "Preventative Maintenance",
-    img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=1200",
-    featured: false,
-  },
-];
-
 export default async function NewsPage() {
-  let articles = defaultArticles;
+  let articles: NewsArticleContent[] = defaultArticles;
 
   try {
     const dbArticles = await prisma.newsArticle.findMany({
@@ -77,6 +25,7 @@ export default async function NewsPage() {
         slug: a.slug,
         title: a.title,
         excerpt: a.content.length > 180 ? a.content.slice(0, 180) + "..." : a.content,
+        content: a.content,
         publishedAt: a.publishedAt.toISOString().split("T")[0],
         category: "Engineering News",
         img: a.imageUrl || "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=1200",
@@ -133,8 +82,9 @@ export default async function NewsPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {featured.map((article) => (
-              <div
+              <Link
                 key={article.slug}
+                href={`/news/${article.slug}`}
                 className="group relative h-96 sm:h-[480px] rounded-none overflow-hidden border border-neutral-200 flex flex-col justify-end shadow-md"
               >
                 <img
@@ -172,7 +122,7 @@ export default async function NewsPage() {
                     </span>
                   </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -193,8 +143,9 @@ export default async function NewsPage() {
 
           <div className="divide-y divide-neutral-200 border-t border-b border-neutral-200">
             {articles.map((article) => (
-              <div
+              <Link
                 key={article.slug}
+                href={`/news/${article.slug}`}
                 className="group py-10 px-8 sm:px-10 flex flex-col md:flex-row gap-8 items-start md:items-center hover:bg-neutral-50 transition-colors cursor-pointer"
               >
                 <div className="w-48 h-32 rounded-none overflow-hidden shrink-0 border border-neutral-200">
@@ -222,29 +173,29 @@ export default async function NewsPage() {
                 <div className="w-12 h-12 rounded-none bg-white border border-neutral-200 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white group-hover:border-blue-600 transition-colors hidden md:flex">
                   <ArrowRight className="w-5 h-5" />
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
       {/* ── 4. Consultation CTA ───────────────────────────────── */}
-      <section className="w-full min-h-[50vh] bg-black py-28 md:py-36 text-center relative overflow-hidden flex items-center justify-center">
+      <section className="w-full min-h-[50vh] bg-neutral-100 py-28 md:py-36 text-center relative overflow-hidden flex items-center justify-center">
         <div className="max-w-2xl mx-auto px-6 relative z-10 space-y-6">
-          <div className="inline-block px-3 py-1 bg-neutral-900 text-neutral-400 text-[10px] font-bold uppercase tracking-widest border border-neutral-800">
+          <div className="inline-block px-3 py-1 bg-white text-blue-700 text-[10px] font-bold uppercase tracking-widest border border-neutral-200">
             Direct Press &amp; Media
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white uppercase tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 uppercase tracking-tight">
             Media &amp; Technical Inquiries.
           </h2>
           <div className="w-16 h-1 bg-blue-600 mx-auto" />
-          <p className="text-neutral-400 text-sm md:text-base font-light leading-relaxed">
+          <p className="text-neutral-600 text-sm md:text-base font-light leading-relaxed">
             For press briefings, architectural case studies, or technical documentation, contact our communications desk in Nairobi.
           </p>
           <div className="pt-2 flex justify-center">
             <Link
               href="/contact"
-              className="h-14 px-8 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 rounded-none transition-colors"
+              className="h-14 px-8 bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 rounded-none transition-colors"
             >
               <span>Contact Press Desk</span>
               <ArrowRight className="w-4 h-4" />

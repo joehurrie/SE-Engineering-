@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import prisma from "@/lib/prisma";
+import {
+  AboutScrollReveal,
+  AboutTimeline,
+  CredentialsGallery,
+} from "@/components/AboutInteractions";
 
 export const dynamic = "force-dynamic";
 
@@ -10,12 +15,6 @@ export const metadata: Metadata = {
   description:
     "Learn about Specialized Engineering Kenya Ltd. — established 2016 in Kilimani, 200+ elevators installed, 30+ expert technical professionals.",
 };
-
-const team = [
-  { name: "Alan",                       role: "Managing Director",                       phone: "+254 (0)116 000100", email: "alan@specializedengineering.co.ke" },
-  { name: "Ana",                        role: "Operations Director",                     phone: "+254 (0)713 104907", email: "ana@specializedengineering.co.ke" },
-  { name: "Engineering Division",       role: "30+ Certified Technicians & Specialists", phone: "+254 (0)116 000100", email: "specializedengineeringltd@gmail.com" },
-];
 
 const milestones = [
   { year: "2016", event: "Incorporated in Kilimani, Nairobi with core technical elevator specialists." },
@@ -61,28 +60,29 @@ export default async function AboutPage() {
   const bodyText = aboutContent?.bodyText || "Kenya's trusted vertical transportation engineering firm since 2016. Delivering international ISO safety, direct factory supply, and unwavering reliability.";
 
   return (
-    <div className="bg-white text-neutral-900 min-h-screen selection:bg-blue-600 selection:text-white">
+    <div className="about-page min-h-screen bg-white text-neutral-900 selection:bg-blue-600 selection:text-white">
 
       {/* ── 1. Hero: 50vh View Height (Nexia Standard) ───────── */}
-      <section className="w-full min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
+      <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] pb-16 pt-32">
         <div className="absolute inset-0 z-0">
           <img
             src={heroImg}
             alt="Specialized Engineering team architectural skyline"
-            className="w-full h-full object-cover brightness-[0.25]"
+            className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+          <div className="absolute inset-0 bg-[#0F0F0F]/70" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F]/40 via-transparent to-[#0F0F0F]/20" />
         </div>
 
         <div className="w-full max-w-4xl mx-auto px-6 relative z-10 flex flex-col items-center justify-center text-center my-auto">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest mb-4">
+          <div className="mb-4 inline-flex items-center gap-2 border border-white/50 bg-[#1D4ED8]/70 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
             {subtitle}
           </div>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-white mb-4 text-center">
+          <h1 className="mb-4 text-center text-4xl font-bold uppercase tracking-tight text-white sm:text-6xl md:text-7xl">
             {title}
           </h1>
           <div className="w-20 h-1 bg-blue-600 mx-auto mb-6" />
-          <p className="text-neutral-400 text-base md:text-lg max-w-xl mx-auto font-light leading-relaxed text-center">
+          <p className="mx-auto max-w-xl text-center text-base font-light leading-relaxed text-white/90 md:text-lg">
             {bodyText}
           </p>
         </div>
@@ -106,7 +106,7 @@ export default async function AboutPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-center">
-            <div className="lg:col-span-6 space-y-6">
+            <div className="space-y-6 lg:col-span-6">
               <h3 className="text-2xl font-bold uppercase tracking-tight text-black">
                 Precision Standards &amp; Certified Execution
               </h3>
@@ -122,7 +122,7 @@ export default async function AboutPage() {
                   href="/contact"
                   className="h-14 px-8 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 rounded-none transition-colors"
                 >
-                  <span>Consult Our Leadership</span>
+                  <span>Contact Our Team</span>
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
@@ -135,49 +135,77 @@ export default async function AboutPage() {
                   alt="Elevator tower engineering"
                   className="w-full h-[460px] object-cover grayscale hover:grayscale-0 transition-all duration-700"
                 />
-                <div className="absolute bottom-6 right-6 bg-blue-600 text-white px-4 py-2 text-xs font-bold z-20">
-                  200+ INSTALLATIONS
-                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* ── 3. Core Advantages (Sharp Cards with Bottom Border) ─ */}
-      <section className="w-full min-h-[75vh] md:min-h-screen py-32 md:py-48 bg-neutral-50 border-b border-neutral-200 flex items-center justify-center">
-        <div className="w-full max-w-7xl mx-auto px-6 space-y-20 flex flex-col items-center justify-center">
-          <div className="flex flex-col items-center justify-center text-center max-w-2xl mx-auto">
-            <div className="inline-block px-3.5 py-1.5 bg-white text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-5 border border-neutral-200">
-              Enterprise Strengths
+      {/* ── 3. Engineering capacity ─ */}
+      <section className="w-full border-b border-neutral-200 bg-[#F5F5F3] py-24 md:py-32">
+        <div className="mx-auto flex w-full max-w-7xl flex-col gap-14 px-6 md:gap-16">
+          <div className="mx-auto max-w-2xl text-center">
+            <div className="mb-5 inline-block border border-neutral-200 bg-white px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest text-neutral-600">
+              Built to deliver
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight text-black mb-5 text-center">
-              Our Core Advantages
+            <h2 className="mb-5 text-4xl font-bold uppercase tracking-tight text-[#0F0F0F] md:text-5xl">
+              Our Capacity
             </h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto" />
+            <div className="mx-auto h-1 w-20 bg-[#2563EB]" />
+            <p className="mx-auto mt-6 max-w-xl text-base font-light leading-relaxed text-neutral-600">
+              The people, partnerships and practical experience to take complex lift projects from first drawing to long-term care.
+            </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-12 lg:auto-rows-[minmax(230px,auto)]">
             {advantages.map((adv, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col items-center space-y-4 border border-neutral-200 bg-white p-7 text-center transition-colors hover:border-neutral-400 md:p-9"
+              <article
+                key={adv.title}
+                className={[
+                  "group relative flex min-h-[250px] flex-col justify-between overflow-hidden border p-7 md:p-9",
+                  idx === 0 && "lg:col-span-7 lg:row-span-2 lg:min-h-[485px]",
+                  idx === 1 && "lg:col-span-5",
+                  idx === 2 && "lg:col-span-5",
+                  idx === 3 && "lg:col-span-12 lg:min-h-[220px] lg:flex-row lg:items-end",
+                  idx === 1
+                    ? "border-[#1D4ED8] bg-[#2563EB] text-white"
+                    : "border-neutral-200 bg-white text-[#0F0F0F]",
+                ].filter(Boolean).join(" ")}
+                data-about-no-reveal
               >
-                <div className="flex items-center justify-center gap-3 mb-2">
-                  <div className="w-8 h-8 bg-blue-50 text-blue-600 flex items-center justify-center rounded-none font-bold text-xs">
-                    <CheckCircle className="w-4 h-4" />
-                  </div>
-                  <span className="font-mono text-xs text-neutral-500 font-bold uppercase tracking-widest">
-                    ADVANTAGE {String(idx + 1).padStart(2, "0")}
+                {idx === 0 && (
+                  <>
+                    <img
+                      src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=85&w=1200"
+                      alt=""
+                      aria-hidden="true"
+                      className="absolute inset-0 h-full w-full object-cover"
+                    />
+                    <div aria-hidden="true" className="absolute inset-0 bg-[#0F0F0F]/65" />
+                  </>
+                )}
+                <span
+                  aria-hidden="true"
+                  className={`pointer-events-none absolute -right-3 -top-10 select-none text-[9rem] font-bold leading-none tracking-tighter transition-transform duration-700 group-hover:scale-110 md:text-[12rem] ${
+                    idx === 0 || idx === 1 ? "text-white/10" : "text-[#2563EB]/[0.07]"
+                  }`}
+                >
+                  0{idx + 1}
+                </span>
+                <div className="relative z-10">
+                  <span className={`font-mono text-xs font-bold uppercase tracking-[0.18em] ${idx === 0 || idx === 1 ? "text-white/75" : "text-[#2563EB]"}`}>
+                    Capacity / 0{idx + 1}
                   </span>
                 </div>
-                <h3 className="text-2xl font-bold text-black uppercase tracking-tight text-center">
-                  {adv.title}
-                </h3>
-                <p className="text-neutral-600 text-base leading-relaxed font-light text-center">
-                  {adv.desc}
-                </p>
-              </div>
+                <div className={`relative z-10 mt-12 max-w-xl ${idx === 3 ? "lg:ml-auto lg:w-2/3" : ""}`}>
+                  <h3 className={`text-2xl font-bold uppercase leading-tight tracking-tight md:text-3xl ${idx === 0 || idx === 1 ? "text-white" : "text-[#0F0F0F]"}`}>
+                    {adv.title}
+                  </h3>
+                  <p className={`mt-4 max-w-lg text-sm font-light leading-relaxed md:text-base ${idx === 0 || idx === 1 ? "text-white/85" : "text-neutral-600"}`}>
+                    {adv.desc}
+                  </p>
+                </div>
+              </article>
             ))}
           </div>
         </div>
@@ -196,36 +224,30 @@ export default async function AboutPage() {
             <div className="w-20 h-1 bg-blue-600 mx-auto" />
           </div>
 
-          <div className="relative pt-6">
-            <div className="absolute left-4 md:left-1/2 md:-translate-x-px top-0 bottom-0 w-px bg-neutral-200" />
-
-            {milestones.map((m, idx) => (
-              <div
-                key={idx}
-                className={`relative flex gap-8 mb-12 last:mb-0 ${
-                  idx % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
-                }`}
-              >
-                <div
-                  className={`flex-1 ${
-                    idx % 2 === 0 ? "md:text-right md:pr-12" : "md:pl-12"
-                  } pl-12 md:pl-0 space-y-1.5`}
-                >
-                  <span className="text-blue-600 font-mono text-xl font-bold">{m.year}</span>
-                  <p className="text-neutral-600 text-base leading-relaxed font-light">{m.event}</p>
-                </div>
-                {/* Dot */}
-                <div className="absolute left-0 md:left-1/2 md:-translate-x-1/2 w-8 h-8 bg-black rounded-none flex items-center justify-center shrink-0">
-                  <div className="w-2.5 h-2.5 bg-blue-500 rounded-none" />
-                </div>
-                <div className="flex-1 hidden md:block" />
-              </div>
-            ))}
-          </div>
+          <AboutTimeline milestones={milestones} />
         </div>
       </section>
 
-      {/* ── 5. Leadership Team (Responsive, airy minimal layout) ─ */}
+      <section id="certifications" className="scroll-mt-28 w-full border-b border-neutral-200 bg-white py-24 md:py-32">
+        <div className="mx-auto w-full max-w-7xl space-y-12 px-6">
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="mb-5 inline-block border border-neutral-200 bg-neutral-50 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest text-neutral-600">
+              Quality, safety &amp; compliance
+            </div>
+            <h2 className="mb-5 text-center text-4xl font-bold uppercase tracking-tight text-black md:text-5xl">
+              Our Certifications
+            </h2>
+            <div className="mx-auto h-1 w-20 bg-blue-600" />
+            <p className="mt-6 text-base font-light leading-relaxed text-neutral-600 md:text-lg">
+              A selection of the standards and credentials behind our commitment to dependable engineering.
+              Certification images will be updated as our documents are added.
+            </p>
+          </div>
+          <CredentialsGallery />
+        </div>
+      </section>
+
+      {/* ── 6. Our team ─ */}
       <section className="w-full bg-neutral-50 section-space">
         <div className="section-shell">
           <div className="mx-auto mb-16 max-w-2xl text-center md:mb-20">
@@ -233,49 +255,47 @@ export default async function AboutPage() {
               Key Personnel
             </div>
             <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight text-black mb-4 text-center">
-              Corporate Leadership
+              Our Team
             </h2>
             <div className="mx-auto h-1 w-20 bg-blue-600" />
           </div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-10">
-            {team.map((member, idx) => (
-              <div
-                key={idx}
-                className="flex flex-col items-center justify-between border border-neutral-200 bg-white p-7 text-center transition-colors hover:border-neutral-400 md:p-9"
-              >
-                <div className="flex w-full flex-col items-center text-center">
-                  <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center bg-black text-lg font-bold text-white rounded-none">
-                    {member.name.charAt(0)}
-                  </div>
-                  <h3 className="mb-2 text-xl font-bold text-black text-center">{member.name}</h3>
-                  <p className="mb-6 text-center text-[11px] uppercase tracking-wider text-neutral-500 font-mono font-semibold">
-                    {member.role}
-                  </p>
-                </div>
-                <div className="w-full space-y-2 border-t border-neutral-100 pt-6 text-sm text-center">
-                  {member.phone && (
-                    <a
-                      href={`tel:${member.phone.replace(/[^0-9+]/g, "")}`}
-                      className="block font-mono text-neutral-600 transition-colors hover:text-blue-600"
-                    >
-                      {member.phone}
-                    </a>
-                  )}
-                  {member.email && (
-                    <a
-                      href={`mailto:${member.email}`}
-                      className="block truncate font-mono text-xs text-neutral-600 transition-colors hover:text-blue-600"
-                    >
-                      {member.email}
-                    </a>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+          <figure className="mb-12 overflow-hidden border border-neutral-200 bg-white">
+            <img
+              src="https://images.unsplash.com/photo-1521737711867-e3b97375f902?auto=format&fit=crop&q=85&w=1800"
+              alt="Specialized Engineering colleagues collaborating as a team"
+              className="h-[260px] w-full object-cover sm:h-[360px] md:h-[460px]"
+            />
+            <figcaption className="border-t border-neutral-200 px-5 py-3 text-xs font-medium uppercase tracking-wider text-neutral-500">
+              Our engineering and operations team
+            </figcaption>
+          </figure>
+
         </div>
       </section>
+
+      <section className="w-full bg-neutral-100 px-6 py-16 text-neutral-900 md:py-20">
+        <div className="mx-auto flex w-full max-w-7xl flex-col items-start justify-between gap-8 md:flex-row md:items-center">
+          <div className="max-w-2xl">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-blue-700">
+              Specialized Engineering Kenya Ltd.
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-tight sm:text-4xl">
+              Ready to move your next project forward?
+            </h2>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-neutral-600 md:text-base">
+              Let’s find the right lift or elevator solution for your building.
+            </p>
+          </div>
+          <Link
+            href="/contact"
+            className="inline-flex h-12 shrink-0 items-center gap-3 bg-blue-700 px-6 text-xs font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-blue-800"
+          >
+            Talk to our team <ArrowRight aria-hidden="true" className="h-4 w-4" />
+          </Link>
+        </div>
+      </section>
+      <AboutScrollReveal />
     </div>
   );
 }

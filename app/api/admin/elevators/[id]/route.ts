@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { getCurrentAdmin } from "@/lib/auth";
+import { parseElevatorProductInput } from "@/lib/elevator-product-input";
 
 export async function PUT(
   request: Request,
@@ -15,19 +16,23 @@ export async function PUT(
   try {
     const { id } = await params;
     const numId = parseInt(id, 10);
-    const data = await request.json();
-    const { category, title, description, specifications, imageUrl, featured } = data;
+    if (!Number.isInteger(numId) || numId < 1) {
+      return NextResponse.json({ error: "Invalid product ID" }, { status: 400 });
+    }
+    const parsed = parseElevatorProductInput(await request.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: parsed.error }, { status: 400 });
+    }
+    if (parsed.data.category.toLowerCase() === "spare parts") {
+      return NextResponse.json(
+        { error: "Spare parts are managed through the dedicated spare-parts catalog." },
+        { status: 400 }
+      );
+    }
 
     const updated = await prisma.elevatorProduct.update({
       where: { id: numId },
-      data: {
-        category,
-        title,
-        description,
-        specifications: typeof specifications === "object" ? JSON.stringify(specifications) : specifications,
-        imageUrl,
-        featured: Boolean(featured),
-      },
+      data: parsed.data,
     });
 
     try {

@@ -21,6 +21,20 @@ const ALLOWED_TYPES = [
 ];
 
 const MAX_OUTPUT_BYTES = 10 * 1024 * 1024; // 10 MB
+const MAX_INPUT_BYTES = 4 * 1024 * 1024;
+const ALLOWED_EXTENSIONS = new Set([
+  ".jpg",
+  ".jpeg",
+  ".png",
+  ".webp",
+  ".gif",
+  ".bmp",
+  ".tif",
+  ".tiff",
+  ".avif",
+  ".heic",
+  ".heif",
+]);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Determine whether a real Vercel Blob token is configured
@@ -72,10 +86,24 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No image file provided." }, { status: 400 });
     }
 
-    // Normalise non-standard mime type alias
-    const mimeType = file.type === "image/jpg" ? "image/jpeg" : file.type;
+    if (file.size === 0) {
+      return NextResponse.json({ error: "The selected image is empty." }, { status: 400 });
+    }
+    if (file.size > MAX_INPUT_BYTES) {
+      return NextResponse.json(
+        { error: "Image is too large to upload. Please choose an image under 4 MB." },
+        { status: 413 }
+      );
+    }
 
-    if (!ALLOWED_TYPES.includes(file.type)) {
+    // Normalise non-standard mime type alias
+    const mimeType = file.type.toLowerCase() === "image/jpg"
+      ? "image/jpeg"
+      : file.type.toLowerCase();
+    const hasSupportedType = ALLOWED_TYPES.includes(mimeType);
+    const hasSupportedExtension = !mimeType && ALLOWED_EXTENSIONS.has(path.extname(file.name).toLowerCase());
+
+    if (!hasSupportedType && !hasSupportedExtension) {
       return NextResponse.json(
         { error: `Unsupported file type: "${mimeType}". Please upload a standard image file (JPG, PNG, WebP, GIF, BMP, TIFF, AVIF, HEIC).` },
         { status: 415 }
@@ -86,10 +114,19 @@ export async function POST(request: Request) {
     const rawBuffer = Buffer.from(await file.arrayBuffer());
 
     // ── 2. Process with Sharp: resize + convert to WebP ───────────────────
-    const optimizedBuffer = await sharp(rawBuffer)
-      .resize({ width: 2560, withoutEnlargement: true })
-      .webp({ quality: 90 })
-      .toBuffer();
+    let optimizedBuffer: Buffer;
+    try {
+      optimizedBuffer = await sharp(rawBuffer)
+        .resize({ width: 2560, withoutEnlargement: true })
+        .webp({ quality: 90 })
+        .toBuffer();
+    } catch (error) {
+      console.warn("[/api/upload] Unsupported or unreadable image:", error);
+      return NextResponse.json(
+        { error: "The selected file could not be decoded as an image. Please use a JPEG, PNG, or WebP file." },
+        { status: 415 }
+      );
+    }
 
     // ── 3. Enforce 10 MB ceiling ───────────────────────────────────────────
     if (optimizedBuffer.length > MAX_OUTPUT_BYTES) {
@@ -113,6 +150,11 @@ export async function POST(request: Request) {
     if (hasBlobToken()) {
       // Production: upload to Vercel Blob CDN
       publicUrl = await saveToBlobStorage(optimizedBuffer, `uploads/${filename}`);
+    } else if (process.env.NODE_ENV === "production") {
+      return NextResponse.json(
+        { error: "Product photo storage is not configured. Set BLOB_READ_WRITE_TOKEN in the production environment." },
+        { status: 503 }
+      );
     } else {
       // Development: write to public/uploads/ and serve statically
       publicUrl = await saveLocally(optimizedBuffer, filename);

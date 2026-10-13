@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { getCurrentAdmin } from "@/lib/auth";
+import { parseProjectInput } from "@/lib/project-input";
 
 export async function PUT(
   request: Request,
@@ -15,18 +16,12 @@ export async function PUT(
   try {
     const { id } = await params;
     const numId = parseInt(id, 10);
-    const { projectName, projectType, elevatorCount, location, imageUrl, featured } = await request.json();
+    const input = parseProjectInput(await request.json());
+    if ("error" in input) return NextResponse.json({ error: input.error }, { status: 400 });
 
     const updated = await prisma.project.update({
       where: { id: numId },
-      data: {
-        projectName,
-        projectType,
-        elevatorCount: Number(elevatorCount) || 1,
-        location: location || null,
-        imageUrl,
-        featured: Boolean(featured),
-      },
+      data: input,
     });
 
     try {

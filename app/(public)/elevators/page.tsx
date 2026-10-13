@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { categoryToSlug } from "@/lib/slugs";
+import ElevatorProductCard from "@/components/ElevatorProductCard";
+import { defaultSpareParts } from "@/lib/default-spare-parts";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +15,18 @@ export const metadata: Metadata = {
     "Explore our full range of elevator solutions: home lifts, passenger elevators, escalators, hospital elevators, and more.",
 };
 
-const defaultElevatorCategories = [
+type ElevatorCatalogItem = {
+  slug: string;
+  title: string;
+  category: string;
+  desc: string;
+  img: string;
+  num: string;
+  spec: string;
+  href?: string;
+};
+
+const defaultElevatorCategories: ElevatorCatalogItem[] = [
   {
     slug: "home-lift",
     title: "Home Lift",
@@ -87,74 +101,90 @@ const defaultElevatorCategories = [
   },
 ];
 
-export default async function ElevatorsPage() {
-  let categories = defaultElevatorCategories;
+type ElevatorsPageProps = {
+  searchParams: Promise<{ category?: string }>;
+};
+
+export default async function ElevatorsPage({ searchParams }: ElevatorsPageProps) {
+  const { category: activeCategory = "all" } = await searchParams;
+  let dbProducts: Awaited<ReturnType<typeof prisma.elevatorProduct.findMany>> = [];
+  let dbSpareParts: Awaited<ReturnType<typeof prisma.sparePartProduct.findMany>> = [];
 
   try {
-    const dbProducts = await prisma.elevatorProduct.findMany({
-      orderBy: { id: "asc" },
-    });
-
-    if (dbProducts && dbProducts.length > 0) {
-      // Map existing categories with database updates (image, title, description, specs)
-      categories = defaultElevatorCategories.map((cat) => {
-        const match = dbProducts.find(
-          (p) =>
-            p.category.toLowerCase() === cat.title.toLowerCase() ||
-            p.title.toLowerCase().includes(cat.title.toLowerCase())
-        );
-
-        if (match) {
-          return {
-            ...cat,
-            title: match.title,
-            desc: match.description,
-            img: match.imageUrl,
-            spec: match.specifications || cat.spec,
-          };
-        }
-        return cat;
-      });
-
-      // Also include any custom products added to the DB that don't match standard defaults
-      const extraProducts = dbProducts.filter(
-        (p) =>
-          !defaultElevatorCategories.some(
-            (c) =>
-              c.title.toLowerCase() === p.category.toLowerCase() ||
-              p.title.toLowerCase().includes(c.title.toLowerCase())
-          )
-      );
-
-      if (extraProducts.length > 0) {
-        extraProducts.forEach((p) => {
-          categories.push({
-            slug: categoryToSlug(p.category),
-            title: p.title,
-            category: p.category,
-            desc: p.description,
-            img: p.imageUrl,
-            num: String(categories.length + 1).padStart(2, "0"),
-            spec: p.specifications || "Engineered Custom Specification",
-          });
-        });
-      }
-    }
+    dbProducts = await prisma.elevatorProduct.findMany({ orderBy: { id: "asc" } });
   } catch (error) {
     console.error("Failed to load elevators from DB:", error);
   }
 
-  const heroImg = categories[0]?.img || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=1600";
+  try {
+    dbSpareParts = await prisma.sparePartProduct.findMany({ orderBy: { id: "asc" } });
+  } catch (error) {
+    console.error("Failed to load spare parts from DB:", error);
+  }
+
+  const sparePartProducts = dbSpareParts.length > 0
+    ? dbSpareParts.map((part) => ({
+        id: part.slug,
+        title: part.title,
+        description: part.description,
+        imageUrl: part.imageUrl,
+        href: `/elevators/spare-parts/${part.slug}`,
+      }))
+    : defaultSpareParts.map((part) => ({
+        id: part.slug,
+        title: part.title,
+        description: part.description,
+        imageUrl: part.imageUrl,
+        href: `/elevators/spare-parts/${part.slug}`,
+      }));
+  const databaseElevators = dbProducts.filter((product) => product.category.trim().toLowerCase() !== "spare parts");
+  const elevatorProducts: ElevatorCatalogItem[] = databaseElevators.length
+    ? databaseElevators
+        .map((product, index) => ({
+          slug: String(product.id),
+          title: product.title,
+          category: product.category,
+          desc: product.description,
+          img: product.imageUrl,
+          num: String(index + 1).padStart(2, "0"),
+          spec: product.specifications || "",
+          href: `/elevators/product/${product.id}`,
+        }))
+    : defaultElevatorCategories;
+
+  const filteredProducts = elevatorProducts.filter((product) => {
+    if (activeCategory === "all") return true;
+    if (activeCategory === "lifts") {
+      return !product.category.toLowerCase().includes("escalator")
+        && !product.category.toLowerCase().includes("moving walk")
+        && !product.category.toLowerCase().includes("transit")
+        && product.slug !== "escalator-moving-walk";
+    }
+    return categoryToSlug(product.category) === activeCategory
+      || product.slug === activeCategory;
+  });
+  const categoryOptions = Array.from(
+    new Map(
+      elevatorProducts.map((product) => [
+        product.href ? categoryToSlug(product.category) : product.slug,
+        product.href ? product.category : product.title,
+      ]),
+    ).entries(),
+  );
+  const heroImg = elevatorProducts[0]?.img || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=1600";
 
   return (
     <div className="bg-white text-[#111111] min-h-screen">
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
       <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
         <div className="absolute inset-0 z-0">
-          <img
+          <Image
             src={heroImg}
             alt="Vertical Transportation Shaft"
-            className="w-full h-full object-cover brightness-[0.25]"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover brightness-[0.25]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </div>
@@ -174,106 +204,130 @@ export default async function ElevatorsPage() {
         </div>
       </section>
 
-      {/* ── 2. Grid of Categories (Nexia System Cards) ────────── */}
-      <section className="w-full min-h-[50vh] md:min-h-[60vh] py-24 md:py-32 bg-neutral-50 border-b border-neutral-200 flex items-center justify-center">
-        <div className="w-full max-w-7xl mx-auto px-6 space-y-20 flex flex-col items-center justify-center">
-          <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto">
-            <div className="inline-block px-3.5 py-1.5 bg-white text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-5 border border-neutral-200">
-              System Range
+      <section id="elevator-products" className="bg-neutral-50 px-6 py-20 md:py-28">
+        <div className="mx-auto w-full max-w-7xl">
+          <div className="mb-12">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="inline-block border border-neutral-200 bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-600">
+                Product catalogue
+              </p>
+              <h2 className="mt-5 text-4xl font-bold uppercase tracking-tight text-black md:text-5xl">
+                Find the right system.
+              </h2>
+              <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-neutral-600">
+                Browse our lift and elevator systems by category, then explore product images and technical specifications.
+              </p>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight text-black mb-5 text-center">
-              Engineered for Every Shaft.
-            </h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto mb-8" />
-            <p className="text-base md:text-lg text-neutral-600 max-w-xl mx-auto font-light leading-relaxed text-center">
-              Click any solution to explore detailed technical dimensions, cabin finishes, and traction configurations.
-            </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-7 lg:grid-cols-4">
-            {categories.map((cat) => (
+          <nav aria-label="Filter elevator products" className="mb-10 flex flex-wrap justify-center gap-2">
+            {[
+              { label: "All products", value: "all" },
+              { label: "Lifts", value: "lifts" },
+              ...categoryOptions.map(([value, label]) => ({ label, value })),
+            ].map((option) => (
               <Link
-                key={cat.slug}
-                href={`/elevators/${cat.slug}`}
-                className="group relative bg-white border border-neutral-200 hover:border-blue-600/40 rounded-none overflow-hidden flex flex-col justify-between h-full transition-all duration-300 hover:shadow-xl"
+                key={option.value}
+                href={option.value === "all" ? "/elevators" : `/elevators?category=${encodeURIComponent(option.value)}`}
+                className={`shrink-0 border px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.1em] transition-colors ${
+                  activeCategory === option.value
+                    ? "border-black bg-black text-white"
+                    : "border-neutral-200 bg-white text-neutral-600 hover:border-black hover:text-black"
+                }`}
               >
-                <div>
-                  <div className="relative h-64 overflow-hidden bg-neutral-100">
-                    <img
-                      src={cat.img || "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&q=80&w=800"}
-                      alt={cat.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
-
-                    <div className="absolute top-4 left-4 z-10">
-                      <span className="font-mono text-xs font-bold text-white bg-black/80 px-2.5 py-1 backdrop-blur-sm">
-                        {cat.num}
-                      </span>
-                    </div>
-
-                    <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between">
-                      <span className="text-[11px] font-mono text-neutral-200 uppercase tracking-wider font-semibold drop-shadow">
-                        {cat.category}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 p-6 md:p-7">
-                    <div className="flex items-start justify-between gap-4">
-                      <h3 className="text-xl font-bold uppercase tracking-tight text-black group-hover:text-blue-600 transition-colors">
-                        {cat.title}
-                      </h3>
-                      <ArrowUpRight className="w-5 h-5 text-neutral-400 group-hover:text-blue-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all shrink-0 mt-1" />
-                    </div>
-
-                    <p className="text-sm text-neutral-500 font-light leading-relaxed line-clamp-3">
-                      {cat.desc}
-                    </p>
-
-                    <div className="pt-4 border-t border-neutral-100">
-                      <div className="flex items-center gap-2 text-xs font-mono text-neutral-400">
-                        <span className="w-1.5 h-1.5 bg-blue-600 shrink-0" />
-                        <span className="truncate">{cat.spec}</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="px-6 pb-6 pt-1 md:px-7 md:pb-7">
-                  <div className="w-full py-3 border border-neutral-200 group-hover:border-black group-hover:bg-black group-hover:text-white text-neutral-900 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2">
-                    <span>Explore Specifications</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </div>
-                </div>
+                {option.label}
               </Link>
             ))}
-          </div>
+          </nav>
+
+          {filteredProducts.length > 0 ? (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {filteredProducts.map((product) => (
+                <ElevatorProductCard
+                  key={product.href || product.slug}
+                  category={product.category}
+                  title={product.title}
+                  description={product.desc}
+                  imageUrl={product.img}
+                  href={product.href || `/elevators/${product.slug}`}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="border border-neutral-200 bg-white px-6 py-16 text-center">
+              <p className="text-sm text-neutral-600">No products are currently listed in this category.</p>
+              <Link href="/contact" className="mt-4 inline-flex text-xs font-semibold uppercase tracking-wider text-blue-600">
+                Ask us about this system <ArrowRight aria-hidden="true" className="ml-2 h-4 w-4" />
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* ── 3. Bottom CTA Section ───────────────────────────── */}
-      <section className="w-full py-28 md:py-36 bg-black text-white flex items-center justify-center">
+      <section id="spare-parts" className="scroll-mt-24 border-t border-neutral-200 bg-white px-6 py-20 md:py-28">
+          <div className="mx-auto w-full max-w-7xl">
+            <div className="mx-auto mb-10 max-w-2xl text-center">
+              <p className="inline-block border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-600">
+                Parts & components
+              </p>
+              <h2 className="mt-5 text-4xl font-bold uppercase tracking-tight text-black md:text-5xl">
+                Spare parts.
+              </h2>
+              <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-neutral-600">
+                Request genuine lift components and replacement parts from our technical team.
+              </p>
+            </div>
+            {sparePartProducts.length > 0 ? (
+              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {sparePartProducts.map((part) => (
+                  <ElevatorProductCard
+                    key={part.id}
+                    category="Spare Parts"
+                    title={part.title}
+                    description={part.description}
+                    imageUrl={part.imageUrl}
+                    href={part.href}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col gap-5 border border-neutral-200 bg-neutral-100 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+                <p className="max-w-2xl text-sm leading-6 text-neutral-700">
+                  Tell us what component you need and our team will help identify the right spare part for your system.
+                </p>
+                <Link
+                  href="/contact"
+                  className="inline-flex shrink-0 items-center gap-2 bg-blue-700 px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-blue-800"
+                >
+                  Request a spare part <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                </Link>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {/* ── 3. Bottom CTA Section ───────────────────────────── */}
+      <section className="flex w-full items-center justify-center bg-neutral-100 py-28 text-neutral-900 md:py-36">
         <div className="max-w-4xl mx-auto px-6 text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest">
+        <div className="inline-flex items-center gap-2 border border-neutral-200 bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-blue-700">
             ENGINEERING SPECIFICATION
           </div>
-          <h2 className="text-3xl sm:text-5xl font-bold uppercase tracking-tight">
+          <h2 className="text-3xl sm:text-5xl font-bold uppercase tracking-tight text-neutral-900">
             Need Custom Dimensions or Low Pit Shafts?
           </h2>
-          <p className="text-neutral-400 text-base md:text-lg max-w-xl mx-auto font-light leading-relaxed">
+          <p className="text-neutral-600 text-base md:text-lg max-w-xl mx-auto font-light leading-relaxed">
             Our engineering team prepares detailed shaft CAD drawings, load calculations, and municipal approval documents.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <Link
               href="/contact"
-              className="px-10 py-4 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold uppercase tracking-wider transition-colors"
+              className="px-10 py-4 bg-blue-700 text-white hover:bg-blue-800 text-xs font-semibold uppercase tracking-wider transition-colors"
             >
               Consult an Engineer
             </Link>
             <Link
               href="/projects"
-              className="px-10 py-4 border border-neutral-700 hover:border-white text-white text-xs font-semibold uppercase tracking-wider transition-colors"
+              className="px-10 py-4 border border-neutral-300 hover:border-neutral-500 hover:bg-neutral-200 text-neutral-800 text-xs font-semibold uppercase tracking-wider transition-colors"
             >
               View Installed Projects
             </Link>

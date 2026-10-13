@@ -1,21 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { Building2, ArrowRight, MapPin, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
+import type { ProjectData } from "@/lib/project-data";
 
-export type ProjectItem = {
-  id: number;
-  projectName: string;
-  category: string;
-  projectType: string;
-  elevatorCount: number;
-  location: string | null;
-  img: string;
-  featured: boolean;
-  year?: string;
-  status?: string;
-};
+export type ProjectItem = ProjectData;
 
 const categories = ["All Projects", "Residential", "Commercial", "Public / Transit"];
 
@@ -69,10 +60,12 @@ export default function ProjectsGallery({ initialProjects }: { initialProjects: 
             >
               <div>
                 <div className="h-64 w-full relative overflow-hidden bg-neutral-100">
-                  <img
+                  <Image
                     src={proj.img}
                     alt={proj.projectName}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700"
                     onError={(e) => {
                       (e.target as HTMLImageElement).src =
                         "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=800";
@@ -108,7 +101,7 @@ export default function ProjectsGallery({ initialProjects }: { initialProjects: 
                     </span>
                     <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
                       <CheckCircle2 className="w-3 h-3" />
-                      {proj.status || "Commissioned"}
+                      {proj.status === "ACTIVE" ? "Active" : "Commissioned"}
                     </span>
                   </div>
 
@@ -124,10 +117,10 @@ export default function ProjectsGallery({ initialProjects }: { initialProjects: 
 
               <div className="px-6 pb-6 pt-1 md:px-7 md:pb-7">
                 <Link
-                  href="/contact"
+                  href={`/projects/${proj.id}`}
                   className="w-full py-3.5 bg-neutral-100 hover:bg-black hover:text-white text-neutral-900 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
                 >
-                  <span>Request Similar Project</span>
+                  <span>View Project</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>

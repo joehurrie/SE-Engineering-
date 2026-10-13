@@ -1,7 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, Wrench, Zap, Settings, CheckCircle2 } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import prisma from "@/lib/prisma";
+import LiftServicesShowcase, {
+  type LiftServiceContent,
+  type LiftServicePart,
+} from "@/components/LiftServicesShowcase";
+import { defaultSpareParts } from "@/lib/default-spare-parts";
 
 export const dynamic = "force-dynamic";
 
@@ -15,7 +20,6 @@ const defaultServices = [
   {
     slug: "spare-parts",
     num: "01",
-    icon: Wrench,
     title: "Spare Parts Supply",
     tagline: "Genuine OEM Component Inventory",
     desc: "We maintain a comprehensive inventory of genuine factory-certified components for all major elevator brands. From emergency breakdown response to scheduled overhauls, our rapid parts network minimizes equipment downtime.",
@@ -32,7 +36,6 @@ const defaultServices = [
   {
     slug: "lift-modernization",
     num: "02",
-    icon: Zap,
     title: "Lift Modernization",
     tagline: "Upgrade for Safety, Ride Quality & Energy Efficiency",
     desc: "Transform aging, energy-consuming elevator systems into quiet, modern architectural assets. We upgrade microprocessor controllers, install regenerative VVVF drives, and modernize cabin aesthetics to international standards.",
@@ -49,7 +52,6 @@ const defaultServices = [
   {
     slug: "solution-customization",
     num: "03",
-    icon: Settings,
     title: "Solution Customization",
     tagline: "Tailored Architectural & Industrial Engineering",
     desc: "Every architectural design has unique structural parameters. Our engineering department designs bespoke shaft configurations, curved glass observation panoramic elevators, and heavy industrial freight mechanisms tailored to your building blueprint.",
@@ -66,12 +68,20 @@ const defaultServices = [
 ];
 
 export default async function LiftServicesPage() {
-  let services = defaultServices;
+  let services: LiftServiceContent[] = defaultServices;
+  let spareParts: LiftServicePart[] = defaultSpareParts.map((part) => ({
+    id: part.slug,
+    title: part.title,
+    description: part.description,
+    image: part.imageUrl,
+    href: `/elevators/spare-parts/${part.slug}`,
+  }));
 
   try {
-    const dbServices = await prisma.liftService.findMany({
-      orderBy: { id: "asc" },
-    });
+    const [dbServices, dbSpareParts] = await Promise.all([
+      prisma.liftService.findMany({ orderBy: { id: "asc" } }),
+      prisma.sparePartProduct.findMany({ orderBy: { id: "asc" } }),
+    ]);
 
     if (dbServices && dbServices.length > 0) {
       services = defaultServices.map((s) => {
@@ -92,8 +102,18 @@ export default async function LiftServicesPage() {
         return s;
       });
     }
+
+    const databaseSpareParts = dbSpareParts
+      .map((product) => ({
+        id: product.id,
+        title: product.title,
+        description: product.description,
+        image: product.imageUrl,
+        href: `/elevators/spare-parts/${product.slug}`,
+      }));
+    if (databaseSpareParts.length > 0) spareParts = databaseSpareParts;
   } catch (error) {
-    console.error("Failed to fetch lift services:", error);
+    console.error("Failed to fetch lift service content:", error);
   }
   return (
     <div className="bg-white text-[#111111] min-h-screen">
@@ -124,93 +144,25 @@ export default async function LiftServicesPage() {
         </div>
       </section>
 
-      {/* ── 2. Services Sections (Nexia Alternating Layout) ─────── */}
-      {services.map((service, idx) => (
-        <section
-          key={service.slug}
-          className={`w-full min-h-[50vh] md:min-h-[60vh] py-24 md:py-32 flex items-center justify-center ${
-            idx % 2 === 0 ? "bg-white" : "bg-neutral-50"
-          } border-b border-neutral-200`}
-        >
-          <div className="w-full max-w-7xl mx-auto px-6 flex flex-col items-center justify-center">
-            {/* Centered Section Header */}
-            <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto mb-20 md:mb-24">
-              <div className="flex items-center justify-center gap-3 mb-5">
-                <span className="font-mono text-xs font-bold text-white bg-blue-600 px-3 py-1">
-                  SE-{service.num}
-                </span>
-                <span className="text-xs font-mono uppercase tracking-widest text-neutral-500 font-bold">
-                  {service.tagline}
-                </span>
-              </div>
-              <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight text-black mb-5 text-center">
-                {service.title}
-              </h2>
-              <div className="w-20 h-1 bg-blue-600 mx-auto mb-8" />
-              <p className="text-neutral-600 text-base md:text-lg leading-relaxed font-light text-center">
-                {service.desc}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20 items-center">
-              {/* Features Column */}
-              <div className={`lg:col-span-6 space-y-8 ${idx % 2 === 1 ? "lg:order-2" : ""}`}>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4">
-                  {service.features.map((f, i) => (
-                    <div key={i} className="flex items-start gap-4 border border-neutral-200 bg-white p-5 md:p-6">
-                      <CheckCircle2 className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
-                      <span className="text-neutral-800 text-sm font-medium leading-relaxed">{f}</span>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Action Button */}
-                <div className="pt-6 flex justify-center lg:justify-start">
-                  <Link
-                    href={`/lift-services/${service.slug}`}
-                    className="h-14 px-8 bg-black hover:bg-blue-600 text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 rounded-none transition-colors"
-                  >
-                    <span>Learn More About {service.title}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* Image Column */}
-              <div className={`lg:col-span-6 ${idx % 2 === 1 ? "lg:order-1" : ""}`}>
-                <div className="relative rounded-none overflow-hidden shadow-2xl border-[16px] border-neutral-100">
-                  <img
-                    src={service.img}
-                    alt={service.title}
-                    className="w-full h-80 sm:h-[460px] object-cover grayscale hover:grayscale-0 transition-all duration-700"
-                  />
-                  <div className="absolute bottom-6 right-6 bg-blue-600 text-white px-5 py-2.5 text-xs font-bold z-20">
-                    {service.title.toUpperCase()}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-      ))}
+      <LiftServicesShowcase services={services} spareParts={spareParts} />
 
       {/* ── 3. Consultation CTA ───────────────────────────────── */}
-      <section className="w-full min-h-[50vh] bg-black py-32 md:py-44 text-center relative overflow-hidden flex items-center justify-center">
+      <section className="w-full min-h-[50vh] bg-neutral-100 py-32 md:py-44 text-center relative overflow-hidden flex items-center justify-center">
         <div className="max-w-2xl mx-auto px-6 relative z-10 space-y-8">
-          <div className="inline-block px-3 py-1 bg-neutral-900 text-neutral-400 text-[10px] font-bold uppercase tracking-widest border border-neutral-800">
+          <div className="inline-block px-3 py-1 bg-white text-blue-700 text-[10px] font-bold uppercase tracking-widest border border-neutral-200">
             Rapid Technical Dispatch
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-white uppercase tracking-tight text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 uppercase tracking-tight text-center">
             Need Expert Lift Support or Modernization?
           </h2>
           <div className="w-16 h-1 bg-blue-600 mx-auto" />
-          <p className="text-neutral-400 text-sm md:text-base font-light leading-relaxed text-center">
+          <p className="text-neutral-600 text-sm md:text-base font-light leading-relaxed text-center">
             Contact our certified engineering department in Kilimani for a free technical assessment and tailored proposal.
           </p>
           <div className="pt-4 flex justify-center">
             <Link
               href="/contact"
-              className="h-14 px-8 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 rounded-none transition-colors"
+              className="h-14 px-8 bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 rounded-none transition-colors"
             >
               <span>Request Service Proposal</span>
               <ArrowRight className="w-4 h-4" />

@@ -52,7 +52,7 @@ export default function HomeContactForm() {
       <form onSubmit={handleContactSubmit} className="w-full space-y-6">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
           <div className="space-y-2">
-            <label htmlFor="home-name" className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-600">
+            <label htmlFor="home-name" className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">
               Full Name *
             </label>
             <input
@@ -61,11 +61,11 @@ export default function HomeContactForm() {
               name="name"
               required
               placeholder="Eng. John Kamau"
-              className="h-12 w-full border border-neutral-300 bg-white px-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
+              className="h-12 w-full rounded-none border border-[#E5E5E5] bg-white px-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
             />
           </div>
           <div className="space-y-2">
-            <label htmlFor="home-phone" className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-600">
+            <label htmlFor="home-phone" className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">
               Phone Number *
             </label>
             <input
@@ -74,13 +74,13 @@ export default function HomeContactForm() {
               name="phone"
               required
               placeholder="+254 700 000 000"
-              className="h-12 w-full border border-neutral-300 bg-white px-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
+              className="h-12 w-full rounded-none border border-[#E5E5E5] bg-white px-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
             />
           </div>
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="home-email" className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-600">
+          <label htmlFor="home-email" className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">
             Email Address *
           </label>
           <input
@@ -89,12 +89,12 @@ export default function HomeContactForm() {
             name="email"
             required
             placeholder="john@development.co.ke"
-            className="h-12 w-full border border-neutral-300 bg-white px-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
+            className="h-12 w-full rounded-none border border-[#E5E5E5] bg-white px-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
           />
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="home-message" className="block text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-600">
+          <label htmlFor="home-message" className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">
             Project Details / Shaft Dimensions *
           </label>
           <textarea
@@ -103,16 +103,16 @@ export default function HomeContactForm() {
             required
             rows={5}
             placeholder="Building shaft dimensions, number of floors, or elevator type..."
-            className="w-full resize-y border border-neutral-300 bg-white p-4 text-sm leading-relaxed text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
+            className="w-full resize-y rounded-none border border-[#E5E5E5] bg-white p-4 text-sm leading-relaxed text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
           />
         </div>
 
         <button
           type="submit"
           disabled={formStatus === "sending"}
-          className="flex h-13 w-full cursor-pointer items-center justify-center gap-3 bg-blue-600 text-xs font-bold uppercase tracking-[0.14em] text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
+          className={`flex h-13 w-full cursor-pointer items-center justify-center gap-3 rounded-none text-xs font-bold uppercase tracking-[0.16em] text-white transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${formStatus === "success" ? "bg-emerald-700 hover:bg-emerald-700" : "bg-[#2563EB] hover:bg-[#1D4ED8]"}`}
         >
-          <span>{formStatus === "sending" ? "Submitting..." : "Request Callback"}</span>
+          <span>{formStatus === "sending" ? "Submitting..." : formStatus === "success" ? "Request received" : "Request callback"}</span>
           <ArrowRight className="w-5 h-5" />
         </button>
       </form>

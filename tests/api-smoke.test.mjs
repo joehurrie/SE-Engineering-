@@ -69,6 +69,7 @@ test("administrator collection APIs reject requests without a valid session", as
     "/api/admin/stats",
     "/api/admin/content",
     "/api/admin/elevators",
+    "/api/admin/spare-parts",
     "/api/admin/inquiries",
     "/api/admin/news",
     "/api/admin/projects",

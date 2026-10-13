@@ -9,9 +9,14 @@ type Project = {
   id: number;
   projectName: string;
   projectType: string;
+  description: string;
   elevatorCount: number;
   location: string | null;
+  latitude: number | null;
+  longitude: number | null;
   imageUrl: string;
+  galleryImages: string[];
+  status: string;
   featured: boolean;
 };
 
@@ -21,13 +26,19 @@ export default function AdminProjectsPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     projectName: "",
     projectType: "Luxury Multi-Family Residential",
+    description: "",
     elevatorCount: 4,
     location: "Kilimani, Nairobi",
+    latitude: "",
+    longitude: "",
     imageUrl: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1200&q=80",
+    galleryImages: [] as string[],
+    status: "COMMISSIONED",
     featured: true,
   });
 
@@ -53,11 +64,17 @@ export default function AdminProjectsPage() {
     setFormData({
       projectName: "",
       projectType: "High-Rise Commercial Tower",
+      description: "",
       elevatorCount: 6,
       location: "Westlands, Nairobi",
+      latitude: "",
+      longitude: "",
       imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80",
+      galleryImages: [],
+      status: "COMMISSIONED",
       featured: true,
     });
+    setSaveError(null);
     setModalOpen(true);
   };
 
@@ -66,11 +83,17 @@ export default function AdminProjectsPage() {
     setFormData({
       projectName: p.projectName,
       projectType: p.projectType,
+      description: p.description || "",
       elevatorCount: p.elevatorCount,
       location: p.location || "",
+      latitude: p.latitude?.toString() || "",
+      longitude: p.longitude?.toString() || "",
       imageUrl: p.imageUrl,
+      galleryImages: p.galleryImages || [],
+      status: p.status || "COMMISSIONED",
       featured: p.featured,
     });
+    setSaveError(null);
     setModalOpen(true);
   };
 
@@ -89,14 +112,21 @@ export default function AdminProjectsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+    setSaveError(null);
     try {
+      const payload = {
+        ...formData,
+        latitude: formData.latitude.trim() ? Number(formData.latitude) : null,
+        longitude: formData.longitude.trim() ? Number(formData.longitude) : null,
+      };
       if (editingProject) {
         const res = await fetch(`/api/admin/projects/${editingProject.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
         const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to update project.");
         if (data.project) {
           setProjects((prev) =>
             prev.map((p) => (p.id === editingProject.id ? data.project : p))
@@ -106,16 +136,17 @@ export default function AdminProjectsPage() {
         const res = await fetch("/api/admin/projects", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
+          body: JSON.stringify(payload),
         });
         const data = await res.json();
+        if (!res.ok) throw new Error(data.error || "Failed to create project.");
         if (data.project) {
           setProjects((prev) => [data.project, ...prev]);
         }
       }
       setModalOpen(false);
     } catch (err) {
-      console.error(err);
+      setSaveError(err instanceof Error ? err.message : "Unable to save the project.");
     } finally {
       setSaving(false);
     }
@@ -191,6 +222,9 @@ export default function AdminProjectsPage() {
                       <span>{proj.location}</span>
                     </div>
                   )}
+                  <p className="mt-2 text-[11px] font-semibold uppercase tracking-wide text-emerald-700">
+                    {proj.status === "ACTIVE" ? "Active" : "Commissioned"}
+                  </p>
                 </div>
               </div>
 
@@ -221,7 +255,7 @@ export default function AdminProjectsPage() {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white border border-[#E2E8F0] rounded-none max-w-lg w-full p-6 space-y-5 shadow-2xl">
+          <div className="bg-white border border-[#E2E8F0] rounded-none max-w-2xl w-full p-6 space-y-5 shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
               <h2 className="text-lg font-bold text-[#0F172A]">
                 {editingProject ? "Edit Project Portfolio" : "Add Project Portfolio"}
@@ -263,6 +297,19 @@ export default function AdminProjectsPage() {
                 />
               </div>
 
+              <div>
+                <label className="block text-xs font-semibold text-[#475569] uppercase tracking-wider mb-1.5">
+                  Project Details
+                </label>
+                <textarea
+                  rows={4}
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="Describe the installation, scope, and project outcome."
+                  className="w-full bg-white border border-[#CBD5E1] rounded-xl px-3.5 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                />
+              </div>
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-[#475569] uppercase tracking-wider mb-1.5">
@@ -276,6 +323,56 @@ export default function AdminProjectsPage() {
                     onChange={(e) => setFormData({ ...formData, elevatorCount: Number(e.target.value) })}
                     className="w-full bg-white border border-[#CBD5E1] rounded-xl px-3.5 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
                   />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-[#475569] uppercase tracking-wider mb-1.5">
+                      Latitude
+                    </label>
+                    <input
+                      type="number"
+                      step="any"
+                      min="-90"
+                      max="90"
+                      value={formData.latitude}
+                      onChange={(e) => setFormData({ ...formData, latitude: e.target.value })}
+                      placeholder="-1.2921"
+                      className="w-full bg-white border border-[#CBD5E1] rounded-xl px-3.5 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-[#475569] uppercase tracking-wider mb-1.5">
+                      Longitude
+                    </label>
+                    <input
+                      type="number"
+                      step="any"
+                      min="-180"
+                      max="180"
+                      value={formData.longitude}
+                      onChange={(e) => setFormData({ ...formData, longitude: e.target.value })}
+                      placeholder="36.8219"
+                      className="w-full bg-white border border-[#CBD5E1] rounded-xl px-3.5 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                    />
+                  </div>
+                  <p className="col-span-2 -mt-2 text-[11px] text-[#64748B]">
+                    Enter both coordinates to show this project as a pin on the public projects map.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-[#475569] uppercase tracking-wider mb-1.5">
+                    Project Status
+                  </label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                    className="w-full bg-white border border-[#CBD5E1] rounded-xl px-3.5 py-2.5 text-sm text-[#0F172A] focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600"
+                  >
+                    <option value="COMMISSIONED">Commissioned</option>
+                    <option value="ACTIVE">Active</option>
+                  </select>
                 </div>
 
                 <div>
@@ -303,6 +400,54 @@ export default function AdminProjectsPage() {
                 />
               </div>
 
+              <div>
+                <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-[#475569]">
+                  Project Gallery
+                </label>
+                <div className="space-y-4">
+                  {formData.galleryImages.map((image, index) => (
+                    <div key={`gallery-${index}`} className="border border-[#E2E8F0] p-3">
+                      <div className="mb-2 flex items-center justify-between">
+                        <span className="text-xs font-medium text-[#475569]">Gallery image {index + 1}</span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              galleryImages: prev.galleryImages.filter((_, imageIndex) => imageIndex !== index),
+                            }))
+                          }
+                          className="text-xs font-semibold text-red-600 hover:text-red-700"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                      <ImageDropzone
+                        value={image}
+                        onChange={(url) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            galleryImages: prev.galleryImages.map((existing, imageIndex) =>
+                              imageIndex === index ? url : existing
+                            ),
+                          }))
+                        }
+                      />
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setFormData((prev) => ({ ...prev, galleryImages: [...prev.galleryImages, ""] }))
+                    }
+                    className="inline-flex items-center gap-2 border border-dashed border-[#94A3B8] px-4 py-2.5 text-xs font-semibold text-[#475569] transition hover:border-blue-600 hover:text-blue-600"
+                  >
+                    <Plus className="h-4 w-4" />
+                    Add gallery photo
+                  </button>
+                </div>
+              </div>
+
               <div className="flex items-center gap-2 pt-1">
                 <input
                   type="checkbox"
@@ -315,6 +460,12 @@ export default function AdminProjectsPage() {
                   Feature on website homepage showcase
                 </label>
               </div>
+
+              {saveError && (
+                <p role="alert" className="border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                  {saveError}
+                </p>
+              )}
 
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E2E8F0]">
                 <button

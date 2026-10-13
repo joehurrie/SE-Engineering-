@@ -105,11 +105,11 @@ export default async function ServiceDetailPage({ params }: Props) {
             </div>
           </div>
           <div className="lg:col-span-5">
-            <div className="bg-black rounded-none p-10 md:p-12 text-white sticky top-28 space-y-6 border border-neutral-800">
-              <span className="text-xs font-semibold tracking-widest text-blue-400 uppercase block font-mono">Engineering Consultation</span>
-              <h3 className="text-2xl font-bold uppercase tracking-tight text-white">Ready to Upgrade or Procure Parts?</h3>
-              <p className="text-neutral-400 text-sm leading-relaxed font-light">Get in touch with our certified engineers in Kilimani for a free site assessment and prompt quotation.</p>
-              <Link href="/contact" className="w-full h-14 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 rounded-none">
+            <div className="bg-neutral-100 rounded-none p-10 md:p-12 text-neutral-900 sticky top-28 space-y-6 border border-neutral-200">
+              <span className="text-xs font-semibold tracking-widest text-blue-700 uppercase block font-mono">Engineering Consultation</span>
+              <h3 className="text-2xl font-bold uppercase tracking-tight text-neutral-900">Ready to Upgrade or Procure Parts?</h3>
+              <p className="text-neutral-600 text-sm leading-relaxed font-light">Get in touch with our certified engineers in Kilimani for a free site assessment and prompt quotation.</p>
+              <Link href="/contact" className="w-full h-14 bg-blue-700 hover:bg-blue-800 text-white text-xs font-bold uppercase tracking-wider transition-colors flex items-center justify-center gap-2 rounded-none">
                 <span>Request a Proposal</span>
                 <ArrowRight className="w-4 h-4" />
               </Link>

@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { getCurrentAdmin } from "@/lib/auth";
+import { parseProjectInput } from "@/lib/project-input";
 
 export async function GET() {
   const user = await getCurrentAdmin();
@@ -27,24 +28,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { projectName, projectType, elevatorCount, location, imageUrl, featured } = await request.json();
-
-    if (!projectName || !projectType || !imageUrl) {
-      return NextResponse.json(
-        { error: "Project name, type, and image URL are required" },
-        { status: 400 }
-      );
-    }
+    const input = parseProjectInput(await request.json());
+    if ("error" in input) return NextResponse.json({ error: input.error }, { status: 400 });
 
     const created = await prisma.project.create({
-      data: {
-        projectName,
-        projectType,
-        elevatorCount: Number(elevatorCount) || 1,
-        location: location || null,
-        imageUrl,
-        featured: Boolean(featured),
-      },
+      data: input,
     });
 
     try {

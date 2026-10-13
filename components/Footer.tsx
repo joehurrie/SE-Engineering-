@@ -119,7 +119,7 @@ export default function Footer() {
             </p>
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center gap-3 w-full max-w-xs h-14 bg-neutral-800 hover:bg-blue-600 text-white text-xs font-semibold uppercase tracking-wider px-6 transition-colors rounded-none mx-auto"
+              className="inline-flex items-center justify-center gap-3 w-full max-w-xs h-14 bg-neutral-700 hover:bg-blue-700 text-white text-xs font-semibold uppercase tracking-wider px-6 transition-colors rounded-none mx-auto"
             >
               <span>Request Consultation</span>
               <ArrowRight className="w-4 h-4" />
