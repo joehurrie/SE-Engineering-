@@ -1,5 +1,23 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Environment and Security
+
+Copy `.env.example` to `.env.local` and configure `DATABASE_URL` plus a unique `NEXTAUTH_SECRET` of at least 32 characters. Generate a secret with `openssl rand -base64 48`. The server validates both values during startup.
+
+Set `ADMIN_EMAIL` and a unique `ADMIN_PASSWORD` of at least 16 characters before running `node prisma/seed.mjs`. Do not commit environment files or use example values in production. Rotate any credentials that have previously been exposed.
+
+Administrator page middleware verifies the signed session. Admin API handlers also validate the session against the current administrator record in PostgreSQL; every `/api/admin` data endpoint requires authentication.
+
+## Verification
+
+```bash
+npm run lint
+npm run build
+npm run test:smoke
+```
+
+The smoke tests require a successful production build and exercise unauthenticated admin API and page requests. GitHub Actions runs lint, build, and these tests on pushes and pull requests to `main`.
+
 ## Getting Started
 
 First, run the development server:

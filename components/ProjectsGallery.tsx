@@ -61,7 +61,7 @@ export default function ProjectsGallery({ initialProjects }: { initialProjects: 
         </div>
 
         {/* Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-7 lg:grid-cols-3">
           {filteredProjects.map((proj) => (
             <div
               key={proj.id}
@@ -101,7 +101,7 @@ export default function ProjectsGallery({ initialProjects }: { initialProjects: 
                   </div>
                 </div>
 
-                <div className="p-8 space-y-4">
+                <div className="space-y-4 p-6 md:p-7">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
                       {proj.category}
@@ -122,7 +122,7 @@ export default function ProjectsGallery({ initialProjects }: { initialProjects: 
                 </div>
               </div>
 
-              <div className="px-8 pb-8 pt-2">
+              <div className="px-6 pb-6 pt-1 md:px-7 md:pb-7">
                 <Link
                   href="/contact"
                   className="w-full py-3.5 bg-neutral-100 hover:bg-black hover:text-white text-neutral-900 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2"

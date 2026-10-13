@@ -33,13 +33,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const [checkingAuth, setCheckingAuth] = useState(pathname !== "/admin/login");
+  const [checkingAuth, setCheckingAuth] = useState(true);
 
   useEffect(() => {
-    if (pathname === "/admin/login") {
-      setCheckingAuth(false);
-      return;
-    }
+    if (pathname === "/admin/login") return;
 
     let active = true;
     fetch("/api/admin/auth/me")
@@ -141,7 +138,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </div>
 
         {/* Database indicator */}
-        <div className="mx-4 my-3 px-3 py-2 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center gap-2 text-[11px] text-emerald-800 font-medium">
+        <div className="mx-4 my-3 px-3 py-2 rounded-none bg-emerald-50 border border-emerald-200 flex items-center gap-2 text-[11px] text-emerald-800 font-medium">
           <Database className="w-3.5 h-3.5 shrink-0 text-emerald-600" />
           <span className="truncate">Neon DB Connected</span>
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse ml-auto shrink-0" />
@@ -193,7 +190,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Main Content Area */}
       <main className="flex-1 min-w-0 overflow-y-auto min-h-screen bg-[#F8FAFC]">
-        {children}
+        <div className="admin-page-shell">{children}</div>
       </main>
     </div>
   );

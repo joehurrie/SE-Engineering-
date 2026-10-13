@@ -22,12 +22,11 @@ const serviceItems = [
   { label: "Solution Customization",   href: "/lift-services/solution-customization" },
 ];
 
-export default function Navbar() {
+function NavbarContent({ pathname }: { pathname: string }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [elevatorsOpen, setElevatorsOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
-  const pathname = usePathname();
 
   const elevatorsRef = useRef<HTMLDivElement>(null);
   const servicesRef = useRef<HTMLDivElement>(null);
@@ -39,12 +38,6 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    setMobileMenuOpen(false);
-    setElevatorsOpen(false);
-    setServicesOpen(false);
-  }, [pathname]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -339,4 +332,9 @@ export default function Navbar() {
       )}
     </>
   );
+}
+
+export default function Navbar() {
+  const pathname = usePathname();
+  return <NavbarContent key={pathname} pathname={pathname} />;
 }

@@ -37,20 +37,21 @@ export default function AdminDashboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchStats();
-  }, []);
+    let active = true;
+    fetch("/api/admin/stats")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active) setStats(data);
+      })
+      .catch((error) => console.error(error))
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
-  const fetchStats = async () => {
-    try {
-      const res = await fetch("/api/admin/stats");
-      const data = await res.json();
-      setStats(data);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <div className="p-6 md:p-8 space-y-8 max-w-7xl w-full mx-auto">
@@ -88,7 +89,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Database Connection Banner */}
-      <div className="p-4 rounded-xl bg-white border border-[#E2E8F0] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="p-4 rounded-none bg-white border border-[#E2E8F0] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0">
             <Database className="w-5 h-5" />
@@ -120,7 +121,7 @@ export default function AdminDashboardPage() {
         <>
           {/* Metrics Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-5 rounded-xl bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-between">
+            <div className="p-5 rounded-none bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-between">
               <div>
                 <span className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
                   Elevator Products
@@ -133,7 +134,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="p-5 rounded-xl bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-between">
+            <div className="p-5 rounded-none bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-between">
               <div>
                 <span className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
                   Lift Services
@@ -146,7 +147,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="p-5 rounded-xl bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-between">
+            <div className="p-5 rounded-none bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-between">
               <div>
                 <span className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
                   Portfolio Projects
@@ -159,7 +160,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            <div className="p-5 rounded-xl bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-between">
+            <div className="p-5 rounded-none bg-white border border-[#E2E8F0] shadow-sm flex items-center justify-between">
               <div>
                 <span className="text-xs font-semibold text-[#64748B] uppercase tracking-wider">
                   Inquiries Inbox
@@ -184,7 +185,7 @@ export default function AdminDashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Link
               href="/admin/elevators"
-              className="group p-6 rounded-xl bg-white border border-[#E2E8F0] hover:border-blue-600 hover:shadow-md transition flex flex-col justify-between"
+              className="group p-6 rounded-none bg-white border border-[#E2E8F0] hover:border-blue-600 hover:shadow-md transition flex flex-col justify-between"
             >
               <div>
                 <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
@@ -205,7 +206,7 @@ export default function AdminDashboardPage() {
 
             <Link
               href="/admin/content"
-              className="group p-6 rounded-xl bg-white border border-[#E2E8F0] hover:border-blue-600 hover:shadow-md transition flex flex-col justify-between"
+              className="group p-6 rounded-none bg-white border border-[#E2E8F0] hover:border-blue-600 hover:shadow-md transition flex flex-col justify-between"
             >
               <div>
                 <div className="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 flex items-center justify-center mb-3">
@@ -226,7 +227,7 @@ export default function AdminDashboardPage() {
 
             <Link
               href="/admin/inquiries"
-              className="group p-6 rounded-xl bg-white border border-[#E2E8F0] hover:border-blue-600 hover:shadow-md transition flex flex-col justify-between"
+              className="group p-6 rounded-none bg-white border border-[#E2E8F0] hover:border-blue-600 hover:shadow-md transition flex flex-col justify-between"
             >
               <div>
                 <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3">
@@ -247,7 +248,7 @@ export default function AdminDashboardPage() {
           </div>
 
           {/* Recent Inquiries List */}
-          <div className="p-6 rounded-xl bg-white border border-[#E2E8F0] shadow-sm">
+          <div className="p-6 rounded-none bg-white border border-[#E2E8F0] shadow-sm">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-base font-bold text-[#0F172A]">Recent Inquiries & Quotes</h2>

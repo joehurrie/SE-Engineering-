@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, ArrowRight, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, ArrowRight } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { categoryToSlug } from "@/lib/slugs";
 
@@ -97,7 +97,7 @@ export default async function ElevatorsPage() {
 
     if (dbProducts && dbProducts.length > 0) {
       // Map existing categories with database updates (image, title, description, specs)
-      categories = defaultElevatorCategories.map((cat, idx) => {
+      categories = defaultElevatorCategories.map((cat) => {
         const match = dbProducts.find(
           (p) =>
             p.category.toLowerCase() === cat.title.toLowerCase() ||
@@ -127,7 +127,7 @@ export default async function ElevatorsPage() {
       );
 
       if (extraProducts.length > 0) {
-        extraProducts.forEach((p, index) => {
+        extraProducts.forEach((p) => {
           categories.push({
             slug: categoryToSlug(p.category),
             title: p.title,
@@ -149,7 +149,7 @@ export default async function ElevatorsPage() {
   return (
     <div className="bg-white text-[#111111] min-h-screen">
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
-      <section className="min-h-[50vh] min-h-[50svh] min-h-[380px] pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
+      <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
         <div className="absolute inset-0 z-0">
           <img
             src={heroImg}
@@ -175,8 +175,8 @@ export default async function ElevatorsPage() {
       </section>
 
       {/* ── 2. Grid of Categories (Nexia System Cards) ────────── */}
-      <section className="w-full min-h-screen py-32 md:py-48 bg-neutral-50 border-b border-neutral-200 flex items-center justify-center">
-        <div className="w-full max-w-7xl mx-auto px-6 space-y-20 flex flex-col justify-center">
+      <section className="w-full min-h-[50vh] md:min-h-[60vh] py-24 md:py-32 bg-neutral-50 border-b border-neutral-200 flex items-center justify-center">
+        <div className="w-full max-w-7xl mx-auto px-6 space-y-20 flex flex-col items-center justify-center">
           <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto">
             <div className="inline-block px-3.5 py-1.5 bg-white text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-5 border border-neutral-200">
               System Range
@@ -190,7 +190,7 @@ export default async function ElevatorsPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-10">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-7 lg:grid-cols-4">
             {categories.map((cat) => (
               <Link
                 key={cat.slug}
@@ -219,7 +219,7 @@ export default async function ElevatorsPage() {
                     </div>
                   </div>
 
-                  <div className="p-8 space-y-4">
+                  <div className="space-y-4 p-6 md:p-7">
                     <div className="flex items-start justify-between gap-4">
                       <h3 className="text-xl font-bold uppercase tracking-tight text-black group-hover:text-blue-600 transition-colors">
                         {cat.title}
@@ -240,7 +240,7 @@ export default async function ElevatorsPage() {
                   </div>
                 </div>
 
-                <div className="px-8 pb-8 pt-2">
+                <div className="px-6 pb-6 pt-1 md:px-7 md:pb-7">
                   <div className="w-full py-3 border border-neutral-200 group-hover:border-black group-hover:bg-black group-hover:text-white text-neutral-900 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2">
                     <span>Explore Specifications</span>
                     <ArrowRight className="w-3.5 h-3.5" />

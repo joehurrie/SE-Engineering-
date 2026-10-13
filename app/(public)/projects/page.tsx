@@ -126,7 +126,7 @@ export default async function ProjectsPage() {
   return (
     <div className="bg-white text-[#111111] min-h-screen">
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
-      <section className="min-h-[50vh] min-h-[50svh] min-h-[380px] pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
+      <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
         <div className="absolute inset-0 z-0">
           <img
             src={heroImg}

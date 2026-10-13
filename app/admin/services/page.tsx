@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Wrench, Plus, Edit2, Trash2, Loader2, X } from "lucide-react";
+import { Plus, Edit2, Trash2, Loader2, X } from "lucide-react";
 import ImageDropzone from "@/components/ImageDropzone";
 
 const SERVICE_CATEGORIES = [
@@ -33,21 +33,21 @@ export default function AdminServicesPage() {
   });
 
   useEffect(() => {
-    fetchServices();
-  }, []);
+    let active = true;
+    fetch("/api/admin/services")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data.services) setServices(data.services);
+      })
+      .catch((error) => console.error(error))
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
-  const fetchServices = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/admin/services");
-      const data = await res.json();
-      if (data.services) setServices(data.services);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleOpenAdd = () => {
     setEditingService(null);
@@ -148,15 +148,15 @@ export default function AdminServicesPage() {
           <span>Loading services from Neon DB...</span>
         </div>
       ) : services.length === 0 ? (
-        <div className="py-16 text-center rounded-xl bg-white border border-[#E2E8F0] text-[#64748B] text-sm">
-          No services defined yet. Click "Add New Service" to create one.
+        <div className="py-16 text-center rounded-none bg-white border border-[#E2E8F0] text-[#64748B] text-sm">
+          No services defined yet. Click &quot;Add New Service&quot; to create one.
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {services.map((srv) => (
             <div
               key={srv.id}
-              className="rounded-xl bg-white border border-[#E2E8F0] overflow-hidden flex flex-col justify-between group hover:border-blue-600/40 hover:shadow-md transition shadow-sm"
+              className="rounded-none bg-white border border-[#E2E8F0] overflow-hidden flex flex-col justify-between group hover:border-blue-600/40 hover:shadow-md transition shadow-sm"
             >
               <div>
                 {srv.imageUrl && (
@@ -209,7 +209,7 @@ export default function AdminServicesPage() {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl">
+          <div className="bg-white border border-[#E2E8F0] rounded-none max-w-lg w-full p-6 space-y-5 shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
               <h2 className="text-lg font-bold text-[#0F172A]">
                 {editingService ? "Edit Lift Service" : "Add Lift Service"}

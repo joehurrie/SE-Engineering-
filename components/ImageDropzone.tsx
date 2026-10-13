@@ -134,7 +134,7 @@ export default function ImageDropzone({
 
       {value && !uploading ? (
         /* ── Preview ── */
-        <div className="relative group rounded-xl overflow-hidden border border-[#E2E8F0] bg-slate-50">
+        <div className="relative group rounded-none overflow-hidden border border-[#E2E8F0] bg-slate-50">
           <img
             src={value}
             alt="Uploaded preview"
@@ -178,7 +178,7 @@ export default function ImageDropzone({
           onDragLeave={onDragLeave}
           onDrop={onDrop}
           className={[
-            "relative flex flex-col items-center justify-center gap-3 w-full h-52 rounded-xl border-2 border-dashed cursor-pointer transition-all duration-200 select-none",
+            "relative flex flex-col items-center justify-center gap-3 w-full h-52 rounded-none border-2 border-dashed cursor-pointer transition-all duration-200 select-none",
             isDragging
               ? "border-blue-500 bg-blue-50 scale-[1.01] shadow-md"
               : uploading
@@ -232,7 +232,7 @@ export default function ImageDropzone({
 
       {/* Error message */}
       {error && (
-        <div className="flex items-start gap-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
+        <div className="flex items-start gap-2 p-3 rounded-none bg-red-50 border border-red-200 text-red-700 text-xs">
           <AlertCircle className="w-3.5 h-3.5 shrink-0 mt-0.5" />
           <span>{error}</span>
         </div>

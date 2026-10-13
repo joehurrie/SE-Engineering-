@@ -64,7 +64,7 @@ export default async function AboutPage() {
     <div className="bg-white text-neutral-900 min-h-screen selection:bg-blue-600 selection:text-white">
 
       {/* ── 1. Hero: 50vh View Height (Nexia Standard) ───────── */}
-      <section className="w-full min-h-[50vh] min-h-[50svh] min-h-[380px] pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
+      <section className="w-full min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
         <div className="absolute inset-0 z-0">
           <img
             src={heroImg}
@@ -89,8 +89,8 @@ export default async function AboutPage() {
       </section>
 
       {/* ── 2. Corporate Overview (Centered Header & Balanced Layout) ─────── */}
-      <section className="w-full min-h-[85vh] md:min-h-screen py-32 md:py-48 bg-white border-b border-neutral-200 flex items-center justify-center">
-        <div className="w-full max-w-7xl mx-auto px-6 flex flex-col justify-center">
+      <section className="w-full min-h-[50vh] md:min-h-[60vh] py-24 md:py-32 bg-white border-b border-neutral-200 flex items-center justify-center">
+        <div className="w-full max-w-7xl mx-auto px-6 flex flex-col items-center justify-center">
           <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto mb-20 md:mb-24">
             <div className="inline-block px-3.5 py-1.5 bg-neutral-100 text-neutral-600 text-[10px] font-bold uppercase tracking-widest border border-neutral-200 mb-5">
               Established 2016 · Kilimani
@@ -146,7 +146,7 @@ export default async function AboutPage() {
 
       {/* ── 3. Core Advantages (Sharp Cards with Bottom Border) ─ */}
       <section className="w-full min-h-[75vh] md:min-h-screen py-32 md:py-48 bg-neutral-50 border-b border-neutral-200 flex items-center justify-center">
-        <div className="w-full max-w-7xl mx-auto px-6 space-y-20">
+        <div className="w-full max-w-7xl mx-auto px-6 space-y-20 flex flex-col items-center justify-center">
           <div className="flex flex-col items-center justify-center text-center max-w-2xl mx-auto">
             <div className="inline-block px-3.5 py-1.5 bg-white text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-5 border border-neutral-200">
               Enterprise Strengths
@@ -161,7 +161,7 @@ export default async function AboutPage() {
             {advantages.map((adv, idx) => (
               <div
                 key={idx}
-                className="bg-white border border-neutral-200 border-b-4 border-b-blue-600 p-10 md:p-12 space-y-4 rounded-none hover:shadow-xl transition-all text-center flex flex-col items-center"
+                className="flex flex-col items-center space-y-4 border border-neutral-200 bg-white p-7 text-center transition-colors hover:border-neutral-400 md:p-9"
               >
                 <div className="flex items-center justify-center gap-3 mb-2">
                   <div className="w-8 h-8 bg-blue-50 text-blue-600 flex items-center justify-center rounded-none font-bold text-xs">
@@ -225,39 +225,39 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* ── 5. Leadership Team (Sharp Cards with Bottom Border) ─ */}
-      <section className="w-full min-h-[75vh] md:min-h-screen py-32 md:py-48 bg-neutral-50 flex items-center justify-center">
-        <div className="w-full max-w-7xl mx-auto px-6 space-y-20">
-          <div className="flex flex-col items-center justify-center text-center max-w-2xl mx-auto">
+      {/* ── 5. Leadership Team (Responsive, airy minimal layout) ─ */}
+      <section className="w-full bg-neutral-50 section-space">
+        <div className="section-shell">
+          <div className="mx-auto mb-16 max-w-2xl text-center md:mb-20">
             <div className="inline-block px-3.5 py-1.5 bg-white text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-5 border border-neutral-200">
               Key Personnel
             </div>
-            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight text-black mb-5 text-center">
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight text-black mb-4 text-center">
               Corporate Leadership
             </h2>
-            <div className="w-20 h-1 bg-blue-600 mx-auto" />
+            <div className="mx-auto h-1 w-20 bg-blue-600" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-10">
             {team.map((member, idx) => (
               <div
                 key={idx}
-                className="bg-white border border-neutral-200 border-b-4 border-b-black hover:border-b-blue-600 rounded-none p-12 md:p-14 flex flex-col items-center text-center justify-between transition-colors shadow-sm"
+                className="flex flex-col items-center justify-between border border-neutral-200 bg-white p-7 text-center transition-colors hover:border-neutral-400 md:p-9"
               >
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-14 h-14 bg-black text-white flex items-center justify-center mb-6 font-bold text-lg rounded-none mx-auto">
+                <div className="flex w-full flex-col items-center text-center">
+                  <div className="mx-auto mb-6 flex h-14 w-14 items-center justify-center bg-black text-lg font-bold text-white rounded-none">
                     {member.name.charAt(0)}
                   </div>
-                  <h3 className="text-black text-xl font-bold mb-1 text-center">{member.name}</h3>
-                  <p className="text-neutral-500 text-xs uppercase tracking-wider mb-6 font-mono font-semibold text-center">
+                  <h3 className="mb-2 text-xl font-bold text-black text-center">{member.name}</h3>
+                  <p className="mb-6 text-center text-[11px] uppercase tracking-wider text-neutral-500 font-mono font-semibold">
                     {member.role}
                   </p>
                 </div>
-                <div className="pt-6 border-t border-neutral-100 space-y-2 text-sm w-full text-center">
+                <div className="w-full space-y-2 border-t border-neutral-100 pt-6 text-sm text-center">
                   {member.phone && (
                     <a
                       href={`tel:${member.phone.replace(/[^0-9+]/g, "")}`}
-                      className="text-neutral-600 hover:text-blue-600 transition-colors block font-mono"
+                      className="block font-mono text-neutral-600 transition-colors hover:text-blue-600"
                     >
                       {member.phone}
                     </a>
@@ -265,7 +265,7 @@ export default async function AboutPage() {
                   {member.email && (
                     <a
                       href={`mailto:${member.email}`}
-                      className="text-neutral-600 hover:text-blue-600 transition-colors block truncate font-mono text-xs"
+                      className="block truncate font-mono text-xs text-neutral-600 transition-colors hover:text-blue-600"
                     >
                       {member.email}
                     </a>

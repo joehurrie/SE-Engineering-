@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Newspaper, Plus, Edit2, Trash2, Loader2, X, Calendar } from "lucide-react";
+import { Plus, Edit2, Trash2, Loader2, X, Calendar } from "lucide-react";
 import ImageDropzone from "@/components/ImageDropzone";
 
 type Article = {
@@ -28,21 +28,21 @@ export default function AdminNewsPage() {
   });
 
   useEffect(() => {
-    fetchArticles();
-  }, []);
+    let active = true;
+    fetch("/api/admin/news")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data.articles) setArticles(data.articles);
+      })
+      .catch((error) => console.error(error))
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
-  const fetchArticles = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/admin/news");
-      const data = await res.json();
-      if (data.articles) setArticles(data.articles);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleOpenAdd = () => {
     setEditingArticle(null);
@@ -143,7 +143,7 @@ export default function AdminNewsPage() {
           <span>Loading articles from Neon DB...</span>
         </div>
       ) : articles.length === 0 ? (
-        <div className="py-16 text-center rounded-xl bg-white border border-[#E2E8F0] text-[#64748B] text-sm">
+        <div className="py-16 text-center rounded-none bg-white border border-[#E2E8F0] text-[#64748B] text-sm">
           No articles published yet. Click &quot;Publish Article&quot; to create one.
         </div>
       ) : (
@@ -151,7 +151,7 @@ export default function AdminNewsPage() {
           {articles.map((art) => (
             <div
               key={art.id}
-              className="rounded-xl bg-white border border-[#E2E8F0] overflow-hidden flex flex-col justify-between group hover:border-blue-600/40 hover:shadow-md transition shadow-sm"
+              className="rounded-none bg-white border border-[#E2E8F0] overflow-hidden flex flex-col justify-between group hover:border-blue-600/40 hover:shadow-md transition shadow-sm"
             >
               <div>
                 {art.imageUrl && (
@@ -207,7 +207,7 @@ export default function AdminNewsPage() {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl">
+          <div className="bg-white border border-[#E2E8F0] rounded-none max-w-lg w-full p-6 space-y-5 shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
               <h2 className="text-lg font-bold text-[#0F172A]">
                 {editingArticle ? "Edit Article" : "Publish New Article"}

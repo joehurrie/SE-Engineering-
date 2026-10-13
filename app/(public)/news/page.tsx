@@ -93,7 +93,7 @@ export default async function NewsPage() {
     <div className="bg-white text-[#111111] min-h-screen">
 
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
-      <section className="min-h-[50vh] min-h-[50svh] min-h-[380px] pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
+      <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=1600"
@@ -119,8 +119,8 @@ export default async function NewsPage() {
       </section>
 
       {/* ── 2. Featured Articles Grid ─────────────────────────── */}
-      <section className="w-full min-h-[75vh] md:min-h-screen py-28 md:py-40 bg-neutral-50 border-b border-neutral-200 flex items-center justify-center">
-        <div className="w-full max-w-7xl mx-auto px-6 space-y-16 flex flex-col justify-center">
+      <section className="w-full min-h-[50vh] md:min-h-[60vh] py-24 md:py-32 bg-neutral-50 border-b border-neutral-200 flex items-center justify-center">
+        <div className="w-full max-w-7xl mx-auto px-6 space-y-16 flex flex-col items-center justify-center">
           <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto">
             <div className="inline-block px-3 py-1 bg-white text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-4 border border-neutral-200">
               Featured Coverage
@@ -180,7 +180,7 @@ export default async function NewsPage() {
 
       {/* ── 3. Article Archive List ───────────────────────────── */}
       <section className="w-full min-h-[75vh] md:min-h-screen py-28 md:py-40 bg-white border-b border-neutral-200 flex items-center justify-center">
-        <div className="w-full max-w-7xl mx-auto px-6 space-y-16 flex flex-col justify-center">
+        <div className="w-full max-w-7xl mx-auto px-6 space-y-16 flex flex-col items-center justify-center">
           <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto">
             <div className="inline-block px-3 py-1 bg-neutral-100 text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-4 border border-neutral-200">
               Industry Archive

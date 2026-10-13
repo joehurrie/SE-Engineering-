@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FileEdit, Save, Loader2, CheckCircle, Image as ImageIcon } from "lucide-react";
+import { FileEdit, Save, Loader2, CheckCircle } from "lucide-react";
 import ImageDropzone from "@/components/ImageDropzone";
 
 type ContentItem = {
@@ -21,23 +21,23 @@ export default function AdminContentPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchContents();
-  }, []);
+    let active = true;
+    fetch("/api/admin/content")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data.contents) setContents(data.contents);
+      })
+      .catch(() => {
+        if (active) setError("Failed to load content sections.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
-  const fetchContents = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/admin/content");
-      const data = await res.json();
-      if (data.contents) {
-        setContents(data.contents);
-      }
-    } catch {
-      setError("Failed to load content sections.");
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleFieldChange = (
     key: string,
@@ -113,7 +113,7 @@ export default function AdminContentPage() {
       </div>
 
       {error && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+        <div className="p-4 rounded-none bg-red-50 border border-red-200 text-red-700 text-sm">
           {error}
         </div>
       )}
@@ -122,7 +122,7 @@ export default function AdminContentPage() {
         {contents.map((item) => (
           <div
             key={item.sectionKey}
-            className="p-6 rounded-xl bg-white border border-[#E2E8F0] shadow-sm space-y-5"
+              className="p-6 rounded-none bg-white border border-[#E2E8F0] shadow-sm space-y-5"
           >
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E2E8F0] pb-4">
               <div className="flex items-center gap-3">

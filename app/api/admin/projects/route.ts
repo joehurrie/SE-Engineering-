@@ -4,6 +4,11 @@ import prisma from "@/lib/prisma";
 import { getCurrentAdmin } from "@/lib/auth";
 
 export async function GET() {
+  const user = await getCurrentAdmin();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const projects = await prisma.project.findMany({
       orderBy: { id: "asc" },

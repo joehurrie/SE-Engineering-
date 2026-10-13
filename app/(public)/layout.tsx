@@ -16,7 +16,7 @@ export default function PublicLayout({
   return (
     <>
       <Navbar />
-      <main>{children}</main>
+      <main className="bg-[#f5f5f5] text-[#0a0a0a]">{children}</main>
       <Footer />
     </>
   );

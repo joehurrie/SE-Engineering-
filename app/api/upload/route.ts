@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import sharp from "sharp";
 import path from "path";
 import fs from "fs/promises";
+import { getCurrentAdmin } from "@/lib/auth";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Accepted MIME types (frontend mirrors this list)
@@ -58,6 +59,11 @@ async function saveToBlobStorage(buffer: Buffer, blobPath: string): Promise<stri
 // POST /api/upload
 // ─────────────────────────────────────────────────────────────────────────────
 export async function POST(request: Request) {
+  const admin = await getCurrentAdmin();
+  if (!admin) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const data = await request.formData();
     const file = data.get("file") as File | null;

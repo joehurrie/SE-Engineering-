@@ -11,7 +11,7 @@ export default function TermsPage() {
   return (
     <div className="bg-white text-[#111111] min-h-screen">
       {/* Hero: 50vh Centered */}
-      <section className="min-h-[50vh] min-h-[50svh] min-h-[380px] pt-32 pb-16 bg-black border-b border-neutral-900 flex items-center justify-center text-center relative overflow-hidden">
+      <section className="min-h-screen pt-32 pb-16 bg-black border-b border-neutral-900 flex items-center justify-center text-center relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-6 relative z-10 w-full flex flex-col items-center justify-center text-center my-auto space-y-4">
           <Link
             href="/"

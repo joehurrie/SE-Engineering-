@@ -99,7 +99,7 @@ export default async function LiftServicesPage() {
     <div className="bg-white text-[#111111] min-h-screen">
 
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
-      <section className="min-h-[50vh] min-h-[50svh] min-h-[380px] pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
+      <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=1600"
@@ -128,11 +128,11 @@ export default async function LiftServicesPage() {
       {services.map((service, idx) => (
         <section
           key={service.slug}
-          className={`w-full min-h-[75vh] md:min-h-screen py-32 md:py-48 flex items-center justify-center ${
+          className={`w-full min-h-[50vh] md:min-h-[60vh] py-24 md:py-32 flex items-center justify-center ${
             idx % 2 === 0 ? "bg-white" : "bg-neutral-50"
           } border-b border-neutral-200`}
         >
-          <div className="w-full max-w-7xl mx-auto px-6 flex flex-col justify-center">
+          <div className="w-full max-w-7xl mx-auto px-6 flex flex-col items-center justify-center">
             {/* Centered Section Header */}
             <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto mb-20 md:mb-24">
               <div className="flex items-center justify-center gap-3 mb-5">
@@ -155,9 +155,9 @@ export default async function LiftServicesPage() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20 items-center">
               {/* Features Column */}
               <div className={`lg:col-span-6 space-y-8 ${idx % 2 === 1 ? "lg:order-2" : ""}`}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 md:gap-4">
                   {service.features.map((f, i) => (
-                    <div key={i} className="flex items-start gap-4 p-7 md:p-8 rounded-none bg-white border border-neutral-200 shadow-sm">
+                    <div key={i} className="flex items-start gap-4 border border-neutral-200 bg-white p-5 md:p-6">
                       <CheckCircle2 className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                       <span className="text-neutral-800 text-sm font-medium leading-relaxed">{f}</span>
                     </div>

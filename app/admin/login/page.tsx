@@ -7,10 +7,16 @@ import { Lock, Mail, ArrowRight, ShieldCheck, AlertCircle, Loader2 } from "lucid
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect") || "/admin";
+  const requestedRedirect = searchParams.get("redirect") || "/admin";
+  const redirectUrl =
+    requestedRedirect.startsWith("/") &&
+    !requestedRedirect.startsWith("//") &&
+    !requestedRedirect.includes("\\")
+      ? requestedRedirect
+      : "/admin";
 
-  const [email, setEmail] = useState("admin@specializedengineering.co.ke");
-  const [password, setPassword] = useState("Admin@SE2026!");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -60,9 +66,9 @@ function LoginForm() {
           </p>
         </div>
 
-        <div className="bg-white border border-[#E2E8F0] rounded-2xl p-6 sm:p-8 shadow-sm">
+        <div className="bg-white border border-[#E2E8F0] rounded-none p-6 sm:p-8 shadow-sm">
           {error && (
-            <div className="mb-6 p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm flex items-center gap-2.5">
+            <div className="mb-6 p-3.5 rounded-none bg-red-50 border border-red-200 text-red-600 text-sm flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
@@ -80,7 +86,7 @@ function LoginForm() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  placeholder="admin@specializedengineering.co.ke"
+                  placeholder="administrator@company.com"
                   className="w-full bg-white border border-[#CBD5E1] rounded-xl pl-11 pr-4 py-3 text-sm text-[#0F172A] placeholder-slate-400 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600 transition"
                 />
               </div>

@@ -2,15 +2,12 @@
 
 import { useEffect, useState } from "react";
 import {
-  Layers,
   Plus,
   Edit2,
   Trash2,
   Loader2,
   X,
-  CheckCircle,
   Star,
-  ExternalLink,
 } from "lucide-react";
 import ImageDropzone from "@/components/ImageDropzone";
 
@@ -55,21 +52,21 @@ export default function AdminElevatorsPage() {
   });
 
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    let active = true;
+    fetch("/api/admin/elevators")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data.products) setProducts(data.products);
+      })
+      .catch((error) => console.error(error))
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/admin/elevators");
-      const data = await res.json();
-      if (data.products) setProducts(data.products);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleOpenAdd = () => {
     setEditingProduct(null);
@@ -235,7 +232,7 @@ export default function AdminElevatorsPage() {
           <span>Loading products from Neon DB...</span>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="py-16 text-center rounded-2xl bg-white border border-[#E2E8F0] text-[#64748B] text-sm">
+        <div className="py-16 text-center rounded-none bg-white border border-[#E2E8F0] text-[#64748B] text-sm">
           No elevator products found in this category. Click &quot;Add New Elevator&quot; to create one.
         </div>
       ) : (
@@ -257,7 +254,7 @@ export default function AdminElevatorsPage() {
             return (
               <div
                 key={item.id}
-                className="rounded-2xl bg-white border border-[#E2E8F0] overflow-hidden flex flex-col justify-between group hover:border-blue-500/50 hover:shadow-md transition duration-300 shadow-sm"
+                className="rounded-none bg-white border border-[#E2E8F0] overflow-hidden flex flex-col justify-between group hover:border-blue-500/50 hover:shadow-md transition duration-300 shadow-sm"
               >
                 <div>
                   <div className="h-48 w-full bg-slate-100 relative overflow-hidden">
@@ -340,7 +337,7 @@ export default function AdminElevatorsPage() {
       {/* Add / Edit Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl my-8">
+          <div className="bg-white border border-[#E2E8F0] rounded-none max-w-lg w-full p-6 space-y-5 shadow-2xl my-8">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
               <h2 className="text-lg font-bold text-[#0F172A]">
                 {editingProduct ? "Edit Elevator Model" : "Add New Elevator Model"}
@@ -354,7 +351,7 @@ export default function AdminElevatorsPage() {
             </div>
 
             {formError && (
-              <div className="p-3.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between gap-3">
+              <div className="p-3.5 rounded-none bg-red-50 border border-red-200 text-red-700 text-xs flex items-center justify-between gap-3">
                 <span className="leading-relaxed">{formError}</span>
                 {formError.includes("Unauthorized") && (
                   <a

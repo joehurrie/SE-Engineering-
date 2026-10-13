@@ -5,9 +5,13 @@ import { signSession, ADMIN_COOKIE_NAME } from "@/lib/auth";
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    const body: unknown = await request.json();
+    if (!body || typeof body !== "object") {
+      return NextResponse.json({ error: "Invalid request body." }, { status: 400 });
+    }
+    const { email, password } = body as { email?: unknown; password?: unknown };
 
-    if (!email || !password) {
+    if (typeof email !== "string" || typeof password !== "string" || !email.trim() || !password) {
       return NextResponse.json(
         { error: "Email and password are required." },
         { status: 400 }
@@ -33,6 +37,10 @@ export async function POST(request: Request) {
       );
     }
 
+    if (admin.role !== "SUPER_ADMIN" && admin.role !== "EDITOR") {
+      return NextResponse.json({ error: "Administrator role is not permitted." }, { status: 403 });
+    }
+
     const token = await signSession({
       id: admin.id,
       email: admin.email,
@@ -55,7 +63,7 @@ export async function POST(request: Request) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 7 * 24 * 60 * 60, // 7 days
+      maxAge: 7 * 24 * 60 * 60,
     });
 
     return response;

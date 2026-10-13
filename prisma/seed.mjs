@@ -7,16 +7,28 @@ async function main() {
   console.log("🌱 Starting database seeding for Specialized Engineering...");
 
   // 1. Seed Admin User
-  const hashedPassword = await bcrypt.hash("Admin@SE2026!", 10);
+  const adminEmail = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (
+    !adminEmail ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(adminEmail) ||
+    adminEmail.endsWith("@example.com") ||
+    !adminPassword ||
+    adminPassword.length < 16 ||
+    /replace-with|change-me|example|placeholder/i.test(adminPassword)
+  ) {
+    throw new Error("Set a real ADMIN_EMAIL and unique ADMIN_PASSWORD of at least 16 characters before seeding.");
+  }
+  const hashedPassword = await bcrypt.hash(adminPassword, 12);
   const admin = await prisma.adminUser.upsert({
-    where: { email: "admin@specializedengineering.co.ke" },
+    where: { email: adminEmail },
     update: {
       password: hashedPassword,
       name: "SE Super Admin",
       role: "SUPER_ADMIN",
     },
     create: {
-      email: "admin@specializedengineering.co.ke",
+      email: adminEmail,
       password: hashedPassword,
       name: "SE Super Admin",
       role: "SUPER_ADMIN",
@@ -281,7 +293,7 @@ async function main() {
   console.log(`✅ News articles seeded (${newsArticles.length} articles)`);
 
   // 7. Seed Sample Inquiry
-  const sampleInquiry = await prisma.inquiry.create({
+  await prisma.inquiry.create({
     data: {
       name: "David Mwangi",
       email: "dmwangi@apexdevelopments.co.ke",

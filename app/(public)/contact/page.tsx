@@ -27,7 +27,7 @@ const serviceCategories = [
 ];
 
 const darkInputClass =
-  "w-full bg-[#111111] border border-white/15 rounded-none px-6 py-5 text-base text-white focus:outline-none focus:border-blue-600 transition-colors placeholder:text-neutral-500 font-light";
+  "w-full bg-[#111111] border border-white/15 rounded-none px-4 py-3.5 text-sm text-white focus:outline-none focus:border-blue-600 transition-colors placeholder:text-neutral-500";
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
@@ -56,7 +56,7 @@ export default function ContactPage() {
     <div className="bg-[#0a0a0a] text-white min-h-screen">
 
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
-      <section className="min-h-[50vh] min-h-[50svh] min-h-[380px] pt-32 pb-16 overflow-hidden border-b border-white/10 flex items-center justify-center bg-[#0a0a0a] relative">
+      <section className="min-h-screen pt-32 pb-16 overflow-hidden border-b border-white/10 flex items-center justify-center bg-[#0a0a0a] relative">
         <div className="absolute inset-0 z-0">
           <img
             src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1600"
@@ -82,11 +82,11 @@ export default function ContactPage() {
       </section>
 
       {/* ── 2. Contact Section: Generous Spacing & Sharp Cards ─ */}
-      <section className="min-h-[85vh] md:min-h-screen py-28 md:py-40 bg-[#111111] border-t border-white/5 flex items-center justify-center">
-        <div className="w-full max-w-7xl mx-auto px-6 flex flex-col justify-center">
+      <section className="min-h-[50vh] md:min-h-[60vh] py-24 md:py-32 bg-[#111111] border-t border-white/5 flex items-center justify-center">
+        <div className="w-full max-w-7xl mx-auto px-6 flex flex-col items-center justify-center">
 
           {/* Centered Section Header */}
-          <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto mb-20 space-y-4">
+          <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto mb-12 space-y-4">
             <span className="inline-block px-3 py-1 bg-[#161616] border border-white/10 text-neutral-400 text-[10px] font-bold uppercase tracking-widest font-mono">
               Kilimani Headquarters
             </span>
@@ -100,27 +100,27 @@ export default function ContactPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
+          <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-12 lg:gap-14">
 
             {/* Left — Consultation info & Spacious Contact Cards (5 cols) */}
-            <div className="lg:col-span-5 flex flex-col space-y-8">
+            <div className="lg:col-span-5 flex flex-col space-y-6">
               {/* Spacious, comfortable contact cards with sharp corners */}
-              <div className="space-y-6">
+              <div className="divide-y divide-white/10 border-y border-white/10">
                 {contacts.map((c, idx) => (
                   <div
                     key={idx}
-                    className="flex items-start gap-6 p-8 md:p-10 rounded-none bg-[#161616] border border-white/10 hover:border-blue-600/40 transition-colors"
+                    className="flex items-start gap-4 py-4"
                   >
-                    <div className="w-14 h-14 rounded-none bg-blue-600/10 border border-blue-600/30 flex items-center justify-center shrink-0 text-blue-500 mt-1">
-                      <c.icon className="w-6 h-6" />
+                    <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center border border-white/10 text-neutral-300">
+                      <c.icon className="h-4 w-4" />
                     </div>
-                    <div className="space-y-2">
-                      <p className="text-xs text-neutral-400 uppercase tracking-widest font-mono font-semibold">
+                    <div className="min-w-0 space-y-1.5">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-neutral-400">
                         {c.label}
                       </p>
                       <a
                         href={c.href}
-                        className="text-white hover:text-blue-400 text-base md:text-lg font-medium break-all transition-colors block"
+                        className="block break-words text-sm font-medium text-white transition-colors hover:text-blue-400 md:text-base"
                       >
                         {c.value}
                       </a>
@@ -130,17 +130,16 @@ export default function ContactPage() {
               </div>
 
               {/* Trust badge */}
-              <div className="p-8 md:p-10 rounded-none border border-white/10 bg-[#161616] flex items-center gap-5">
-                <div className="w-3 h-3 rounded-full bg-blue-500 shrink-0" />
-                <p className="text-sm md:text-base text-neutral-300 font-light leading-relaxed">
-                  <span className="text-white font-medium">Direct Technical Dispatch:</span> Inquiries are routed immediately to senior project estimators in Kilimani.
+              <div className="border-l-2 border-blue-600 pl-4">
+                <p className="text-sm leading-relaxed text-neutral-300">
+                  <span className="font-medium text-white">Project response:</span> inquiries are routed to our Kilimani engineering team within one business day.
                 </p>
               </div>
             </div>
 
             {/* Right — Form Card (7 cols) with generous breathing room */}
-            <div className="lg:col-span-7 bg-[#161616] border border-white/10 rounded-none p-10 sm:p-14 md:p-16 space-y-10 shadow-2xl">
-              <div className="border-b border-white/10 pb-8 space-y-2">
+            <div className="lg:col-span-7 space-y-8 border border-white/10 bg-[#161616] p-6 sm:p-8 md:p-10">
+              <div className="space-y-2 border-b border-white/10 pb-6">
                 <span className="text-xs font-mono tracking-widest text-blue-400 uppercase block font-semibold">
                   Inquiry Portal
                 </span>
@@ -166,9 +165,9 @@ export default function ContactPage() {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-8 sm:space-y-10">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                  <div className="space-y-3">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+                  <div className="space-y-2">
                     <label htmlFor="name" className="text-xs uppercase tracking-wider text-neutral-400 font-semibold font-mono block">
                       Full Name *
                     </label>
@@ -182,7 +181,7 @@ export default function ContactPage() {
                       placeholder="Eng. John Kamau"
                     />
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <label htmlFor="email" className="text-xs uppercase tracking-wider text-neutral-400 font-semibold font-mono block">
                       Email Address *
                     </label>
@@ -198,7 +197,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <label htmlFor="phone" className="text-xs uppercase tracking-wider text-neutral-400 font-semibold font-mono block">
                     Phone Number
                   </label>
@@ -213,7 +212,7 @@ export default function ContactPage() {
                 </div>
 
                 {/* Service Category Pills */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                   <label className="text-xs uppercase tracking-wider text-neutral-400 font-semibold font-mono flex items-center justify-between">
                     <span>Service Category</span>
                     {form.subject && <span className="text-blue-400 normal-case font-sans text-xs">Selected: {form.subject}</span>}
@@ -239,7 +238,7 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <label htmlFor="message" className="text-xs uppercase tracking-wider text-neutral-400 font-semibold font-mono block">
                     Project Details / Tender Specifications *
                   </label>

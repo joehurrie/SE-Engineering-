@@ -4,15 +4,14 @@ import {
   ChevronDown,
   Building2,
   Clock,
-  Layers,
   Award,
   Headphones,
   Quote,
-  CheckCircle2,
 } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { categoryToSlug } from "@/lib/slugs";
 import HomeContactForm from "@/components/HomeContactForm";
+import type { ElevatorProduct, Project, SiteContent } from "@prisma/client";
 
 export const dynamic = "force-dynamic";
 
@@ -84,9 +83,9 @@ const faqs = [
 ];
 
 export default async function HomePage() {
-  let heroContent = null;
-  let dbElevators: any[] = [];
-  let dbProjects: any[] = [];
+  let heroContent: SiteContent | null = null;
+  let dbElevators: ElevatorProduct[] = [];
+  let dbProjects: Project[] = [];
 
   try {
     const [heroRes, elevatorsRes, projectsRes] = await Promise.all([
@@ -112,7 +111,15 @@ export default async function HomePage() {
     "High-performance elevator systems engineered for modern architecture. Exclusive XIZI partner delivering ISO safety, German-standard traction, and 24/7 Nairobi support.";
 
   // Systems cards
-  let displaySystems: any[] = [];
+  let displaySystems: Array<{
+    id?: number;
+    series: string;
+    title: string;
+    desc: string;
+    specs: string;
+    image: string;
+    href: string;
+  }> = [];
   if (dbElevators.length > 0) {
     displaySystems = dbElevators.map((e) => ({
       id: e.id,
@@ -122,136 +129,128 @@ export default async function HomePage() {
       specs: e.specifications || "Engineered Precision Specification",
       image: e.imageUrl,
       href: `/elevators/${categoryToSlug(e.category)}`,
-      isCustom: false,
     }));
   } else {
     displaySystems = defaultElevatorSystems;
   }
 
-  // Inject custom bespoke card
-  displaySystems.splice(2, 0, {
-    isCustom: true,
-    title: "Custom Solutions",
-    desc: "Have a unique architectural vision? We fabricate bespoke panoramic glass capsules, low-pit configurations, and custom car interiors to architect drawings.",
-    features: [
-      "Curved Glass Capsules",
-      "Low Pit Shafts (300 mm)",
-      "Smart Destination Dispatch",
-    ],
-    href: "/contact",
-    series: "",
-    specs: "",
-    image: "",
-  });
-
   const spotlightProject = dbProjects[0];
+  const customSolution = {
+    title: "Custom Solutions",
+    description:
+      "Have a unique architectural vision? We fabricate bespoke panoramic glass capsules, low-pit configurations, and custom car interiors to architect drawings.",
+    features: [
+      "Curved glass capsules",
+      "Low-pit shafts from 300 mm",
+      "Smart destination dispatch",
+    ],
+    image: defaultElevatorSystems[2].image,
+  };
 
   return (
     <div className="w-full bg-white text-neutral-900 antialiased selection:bg-blue-600 selection:text-white">
 
-      {/* ══ 1. HERO SECTION (100vh, Minimal, Centered) ════════════════ */}
-      <section className="relative min-h-screen w-full flex items-center justify-center overflow-hidden py-24 md:py-32">
-        {/* Background Image with Hero Overlay */}
+      {/* ══ 1. HERO SECTION (100vh) ═════════════════════════════════════ */}
+      <section className="relative min-h-screen w-full overflow-hidden bg-black">
         <div className="absolute inset-0 z-0">
           <img
             src={heroImage}
             alt="Modern Vertical Transportation Facade"
-            className="w-full h-full object-cover"
+            className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 hero-overlay" />
+          <div className="absolute inset-0 bg-black/55" />
         </div>
 
-        {/* Centered Content Container */}
-        <div className="relative z-10 w-full max-w-5xl mx-auto px-6 flex flex-col items-center justify-center text-center my-auto">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-blue-600 text-white text-[11px] font-bold uppercase tracking-widest mb-8 animate-fade-in-up">
-            {heroBadge}
-          </div>
+        <div className="section-shell relative z-10 flex min-h-screen items-center justify-center">
+          <div className="mx-auto max-w-5xl py-24 text-center text-white md:py-28">
+            <div className="mb-8 inline-flex items-center gap-2 border border-white/15 bg-white/5 px-3.5 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-white/90 backdrop-blur-sm">
+              {heroBadge}
+            </div>
 
-          <h1
-            className="text-5xl sm:text-7xl lg:text-8xl font-bold text-white tracking-tight mb-8 leading-[1.08] animate-fade-in-up text-center"
-            style={{ animationDelay: "0.1s" }}
-          >
-            {heroTitle.includes("<br") ? (
-              heroTitle
-            ) : (
-              <>
-                {heroTitle}
-              </>
-            )}
-          </h1>
+            <h1 className="mb-7 text-5xl font-bold tracking-[-0.06em] text-white sm:text-6xl md:text-7xl lg:text-8xl">
+              {heroTitle}
+            </h1>
 
-          <p
-            className="text-lg md:text-xl text-neutral-300 max-w-2xl mx-auto mb-12 leading-relaxed font-light animate-fade-in-up text-center"
-            style={{ animationDelay: "0.2s" }}
-          >
-            {heroBody}
-          </p>
+            <p className="mx-auto max-w-2xl text-base leading-relaxed text-neutral-200 md:text-xl">
+              {heroBody}
+            </p>
 
-          <div
-            className="flex flex-col sm:flex-row items-center justify-center gap-5 animate-fade-in-up w-full"
-            style={{ animationDelay: "0.3s" }}
-          >
-            <Link
-              href="/elevators"
-              className="h-14 px-10 bg-blue-600 text-white text-sm font-semibold uppercase tracking-wider hover:bg-blue-700 transition-colors w-full sm:w-auto flex items-center justify-center rounded-none"
-            >
-              View Catalog
-            </Link>
-            <Link
-              href="/contact"
-              className="h-14 px-10 bg-white text-black text-sm font-semibold uppercase tracking-wider hover:bg-neutral-100 transition-colors w-full sm:w-auto flex items-center justify-center gap-2 rounded-none"
-            >
-              Get Engineering Quote
-            </Link>
+            <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Link
+                href="/elevators"
+                className="inline-flex h-14 items-center justify-center rounded-none bg-blue-600 px-8 text-sm font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-blue-500"
+              >
+                View Catalog
+              </Link>
+              <Link
+                href="/contact"
+                className="inline-flex h-14 items-center justify-center rounded-none border border-white/20 bg-white px-8 text-sm font-semibold uppercase tracking-[0.12em] text-black transition-colors hover:bg-neutral-100"
+              >
+                Get Engineering Quote
+              </Link>
+            </div>
           </div>
         </div>
 
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/50 animate-bounce">
-          <span className="text-[10px] uppercase tracking-widest">Scroll</span>
-          <ChevronDown className="w-4 h-4" />
+        <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 text-white/60">
+          <span className="text-[10px] uppercase tracking-[0.25em]">Scroll</span>
+          <ChevronDown className="h-4 w-4" />
         </div>
       </section>
 
-      {/* ══ 2. STATS SECTION (50vh, Minimal, Spacious) ═════════════════ */}
-      <section className="w-full min-h-[50vh] bg-black text-white flex items-center justify-center py-24 md:py-32 relative z-20">
-        <div className="w-full max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-8 divide-y md:divide-y-0 md:divide-x divide-neutral-800">
-            <div className="flex flex-col items-center justify-center text-center p-6 space-y-3">
-              <div className="text-4xl sm:text-6xl lg:text-7xl font-bold text-blue-500 tracking-tight font-mono">
-                200+
-              </div>
-              <div className="text-xs sm:text-sm text-neutral-400 uppercase tracking-widest font-medium">
-                Installations Completed
-              </div>
+      {/* ══ 2. STATS SECTION (50vh) ═════════════════════════════════════ */}
+      <section className="w-full bg-black py-16 text-white md:py-20">
+        <div className="section-shell">
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
+            <div className="flex flex-col items-center justify-center space-y-3 border border-white/10 bg-white/3 p-6 text-center">
+              <div className="font-mono text-4xl font-bold text-blue-500 sm:text-5xl">200+</div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">Installations</div>
             </div>
 
-            <div className="flex flex-col items-center justify-center text-center p-6 space-y-3">
-              <div className="text-4xl sm:text-6xl lg:text-7xl font-bold text-blue-500 tracking-tight font-mono">
-                30+
-              </div>
-              <div className="text-xs sm:text-sm text-neutral-400 uppercase tracking-widest font-medium">
-                Certified Engineers &amp; Techs
-              </div>
+            <div className="flex flex-col items-center justify-center space-y-3 border border-white/10 bg-white/3 p-6 text-center">
+              <div className="font-mono text-4xl font-bold text-blue-500 sm:text-5xl">30+</div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">Experts</div>
             </div>
 
-            <div className="flex flex-col items-center justify-center text-center p-6 space-y-3">
-              <div className="text-4xl sm:text-6xl lg:text-7xl font-bold text-blue-500 tracking-tight font-mono">
-                10-Yr
-              </div>
-              <div className="text-xs sm:text-sm text-neutral-400 uppercase tracking-widest font-medium">
-                Structural Warranty
-              </div>
+            <div className="flex flex-col items-center justify-center space-y-3 border border-white/10 bg-white/3 p-6 text-center">
+              <div className="font-mono text-4xl font-bold text-blue-500 sm:text-5xl">10Y</div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">Warranty</div>
             </div>
 
-            <div className="flex flex-col items-center justify-center text-center p-6 space-y-3">
-              <div className="text-4xl sm:text-6xl lg:text-7xl font-bold text-blue-500 tracking-tight font-mono">
-                24/7
-              </div>
-              <div className="text-xs sm:text-sm text-neutral-400 uppercase tracking-widest font-medium">
-                Nairobi Rapid Response
-              </div>
+            <div className="flex flex-col items-center justify-center space-y-3 border border-white/10 bg-white/3 p-6 text-center">
+              <div className="font-mono text-4xl font-bold text-blue-500 sm:text-5xl">24/7</div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-neutral-400">Support</div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══ 3. OUR PROCESS (full width, minimal flow) ═════════════════ */}
+      <section className="bg-white py-20 md:py-28">
+        <div className="section-shell">
+          <div className="mb-14 text-center">
+            <div className="inline-block border border-neutral-200 bg-neutral-100 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-600">
+              Our Process
+            </div>
+            <h2 className="mt-5 text-3xl font-bold tracking-[-0.05em] text-black sm:text-4xl md:text-5xl">
+              A clear path from design to delivery.
+            </h2>
+          </div>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {[
+              { title: "Assess", text: "We review shaft dimensions, traffic flow, and architectural fit before any design is signed off." },
+              { title: "Engineer", text: "Our technical specialists select the right system, cabin, control logic, and safety parameters for your project." },
+              { title: "Deliver", text: "Installation, commissioning, inspection, and long-term support are managed as one seamless project." },
+            ].map((step, idx) => (
+              <div key={step.title} className="border border-neutral-200 bg-neutral-50 p-8 text-left shadow-[0_8px_24px_rgba(15,23,42,0.02)]">
+                <div className="mb-5 flex h-10 w-10 items-center justify-center border border-blue-200 bg-blue-50 text-sm font-bold text-blue-600">
+                  0{idx + 1}
+                </div>
+                <h3 className="mb-3 text-xl font-bold tracking-[-0.04em] text-black">{step.title}</h3>
+                <p className="text-sm leading-relaxed text-neutral-600">{step.text}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -289,13 +288,10 @@ export default async function HomePage() {
       </section>
 
       {/* ══ 4. SYSTEMS GRID (100vh, Substantial Breathing Room) ═══════ */}
-      <section
-        id="products"
-        className="w-full min-h-screen bg-neutral-50 flex items-center justify-center py-32 md:py-48"
-      >
-        <div className="w-full max-w-7xl mx-auto px-6 flex flex-col justify-center">
+      <section id="products" className="w-full bg-neutral-50 py-20 md:py-28">
+        <div className="section-shell flex flex-col items-center">
           {/* Centered Section Header */}
-          <div className="flex flex-col items-center justify-center text-center mb-24 md:mb-28 max-w-3xl mx-auto">
+          <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center justify-center text-center md:mb-14">
             <div className="inline-block px-3.5 py-1.5 bg-white text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-5 border border-neutral-200">
               System Range
             </div>
@@ -309,96 +305,93 @@ export default async function HomePage() {
           </div>
 
           {/* Cards Grid */}
-          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-            {displaySystems.map((item: any, idx: number) => {
-              if (item.isCustom) {
-                return (
-                  <div
-                    key="custom-solution-card"
-                    className="group bg-black text-white hover:shadow-2xl transition-all duration-300 relative overflow-hidden min-h-[640px] flex flex-col justify-between p-12 md:p-16 rounded-none text-center items-center"
-                  >
-                    <div className="absolute top-0 right-0 p-6 opacity-10">
-                      <Layers className="w-48 h-48" />
-                    </div>
-
-                    <div className="relative z-10 space-y-6 flex flex-col items-center text-center w-full">
-                      <div className="inline-block text-xs font-mono font-bold tracking-widest text-blue-400 uppercase">
-                        Bespoke Fabrication
-                      </div>
-                      <h3 className="text-3xl sm:text-4xl font-bold tracking-tight text-center">
-                        {item.title}
-                      </h3>
-                      <p className="text-neutral-400 leading-relaxed text-base font-light text-center max-w-sm mx-auto">
-                        {item.desc}
-                      </p>
-                      <ul className="space-y-5 my-8 text-left inline-block mx-auto">
-                        {item.features?.map((f: string) => (
-                          <li key={f} className="flex items-center gap-4">
-                            <div className="w-2 h-2 bg-blue-500 rounded-none shrink-0" />
-                            <span className="text-sm font-medium">{f}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div className="relative z-10 pt-8 w-full">
-                      <Link
-                        href={item.href}
-                        className="w-full h-16 bg-white text-black font-bold uppercase tracking-wider hover:bg-neutral-200 transition-colors flex items-center justify-center text-xs rounded-none"
-                      >
-                        Consult Engineering
-                      </Link>
-                    </div>
-                  </div>
-                );
-              }
-
-              return (
+          <div className="grid w-full grid-cols-1 gap-6 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
+            {displaySystems.map((item, idx) => (
                 <div
                   key={item.id ? `elevator-card-${item.id}` : `system-card-${item.title}-${idx}`}
-                  className="group bg-white border border-neutral-200 hover:border-blue-600/30 hover:shadow-2xl transition-all duration-300 relative overflow-hidden min-h-[640px] flex flex-col rounded-none text-center"
+                  className="group relative flex min-h-[500px] flex-col overflow-hidden border border-neutral-200 bg-white text-center transition-colors duration-300 hover:border-neutral-400"
                 >
-                  <div className="h-64 sm:h-72 overflow-hidden relative">
+                  <div className="relative h-64 overflow-hidden sm:h-72">
                     <img
                       src={item.image}
                       alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent transition-colors group-hover:from-black/10" />
                   </div>
-                  <div className="p-10 md:p-14 flex-1 flex flex-col justify-between space-y-8 items-center text-center">
-                    <div className="space-y-5 flex flex-col items-center text-center w-full">
-                      <div className="flex items-center justify-center gap-3">
-                        <Building2 className="w-4 h-4 text-blue-600" />
-                        <span className="text-xs font-bold uppercase tracking-widest text-neutral-500 font-mono">
+                  <div className="flex flex-1 flex-col items-center justify-between space-y-6 p-6 text-center md:p-8">
+                    <div className="flex w-full flex-col items-center space-y-4 text-center">
+                      <div className="flex items-center justify-center gap-2.5">
+                        <Building2 className="h-4 w-4 text-blue-600" />
+                        <span className="font-mono text-[11px] font-bold uppercase tracking-[0.18em] text-neutral-500">
                           {item.series}
                         </span>
                       </div>
-                      <h3 className="text-2xl sm:text-3xl font-bold text-black tracking-tight text-center">
+                      <h3 className="text-2xl font-bold tracking-[-0.05em] text-black sm:text-3xl">
                         {item.title}
                       </h3>
-                      <p className="text-neutral-600 text-sm md:text-base leading-relaxed font-light line-clamp-3 text-center max-w-sm mx-auto">
+                      <p className="mx-auto max-w-sm text-sm leading-relaxed text-neutral-600 md:text-[15px]">
                         {item.desc}
                       </p>
                     </div>
                     <Link
                       href={item.href}
-                      className="inline-flex items-center justify-center gap-2 text-sm font-semibold text-black hover:text-blue-600 transition-colors pt-8 border-t border-neutral-100 w-full"
+                      className="inline-flex w-full items-center justify-center gap-2 border-t border-neutral-100 pt-5 text-sm font-semibold text-black transition-colors hover:text-blue-600"
                     >
                       <span>Explore Specs</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="h-4 w-4" />
                     </Link>
                   </div>
                 </div>
-              );
-            })}
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-white py-14 md:py-20">
+        <div className="section-shell">
+          <div className="grid overflow-hidden bg-neutral-950 text-white lg:grid-cols-[1.05fr_0.95fr]">
+            <div className="flex flex-col justify-center px-7 py-10 sm:px-10 md:px-14 md:py-14">
+              <p className="mb-5 text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-400">
+                Beyond the standard range
+              </p>
+              <h2 className="max-w-xl text-3xl font-semibold tracking-[-0.05em] sm:text-4xl md:text-5xl">
+                {customSolution.title}, engineered around your architecture.
+              </h2>
+              <p className="mt-5 max-w-xl text-sm leading-7 text-neutral-300 md:text-base">
+                {customSolution.description}
+              </p>
+              <ul className="mt-7 grid gap-x-8 gap-y-3 sm:grid-cols-2">
+                {customSolution.features.map((feature) => (
+                  <li key={feature} className="flex items-center gap-3 text-sm text-neutral-200">
+                    <span className="h-1.5 w-1.5 shrink-0 bg-blue-500" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/contact"
+                className="mt-9 inline-flex h-14 w-fit items-center gap-3 bg-white px-6 text-xs font-bold uppercase tracking-[0.14em] text-black transition-colors hover:bg-neutral-200"
+              >
+                Discuss a bespoke project
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+            <div className="relative min-h-64 lg:min-h-[480px]">
+              <img
+                src={customSolution.image}
+                alt="Architectural panoramic elevator installation"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-neutral-950/30 via-transparent to-transparent" />
+            </div>
           </div>
         </div>
       </section>
 
       {/* ══ 5. WHY CHOOSE US / THE SE STANDARD (100vh, Clean 2-Col) ════ */}
       <section className="w-full min-h-screen bg-white border-y border-neutral-100 flex items-center justify-center py-32 md:py-48">
-        <div className="w-full max-w-7xl mx-auto px-6 flex flex-col justify-center">
+        <div className="w-full max-w-7xl mx-auto px-6 flex flex-col items-center justify-center">
           {/* Centered Section Header */}
           <div className="flex flex-col items-center justify-center text-center mb-24 md:mb-28 max-w-3xl mx-auto">
             <div className="inline-block px-3.5 py-1.5 bg-neutral-100 text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-5 border border-neutral-200">
@@ -420,8 +413,8 @@ export default async function HomePage() {
                   <Award className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="text-xl font-bold text-black">Certified Factory Systems</h4>
-                  <p className="text-sm text-neutral-500 mt-2 font-light leading-relaxed">
+                  <h4 className="text-xl font-bold tracking-[-0.04em] text-black">Certified Factory Systems</h4>
+                  <p className="mt-2 text-[15px] leading-relaxed text-neutral-600">
                     Direct XIZI manufacturer partnership with genuine factory ISO certificates and zero middleman markups.
                   </p>
                 </div>
@@ -432,8 +425,8 @@ export default async function HomePage() {
                   <Clock className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="text-xl font-bold text-black">On-Time Commissioning</h4>
-                  <p className="text-sm text-neutral-500 mt-2 font-light leading-relaxed">
+                  <h4 className="text-xl font-bold tracking-[-0.04em] text-black">On-Time Commissioning</h4>
+                  <p className="mt-2 text-[15px] leading-relaxed text-neutral-600">
                     Standardized shaft assembly protocols ensuring strict adherence to developer delivery milestones.
                   </p>
                 </div>
@@ -444,8 +437,8 @@ export default async function HomePage() {
                   <Headphones className="w-6 h-6" />
                 </div>
                 <div>
-                  <h4 className="text-xl font-bold text-black">24/7 Rapid Emergency Response</h4>
-                  <p className="text-sm text-neutral-500 mt-2 font-light leading-relaxed">
+                  <h4 className="text-xl font-bold tracking-[-0.04em] text-black">24/7 Rapid Emergency Response</h4>
+                  <p className="mt-2 text-[15px] leading-relaxed text-neutral-600">
                     10-year structural warranty on workmanship and under 30-minute standby engineering crews in Nairobi.
                   </p>
                 </div>
@@ -468,76 +461,76 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* ══ 6. TESTIMONIALS (80vh, Minimal Cards) ══════════════════════ */}
-      <section className="w-full min-h-[80vh] bg-neutral-50 flex items-center justify-center py-32 md:py-48">
-        <div className="w-full max-w-7xl mx-auto px-6 text-center">
-          <div className="flex flex-col items-center justify-center text-center mb-24 md:mb-28 max-w-3xl mx-auto">
+      {/* ══ 6. TESTIMONIALS (Responsive, airy minimal layout) ═══════════ */}
+      <section className="w-full bg-neutral-50 py-20 md:py-28">
+        <div className="mx-auto w-full max-w-7xl px-6 text-center">
+          <div className="mx-auto mb-16 md:mb-20 max-w-3xl text-center">
             <div className="inline-block px-3.5 py-1.5 bg-white text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-5 border border-neutral-200">
               Client Testimonials
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-black mb-5 text-center">
+            <h2 className="text-4xl md:text-5xl font-bold text-black mb-4 text-center tracking-tight">
               Trusted by Professionals
             </h2>
             <div className="w-20 h-1 bg-blue-600 mx-auto" />
           </div>
 
-          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
-            <div className="bg-white p-12 md:p-16 border-b-4 border-blue-600 shadow-sm text-center flex flex-col items-center justify-between">
+          <div className="grid w-full grid-cols-1 gap-8 md:grid-cols-3 md:gap-10">
+            <div className="flex flex-col items-center justify-between border border-neutral-200 bg-white p-7 text-center md:p-9">
               <div className="flex flex-col items-center text-center">
-                <div className="text-blue-600 mb-8 flex justify-center">
-                  <Quote className="w-9 h-9" />
+                <div className="mb-6 flex justify-center text-blue-600">
+                  <Quote className="h-8 w-8" />
                 </div>
-                <p className="text-neutral-600 text-base md:text-lg leading-relaxed mb-10 font-light text-center">
+                <p className="mb-8 text-[15px] leading-relaxed text-neutral-600 md:text-lg text-center">
                   &ldquo;Specialized Engineering installed 12 high-speed passenger elevators at Alina Harbor Towers on time. Their technical alignment and zero vibration ride quality is world-class.&rdquo;
                 </p>
               </div>
-              <div className="flex flex-col items-center text-center gap-3 pt-8 border-t border-neutral-100 w-full">
-                <div className="w-12 h-12 bg-black text-white flex items-center justify-center font-bold text-sm">
+              <div className="flex w-full flex-col items-center gap-3 border-t border-neutral-100 pt-6 text-center">
+                <div className="flex h-12 w-12 items-center justify-center bg-black text-sm font-bold text-white">
                   AK
                 </div>
                 <div>
-                  <div className="text-black text-base font-bold">Amit Kumar</div>
-                  <div className="text-neutral-500 text-xs mt-0.5">Commercial Developer, Kilimani</div>
+                  <div className="text-base font-bold tracking-[-0.03em] text-black">Amit Kumar</div>
+                  <div className="mt-1 text-xs uppercase tracking-[0.16em] text-neutral-500">Commercial Developer, Kilimani</div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-12 md:p-16 border-b-4 border-black shadow-sm text-center flex flex-col items-center justify-between">
+            <div className="flex flex-col items-center justify-between border border-neutral-200 bg-white p-7 text-center md:p-9">
               <div className="flex flex-col items-center text-center">
-                <div className="text-black mb-8 flex justify-center">
-                  <Quote className="w-9 h-9" />
+                <div className="mb-6 flex justify-center text-black">
+                  <Quote className="h-8 w-8" />
                 </div>
-                <p className="text-neutral-600 text-base md:text-lg leading-relaxed mb-10 font-light text-center">
+                <p className="mb-8 text-[15px] leading-relaxed text-neutral-600 md:text-lg text-center">
                   &ldquo;As an architect, I need reliability in shaft dimensions and bespoke panoramic cab finishes. Specialized Engineering delivers exactly what is specified in our CAD drawings.&rdquo;
                 </p>
               </div>
-              <div className="flex flex-col items-center text-center gap-3 pt-8 border-t border-neutral-100 w-full">
-                <div className="w-12 h-12 bg-blue-600 text-white flex items-center justify-center font-bold text-sm">
+              <div className="flex w-full flex-col items-center gap-3 border-t border-neutral-100 pt-6 text-center">
+                <div className="flex h-12 w-12 items-center justify-center bg-blue-600 text-sm font-bold text-white">
                   SJ
                 </div>
                 <div>
-                  <div className="text-black text-base font-bold">Sarah Jenkins</div>
-                  <div className="text-neutral-500 text-xs mt-0.5">Principal Architect, Nairobi</div>
+                  <div className="text-base font-bold tracking-[-0.03em] text-black">Sarah Jenkins</div>
+                  <div className="mt-1 text-xs uppercase tracking-[0.16em] text-neutral-500">Principal Architect, Nairobi</div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-12 md:p-16 border-b-4 border-blue-600 shadow-sm text-center flex flex-col items-center justify-between">
+            <div className="flex h-full flex-col items-center justify-between border border-neutral-200 bg-white p-7 text-center md:p-9">
               <div className="flex flex-col items-center text-center">
-                <div className="text-blue-600 mb-8 flex justify-center">
-                  <Quote className="w-9 h-9" />
+                <div className="mb-6 flex justify-center text-blue-600">
+                  <Quote className="h-8 w-8" />
                 </div>
-                <p className="text-neutral-600 text-base md:text-lg leading-relaxed mb-10 font-light text-center">
+                <p className="mb-8 text-[15px] leading-relaxed text-neutral-600 md:text-lg text-center">
                   &ldquo;The custom glass home lift in our Karen villa operates whisper-quiet and fits seamlessly with our double-height living room aesthetics. Highly recommended.&rdquo;
                 </p>
               </div>
-              <div className="flex flex-col items-center text-center gap-3 pt-8 border-t border-neutral-100 w-full">
-                <div className="w-12 h-12 bg-black text-white flex items-center justify-center font-bold text-sm">
+              <div className="flex w-full flex-col items-center gap-3 border-t border-neutral-100 pt-6 text-center">
+                <div className="flex h-12 w-12 items-center justify-center bg-black text-sm font-bold text-white">
                   RM
                 </div>
                 <div>
-                  <div className="text-black text-base font-bold">Rajesh M.</div>
-                  <div className="text-neutral-500 text-xs mt-0.5">Private Villa Owner, Karen</div>
+                  <div className="text-base font-bold tracking-[-0.03em] text-black">Rajesh M.</div>
+                  <div className="mt-1 text-xs uppercase tracking-[0.16em] text-neutral-500">Private Villa Owner, Karen</div>
                 </div>
               </div>
             </div>
@@ -546,9 +539,9 @@ export default async function HomePage() {
       </section>
 
       {/* ══ 7. FAQ SECTION (75vh, Centered Minimal Accordion) ══════════ */}
-      <section className="w-full min-h-[75vh] bg-white border-t border-neutral-100 flex items-center justify-center py-32 md:py-48">
-        <div className="w-full max-w-4xl mx-auto px-6">
-          <div className="flex flex-col items-center justify-center text-center mb-20 md:mb-24 max-w-3xl mx-auto">
+      <section className="w-full border-t border-neutral-100 bg-white py-20 md:py-28">
+        <div className="mx-auto w-full max-w-4xl px-6">
+          <div className="mx-auto mb-12 flex max-w-3xl flex-col items-center justify-center text-center md:mb-14">
             <div className="inline-block px-3.5 py-1.5 bg-neutral-100 text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-5 border border-neutral-200">
               Common Inquiries
             </div>
@@ -558,16 +551,16 @@ export default async function HomePage() {
             <div className="w-20 h-1 bg-blue-600 mx-auto mt-5" />
           </div>
 
-          <div className="w-full space-y-8">
+          <div className="w-full space-y-4 md:space-y-5">
             {faqs.map((faq) => (
-              <details key={faq.q} className="group border border-neutral-200 p-10 md:p-14 bg-neutral-50/50">
-                <summary className="flex justify-between items-center cursor-pointer list-none">
+              <details key={faq.q} className="group border border-neutral-200 bg-neutral-50/50 p-5 md:p-7">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-5">
                   <span className="text-base md:text-xl font-bold text-neutral-900 group-hover:text-blue-600 transition-colors">
                     {faq.q}
                   </span>
                   <ChevronDown className="w-5 h-5 text-neutral-400 group-open:rotate-180 transition-transform duration-200 shrink-0 ml-4" />
                 </summary>
-                <div className="text-neutral-600 text-base md:text-lg leading-relaxed mt-6 pt-6 border-t border-neutral-200 font-light">
+                <div className="mt-4 border-t border-neutral-200 pt-4 text-sm leading-relaxed text-neutral-600 md:mt-5 md:pt-5 md:text-base">
                   {faq.a}
                 </div>
               </details>
@@ -577,41 +570,26 @@ export default async function HomePage() {
       </section>
 
       {/* ══ 8. CTA / CONTACT (100vh, Full-Screen Industrial Statement) ═ */}
-      <section
-        id="contact"
-        className="w-full min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center py-32 md:py-48"
-      >
-        <div className="absolute right-0 top-0 h-full w-1/3 bg-blue-600 clip-diagonal hidden md:block" />
-
-        <div className="w-full max-w-4xl mx-auto px-6 relative z-10 flex flex-col items-center justify-center text-center my-auto">
-          <div className="inline-block px-3.5 py-1.5 bg-blue-600 text-white text-[11px] font-bold uppercase tracking-widest mb-6">
-            CONSULTATION &amp; QUOTE
+      <section id="contact" className="w-full bg-neutral-50 py-20 md:py-28">
+        <div className="mx-auto w-full max-w-5xl px-6">
+          <div className="mx-auto mb-10 max-w-3xl text-center md:mb-12">
+            <p className="mb-4 text-[11px] font-bold uppercase tracking-[0.2em] text-neutral-500">
+              Consultation &amp; quote
+            </p>
+            <h2 className="text-3xl font-semibold tracking-[-0.05em] text-black sm:text-4xl md:text-5xl">
+              Let&rsquo;s plan your next lift.
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 md:text-base">
+              Share a few project details and our engineers will help define the right system and next steps.
+            </p>
           </div>
-          <h2 className="text-4xl sm:text-6xl lg:text-7xl font-bold tracking-tight mb-6 text-center">
-            Ready to upgrade?
-          </h2>
-          <div className="w-20 h-1 bg-blue-600 mx-auto mb-8" />
-          <p className="text-neutral-300 text-lg md:text-xl mb-16 max-w-xl mx-auto font-light text-center leading-relaxed">
-            Get a certified engineering consultation and shaft quote for your property.
-            <span className="text-white block mt-2 font-medium">
-              No hidden costs. Direct manufacturer precision.
-            </span>
-          </p>
 
-          {/* Form Card Container */}
-          <div className="w-full max-w-2xl mx-auto bg-[#141414] border border-white/10 p-12 sm:p-16 md:p-20 rounded-none shadow-2xl text-left space-y-10">
-            <div className="border-b border-white/10 pb-8 space-y-2.5">
-              <span className="text-xs font-mono tracking-widest text-blue-400 uppercase font-semibold block">
-                Direct Engineering Dispatch
-              </span>
-              <h3 className="text-2xl sm:text-3xl font-bold text-white uppercase tracking-tight">
-                Request A Quote
-              </h3>
-              <p className="text-sm text-neutral-400 font-light">
-                Direct consultation with our Nairobi technical team
-              </p>
+          <div className="mx-auto max-w-4xl border border-neutral-200 bg-white p-6 sm:p-8 md:p-10">
+            <div className="mb-7 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-b border-neutral-200 pb-5 text-center text-xs text-neutral-600">
+              <span><strong className="font-semibold text-neutral-900">Based in</strong> Kilimani, Nairobi</span>
+              <span><strong className="font-semibold text-neutral-900">Response</strong> within one business day</span>
+              <span><strong className="font-semibold text-neutral-900">Emergency</strong> 24/7 standby</span>
             </div>
-
             <HomeContactForm />
           </div>
         </div>

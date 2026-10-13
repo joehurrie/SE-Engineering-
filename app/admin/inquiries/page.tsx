@@ -3,15 +3,12 @@
 import { useEffect, useState } from "react";
 import {
   Mail,
-  CheckCircle,
-  Clock,
   Trash2,
   Loader2,
   Phone,
   Calendar,
   Eye,
   X,
-  Filter,
 } from "lucide-react";
 
 type Inquiry = {
@@ -32,21 +29,21 @@ export default function AdminInquiriesPage() {
   const [selectedInquiry, setSelectedInquiry] = useState<Inquiry | null>(null);
 
   useEffect(() => {
-    fetchInquiries();
-  }, []);
+    let active = true;
+    fetch("/api/admin/inquiries")
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data.inquiries) setInquiries(data.inquiries);
+      })
+      .catch((error) => console.error(error))
+      .finally(() => {
+        if (active) setLoading(false);
+      });
 
-  const fetchInquiries = async () => {
-    try {
-      setLoading(true);
-      const res = await fetch("/api/admin/inquiries");
-      const data = await res.json();
-      if (data.inquiries) setInquiries(data.inquiries);
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleToggleRead = async (inq: Inquiry) => {
     try {
@@ -152,7 +149,7 @@ export default function AdminInquiriesPage() {
           <span>Loading client inquiries from Neon DB...</span>
         </div>
       ) : filtered.length === 0 ? (
-        <div className="py-16 text-center rounded-xl bg-white border border-[#E2E8F0] text-[#64748B] text-sm">
+        <div className="py-16 text-center rounded-none bg-white border border-[#E2E8F0] text-[#64748B] text-sm">
           No inquiries matching this filter.
         </div>
       ) : (
@@ -160,7 +157,7 @@ export default function AdminInquiriesPage() {
           {filtered.map((inq) => (
             <div
               key={inq.id}
-              className={`p-5 rounded-xl border transition flex flex-col md:flex-row md:items-center justify-between gap-4 ${
+              className={`p-5 rounded-none border transition flex flex-col md:flex-row md:items-center justify-between gap-4 ${
                 !inq.read
                   ? "bg-white border-blue-300 shadow-sm ring-1 ring-blue-50"
                   : "bg-white/80 border-[#E2E8F0] opacity-85 hover:opacity-100"
@@ -236,7 +233,7 @@ export default function AdminInquiriesPage() {
       {/* Inquiry Detail Modal */}
       {selectedInquiry && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white border border-[#E2E8F0] rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-2xl">
+          <div className="bg-white border border-[#E2E8F0] rounded-none max-w-lg w-full p-6 space-y-5 shadow-2xl">
             <div className="flex items-center justify-between border-b border-[#E2E8F0] pb-4">
               <div>
                 <h2 className="text-base font-bold text-[#0F172A]">Inquiry Details</h2>
@@ -253,7 +250,7 @@ export default function AdminInquiriesPage() {
             </div>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3 p-4 rounded-xl bg-[#F8FAFC] border border-[#E2E8F0] text-xs">
+              <div className="grid grid-cols-2 gap-3 border border-[#E2E8F0] bg-[#F8FAFC] p-4 text-xs">
                 <div>
                   <span className="text-[#64748B] block font-medium">Sender Name</span>
                   <span className="font-bold text-[#0F172A] mt-0.5 block">
@@ -281,7 +278,7 @@ export default function AdminInquiriesPage() {
                 <span className="text-xs font-semibold text-[#475569] uppercase tracking-wider block mb-1">
                   Subject / Service Requested:
                 </span>
-                <div className="p-3 rounded-xl bg-[#F8FAFC] text-xs font-medium text-[#0F172A] border border-[#E2E8F0]">
+                <div className="border border-[#E2E8F0] bg-[#F8FAFC] p-3 text-xs font-medium text-[#0F172A]">
                   {selectedInquiry.subject || "General Inquiry"}
                 </div>
               </div>
@@ -290,7 +287,7 @@ export default function AdminInquiriesPage() {
                 <span className="text-xs font-semibold text-[#475569] uppercase tracking-wider block mb-1">
                   Full Tender / Message Content:
                 </span>
-                <div className="p-4 rounded-xl bg-[#F8FAFC] text-xs text-[#334155] border border-[#E2E8F0] leading-relaxed whitespace-pre-wrap">
+                <div className="border border-[#E2E8F0] bg-[#F8FAFC] p-4 text-xs leading-relaxed text-[#334155] whitespace-pre-wrap">
                   {selectedInquiry.message}
                 </div>
               </div>
