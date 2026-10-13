@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { Plus, Edit2, Trash2, Loader2, X, Star, MapPin } from "lucide-react";
 import ImageDropzone from "@/components/ImageDropzone";
 
@@ -162,10 +163,12 @@ export default function AdminProjectsPage() {
             >
               <div>
                 <div className="h-48 w-full bg-slate-100 relative overflow-hidden">
-                  <img
+                  <Image
                     src={proj.imageUrl}
                     alt={proj.projectName}
-                    className="w-full h-full object-cover group-hover:scale-105 transition duration-500"
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    className="object-cover transition duration-500 group-hover:scale-105"
                   />
                   <div className="absolute top-3 left-3 flex gap-2">
                     <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-slate-900/80 backdrop-blur-md text-white border border-white/10">

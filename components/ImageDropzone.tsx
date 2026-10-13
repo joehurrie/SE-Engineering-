@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState, DragEvent, ChangeEvent } from "react";
+import Image from "next/image";
 import { UploadCloud, Loader2, CheckCircle, AlertCircle, X, Image as ImageIcon } from "lucide-react";
 
 interface ImageDropzoneProps {
@@ -134,11 +135,14 @@ export default function ImageDropzone({
 
       {value && !uploading ? (
         /* ── Preview ── */
-        <div className="relative group rounded-none overflow-hidden border border-[#E2E8F0] bg-slate-50">
-          <img
+        <div className="relative group h-52 rounded-none overflow-hidden border border-[#E2E8F0] bg-slate-50">
+          <Image
             src={value}
             alt="Uploaded preview"
-            className="w-full h-52 object-cover transition duration-300 group-hover:brightness-75"
+            fill
+            unoptimized
+            sizes="100vw"
+            className="object-cover transition duration-300 group-hover:brightness-75"
           />
           {/* Overlay controls */}
           <div className="absolute inset-0 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition duration-200">
