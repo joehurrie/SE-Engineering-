@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Calendar, ArrowUpRight } from "lucide-react";
 import prisma from "@/lib/prisma";
+import ScrollRevealPage from "@/components/ScrollRevealPage";
 import { defaultArticles, type NewsArticleContent } from "@/lib/news-data";
 
 export const dynamic = "force-dynamic";
@@ -39,7 +40,7 @@ export default async function NewsPage() {
   const featured = articles.filter((a) => a.featured);
 
   return (
-    <div className="bg-white text-[#111111] min-h-screen">
+    <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
 
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
       <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
@@ -203,6 +204,6 @@ export default async function NewsPage() {
           </div>
         </div>
       </section>
-    </div>
+    </ScrollRevealPage>
   );
 }

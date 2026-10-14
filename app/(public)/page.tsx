@@ -2,7 +2,9 @@ import Link from "next/link";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { categoryToSlug } from "@/lib/slugs";
+import { getElevatorProductAsset } from "@/lib/elevator-product-assets";
 import HomeContactForm from "@/components/HomeContactForm";
+import bespokeFallbackImage from "./Assets/design.jpg";
 import HomeLandingSections, {
   HomeMetricTransition,
   type HomeProduct,
@@ -19,7 +21,8 @@ const defaultSystems: HomeProduct[] = [
     title: "Home lifts",
     desc: "Whisper-quiet residential lifts configured around private homes, available space, and architectural finishes.",
     specs: "Residential · Bespoke cabin options",
-    image: "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&q=85&w=1400",
+    image: getElevatorProductAsset("Home lifts", "Residential").src,
+    fallbackImage: "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&q=85&w=1400",
     href: "/elevators/home-lift",
   },
   {
@@ -27,7 +30,8 @@ const defaultSystems: HomeProduct[] = [
     title: "Passenger elevators",
     desc: "Efficient vertical transport for commercial towers, apartments, and mixed-use developments.",
     specs: "Commercial · Gearless traction",
-    image: "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?auto=format&fit=crop&q=85&w=1400",
+    image: getElevatorProductAsset("Passenger elevators", "Commercial").src,
+    fallbackImage: "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?auto=format&fit=crop&q=85&w=1400",
     href: "/elevators/passenger-elevator",
   },
   {
@@ -35,7 +39,8 @@ const defaultSystems: HomeProduct[] = [
     title: "Hospital lifts",
     desc: "Smooth, dependable movement for beds, clinical teams, and essential equipment.",
     specs: "Healthcare · Stretcher-ready",
-    image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=85&w=1400",
+    image: getElevatorProductAsset("Hospital lifts", "Healthcare").src,
+    fallbackImage: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=85&w=1400",
     href: "/elevators/hospital-elevator",
   },
   {
@@ -43,7 +48,8 @@ const defaultSystems: HomeProduct[] = [
     title: "Escalators",
     desc: "High-capacity people movement for retail, hospitality, and public transport environments.",
     specs: "Public spaces · Heavy transit duty",
-    image: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&q=85&w=1400",
+    image: getElevatorProductAsset("Escalators", "Public spaces").src,
+    fallbackImage: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&q=85&w=1400",
     href: "/elevators/escalator-moving-walk",
   },
 ];
@@ -67,22 +73,36 @@ const faqs = [
   },
 ];
 
+function warnHomeFallback(section: string, reason: unknown) {
+  const detail = reason instanceof Error ? reason.message : String(reason);
+  console.warn(`Could not load live home ${section}; using defaults: ${detail}`);
+}
+
 export default async function HomePage() {
   let heroContent: SiteContent | null = null;
   let dbElevators: ElevatorProduct[] = [];
   let dbProjects: Project[] = [];
 
-  try {
-    const [heroRes, elevatorsRes, projectsRes] = await Promise.all([
-      prisma.siteContent.findUnique({ where: { sectionKey: "home_hero" } }),
-      prisma.elevatorProduct.findMany({ orderBy: { id: "asc" } }),
-      prisma.project.findMany({ orderBy: { id: "asc" } }),
-    ]);
-    heroContent = heroRes;
-    dbElevators = elevatorsRes;
-    dbProjects = projectsRes;
-  } catch (error) {
-    console.error("Failed to load live home data:", error);
+  const [heroResult, elevatorsResult, projectsResult] = await Promise.allSettled([
+    prisma.siteContent.findUnique({ where: { sectionKey: "home_hero" } }),
+    prisma.elevatorProduct.findMany({ orderBy: { id: "asc" } }),
+    prisma.project.findMany({ orderBy: { id: "asc" } }),
+  ]);
+
+  if (heroResult.status === "fulfilled") {
+    heroContent = heroResult.value;
+  } else {
+    warnHomeFallback("hero content", heroResult.reason);
+  }
+  if (elevatorsResult.status === "fulfilled") {
+    dbElevators = elevatorsResult.value;
+  } else {
+    warnHomeFallback("elevator products", elevatorsResult.reason);
+  }
+  if (projectsResult.status === "fulfilled") {
+    dbProjects = projectsResult.value;
+  } else {
+    warnHomeFallback("projects", projectsResult.reason);
   }
 
   const heroImage = heroContent?.imageUrl || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=85&w=1800&auto=format&fit=crop";
@@ -97,7 +117,8 @@ export default async function HomePage() {
         title: elevator.title,
         desc: elevator.description,
         specs: elevator.specifications || "Engineered precision specification",
-        image: elevator.imageUrl,
+        image: getElevatorProductAsset(elevator.title, elevator.category).src,
+        fallbackImage: elevator.imageUrl,
         href: `/elevators/${categoryToSlug(elevator.category)}`,
       }));
   const requiredSystemMatches = [/home|residential/i, /passenger|commercial/i, /hospital|medical/i, /escalator|moving walk/i];
@@ -115,16 +136,21 @@ export default async function HomePage() {
     imageUrl: project.imageUrl,
     projectType: project.projectType,
     location: project.location,
+    href: `/projects/${project.id}`,
+    category: project.projectType.toLowerCase().includes("residential")
+      ? "Residential"
+      : project.projectType.toLowerCase().includes("transit") || project.projectType.toLowerCase().includes("escalator")
+        ? "Public / Transit"
+        : "Commercial",
+    elevatorCount: project.elevatorCount,
+    featured: project.featured,
+    status: project.status,
   }));
-  const metricProject = projects[0] || {
-    projectName: "Vertical transport installation, Nairobi",
-    imageUrl: defaultSystems[1].image,
-  };
   const promotion: HomePromotion = {
     title: "Custom solutions",
     description: "Have a unique architectural vision? We fabricate bespoke panoramic glass capsules, low-pit configurations, and custom car interiors to architect drawings.",
     features: ["Curved glass capsules", "Low-pit shafts from 300 mm", "Smart destination dispatch"],
-    image: "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=85&w=1400",
+    image: bespokeFallbackImage.src,
   };
   const yearsInOperation = new Date().getFullYear() - 2016;
 
@@ -142,13 +168,13 @@ export default async function HomePage() {
               <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] tracking-normal sm:text-5xl md:text-6xl lg:text-7xl">{heroTitle}</h1>
               <p className="mt-6 max-w-xl text-sm leading-7 text-white/75 md:text-base">{heroBody}</p>
               <Link href="#contact" className="mt-8 inline-flex h-14 items-center justify-center border border-white bg-white px-7 text-sm font-semibold text-[#0F0F0F] transition-colors hover:border-[#2563EB] hover:bg-[#2563EB] hover:text-white">
-                Get in touch <ArrowRight aria-hidden="true" className="ml-3 h-4 w-4" />
+                Get Started <ArrowRight aria-hidden="true" className="ml-3 h-4 w-4" />
               </Link>
             </div>
           </div>
         </section>
         <div className="relative z-10">
-          <HomeMetricTransition project={metricProject} yearsInOperation={yearsInOperation} />
+          <HomeMetricTransition yearsInOperation={yearsInOperation} />
         </div>
       </div>
 

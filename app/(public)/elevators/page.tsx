@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { categoryToSlug } from "@/lib/slugs";
 import ElevatorProductCard from "@/components/ElevatorProductCard";
+import ScrollRevealPage from "@/components/ScrollRevealPage";
 import { defaultSpareParts } from "@/lib/default-spare-parts";
 
 export const dynamic = "force-dynamic";
@@ -174,7 +175,7 @@ export default async function ElevatorsPage({ searchParams }: ElevatorsPageProps
   const heroImg = elevatorProducts[0]?.img || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=1600";
 
   return (
-    <div className="bg-white text-[#111111] min-h-screen">
+    <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
       <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
         <div className="absolute inset-0 z-0">
@@ -334,6 +335,6 @@ export default async function ElevatorsPage({ searchParams }: ElevatorsPageProps
           </div>
         </div>
       </section>
-    </div>
+    </ScrollRevealPage>
   );
 }

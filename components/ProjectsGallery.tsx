@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { Building2, ArrowRight, MapPin, CheckCircle2 } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 import Link from "next/link";
 import type { ProjectData } from "@/lib/project-data";
 
@@ -73,18 +73,6 @@ export default function ProjectsGallery({ initialProjects }: { initialProjects: 
                   />
                   <div className="absolute inset-0 bg-black/25 group-hover:bg-transparent transition-colors" />
 
-                  <div className="absolute top-4 left-4 flex gap-2 z-10">
-                    <span className="px-3 py-1 text-xs font-bold bg-white text-black flex items-center gap-1.5 shadow-sm">
-                      <Building2 className="w-3.5 h-3.5 text-blue-600" />
-                      {proj.elevatorCount} Units
-                    </span>
-                    {proj.featured && (
-                      <span className="px-3 py-1 text-xs font-bold uppercase tracking-wider bg-blue-600 text-white shadow-sm">
-                        Featured
-                      </span>
-                    )}
-                  </div>
-
                   <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between text-xs text-white drop-shadow">
                     <span className="flex items-center gap-1">
                       <MapPin className="w-3.5 h-3.5 text-blue-400 shrink-0" />
@@ -99,29 +87,25 @@ export default function ProjectsGallery({ initialProjects }: { initialProjects: 
                     <span className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
                       {proj.category}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
-                      <CheckCircle2 className="w-3 h-3" />
-                      {proj.status === "ACTIVE" ? "Active" : "Commissioned"}
-                    </span>
                   </div>
 
                   <h3 className="text-xl font-bold uppercase tracking-tight text-black group-hover:text-blue-600 transition-colors">
                     {proj.projectName}
                   </h3>
 
-                  <p className="text-sm text-neutral-500 font-light leading-relaxed">
+                  <p className="truncate text-sm text-neutral-500 font-light leading-relaxed">
                     {proj.projectType}
                   </p>
                 </div>
               </div>
 
-              <div className="px-6 pb-6 pt-1 md:px-7 md:pb-7">
+              <div className="flex justify-end px-6 pb-5 pt-0 md:px-7 md:pb-6">
                 <Link
                   href={`/projects/${proj.id}`}
-                  className="w-full py-3.5 bg-neutral-100 hover:bg-black hover:text-white text-neutral-900 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-2"
+                  aria-label={`View project: ${proj.projectName}`}
+                  className="inline-flex h-10 w-10 items-center justify-center text-neutral-500 transition-colors hover:text-blue-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
                 >
-                  <span>View Project</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight aria-hidden="true" className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Link>
               </div>
             </div>

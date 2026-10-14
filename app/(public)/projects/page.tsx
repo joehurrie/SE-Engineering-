@@ -3,6 +3,7 @@ import Image from "next/image";
 import prisma from "@/lib/prisma";
 import ProjectsGallery from "@/components/ProjectsGallery";
 import GoogleProjectsMap from "@/components/GoogleProjectsMap";
+import ScrollRevealPage from "@/components/ScrollRevealPage";
 import { defaultProjects, type ProjectData } from "@/lib/project-data";
 
 export const dynamic = "force-dynamic";
@@ -55,7 +56,7 @@ export default async function ProjectsPage() {
   const heroImg = projectList[0]?.img || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=1600";
 
   return (
-    <div className="bg-white text-[#111111] min-h-screen">
+    <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
       <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
         <div className="absolute inset-0 z-0">
@@ -99,6 +100,6 @@ export default async function ProjectsPage() {
           }];
         })}
       />
-    </div>
+    </ScrollRevealPage>
   );
 }

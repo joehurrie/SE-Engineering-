@@ -3,6 +3,7 @@ import Image from "next/image";
 import { ArrowLeft, ArrowRight, CheckCircle2, ClipboardList } from "lucide-react";
 import ElevatorProductGallery from "@/components/ElevatorProductGallery";
 import ElevatorProductCard from "@/components/ElevatorProductCard";
+import ScrollRevealPage from "@/components/ScrollRevealPage";
 
 type ElevatorProduct = {
   category: string;
@@ -49,6 +50,7 @@ export default function ElevatorProductDetailView({
   })();
 
   return (
+    <ScrollRevealPage>
     <main className="min-h-screen bg-white text-[#111111]">
       <section className="relative flex min-h-[62vh] items-end overflow-hidden bg-black pb-12 pt-32 text-white md:min-h-[72vh] md:pb-16">
         <Image
@@ -192,5 +194,6 @@ export default function ElevatorProductDetailView({
         </section>
       )}
     </main>
+    </ScrollRevealPage>
   );
 }

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { notFound } from "next/navigation";
+import ScrollRevealPage from "@/components/ScrollRevealPage";
 
 const serviceData: Record<string, {
   title: string;
@@ -67,7 +68,7 @@ export default async function ServiceDetailPage({ params }: Props) {
   if (!data) notFound();
 
   return (
-    <div className="bg-white text-[#111111] min-h-screen">
+    <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
       <section className="min-h-[50vh] min-h-[50svh] min-h-[380px] relative pt-32 pb-16 flex items-center justify-center overflow-hidden border-b border-black bg-black">
         <div className="absolute inset-0">
@@ -118,6 +119,6 @@ export default async function ServiceDetailPage({ params }: Props) {
         </div>
       </section>
 
-    </div>
+    </ScrollRevealPage>
   );
 }

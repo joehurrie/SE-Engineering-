@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import ProjectDetailView from "@/components/ProjectDetailView";
+import ScrollRevealPage from "@/components/ScrollRevealPage";
 import { defaultProjects } from "@/lib/project-data";
 
 export const dynamic = "force-dynamic";
@@ -88,5 +89,9 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     .filter((item) => item.id !== project.id)
     .slice(0, 3);
 
-  return <ProjectDetailView project={project} relatedProjects={relatedProjects} />;
+  return (
+    <ScrollRevealPage>
+      <ProjectDetailView project={project} relatedProjects={relatedProjects} />
+    </ScrollRevealPage>
+  );
 }

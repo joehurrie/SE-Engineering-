@@ -6,6 +6,7 @@ import LiftServicesShowcase, {
   type LiftServiceContent,
   type LiftServicePart,
 } from "@/components/LiftServicesShowcase";
+import ScrollRevealPage from "@/components/ScrollRevealPage";
 import { defaultSpareParts } from "@/lib/default-spare-parts";
 
 export const dynamic = "force-dynamic";
@@ -116,7 +117,7 @@ export default async function LiftServicesPage() {
     console.error("Failed to fetch lift service content:", error);
   }
   return (
-    <div className="bg-white text-[#111111] min-h-screen">
+    <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
 
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
       <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
@@ -170,6 +171,6 @@ export default async function LiftServicesPage() {
           </div>
         </div>
       </section>
-    </div>
+    </ScrollRevealPage>
   );
 }

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowRight, Calendar } from "lucide-react";
 import prisma from "@/lib/prisma";
+import ScrollRevealPage from "@/components/ScrollRevealPage";
 import { defaultArticles, type NewsArticleContent } from "@/lib/news-data";
 
 export const dynamic = "force-dynamic";
@@ -76,6 +77,7 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
     .filter(Boolean);
 
   return (
+    <ScrollRevealPage>
     <main className="min-h-screen bg-white text-neutral-900">
       <header className="relative flex min-h-[64vh] items-end overflow-hidden bg-neutral-950 pb-12 pt-32 text-white md:min-h-[76vh] md:pb-16">
         <Image
@@ -195,5 +197,6 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
         </section>
       )}
     </main>
+    </ScrollRevealPage>
   );
 }

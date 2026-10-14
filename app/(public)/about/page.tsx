@@ -3,10 +3,10 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import prisma from "@/lib/prisma";
 import {
-  AboutScrollReveal,
   AboutTimeline,
   CredentialsGallery,
 } from "@/components/AboutInteractions";
+import ScrollRevealPage from "@/components/ScrollRevealPage";
 
 export const dynamic = "force-dynamic";
 
@@ -60,7 +60,7 @@ export default async function AboutPage() {
   const bodyText = aboutContent?.bodyText || "Kenya's trusted vertical transportation engineering firm since 2016. Delivering international ISO safety, direct factory supply, and unwavering reliability.";
 
   return (
-    <div className="about-page min-h-screen bg-white text-neutral-900 selection:bg-blue-600 selection:text-white">
+    <ScrollRevealPage className="about-page min-h-screen bg-white text-neutral-900 selection:bg-blue-600 selection:text-white">
 
       {/* ── 1. Hero: 50vh View Height (Nexia Standard) ───────── */}
       <section className="relative flex min-h-screen w-full items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] pb-16 pt-32">
@@ -171,7 +171,6 @@ export default async function AboutPage() {
                     ? "border-[#1D4ED8] bg-[#2563EB] text-white"
                     : "border-neutral-200 bg-white text-[#0F0F0F]",
                 ].filter(Boolean).join(" ")}
-                data-about-no-reveal
               >
                 {idx === 0 && (
                   <>
@@ -295,7 +294,6 @@ export default async function AboutPage() {
           </Link>
         </div>
       </section>
-      <AboutScrollReveal />
-    </div>
+    </ScrollRevealPage>
   );
 }

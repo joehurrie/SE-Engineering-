@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useSpring } from "motion/react";
 
 type Milestone = {
@@ -26,45 +26,6 @@ const credentials = [
     image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&q=85&w=900",
   },
 ];
-
-export function AboutScrollReveal() {
-  useEffect(() => {
-    const root = document.querySelector(".about-page");
-    if (!root) return;
-
-    const candidates = root.querySelectorAll<HTMLElement>(
-      "h1, h2, h3, h4, p, a, button, article, figure, li, span, div",
-    );
-    const targets = Array.from(candidates).filter(
-      (element) =>
-        !element.closest("[data-about-no-reveal]") &&
-        !element.closest('[aria-hidden="true"]') &&
-        (element.matches("h1, h2, h3, h4, p, a, button, article, figure, li") ||
-          (element.children.length === 0 && Boolean(element.textContent?.trim()))),
-    );
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add("is-visible");
-          observer.unobserve(entry.target);
-        });
-      },
-      { threshold: 0.12, rootMargin: "0px 0px -5% 0px" },
-    );
-
-    targets.forEach((target, index) => {
-      target.classList.add("about-reveal");
-      target.style.setProperty("--about-reveal-delay", `${(index % 5) * 70}ms`);
-      observer.observe(target);
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
-  return null;
-}
 
 export function AboutTimeline({ milestones }: { milestones: Milestone[] }) {
   const timelineRef = useRef<HTMLDivElement>(null);

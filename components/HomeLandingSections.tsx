@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import designImage from "@/app/(public)/Assets/design.jpg";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
   ArrowRight,
   ClipboardCheck,
@@ -20,6 +20,12 @@ export type HomeProject = {
   imageUrl: string;
   projectType?: string;
   location?: string | null;
+  href?: string;
+  category?: string;
+  elevatorCount?: number;
+  featured?: boolean;
+  year?: string;
+  status?: string;
 };
 
 export type HomeProduct = {
@@ -28,6 +34,7 @@ export type HomeProduct = {
   desc: string;
   specs: string;
   image: string;
+  fallbackImage?: string;
   href: string;
 };
 
@@ -73,41 +80,91 @@ const fallbackProducts: HomeProduct[] = [
   },
 ];
 
+function ElevatorProductImage({ product, isClone }: { product: HomeProduct; isClone: boolean }) {
+  const [imageSource, setImageSource] = useState(product.image);
+  const [usingFallback, setUsingFallback] = useState(false);
+
+  return (
+    <Image
+      src={imageSource}
+      alt={isClone ? "" : product.title}
+      fill
+      sizes="(min-width: 1400px) 320px, 23vw"
+      className="object-contain"
+      onError={() => {
+        if (!usingFallback && product.fallbackImage && product.fallbackImage !== imageSource) {
+          setUsingFallback(true);
+          setImageSource(product.fallbackImage);
+          return;
+        }
+        console.error(`Failed to load image for elevator product "${product.title}".`);
+      }}
+    />
+  );
+}
+
 const fallbackProjects: HomeProject[] = [
   {
     projectName: "Alina Harbor Apartments",
     projectType: "Residential elevator installation",
     location: "Kilimani, Nairobi",
+    category: "Residential",
+    elevatorCount: 12,
+    featured: true,
+    year: "2023",
+    status: "COMMISSIONED",
     imageUrl: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=85&w=900",
   },
   {
     projectName: "Apple Tree Apartments",
     projectType: "Passenger elevator systems",
     location: "Westlands, Nairobi",
+    category: "Commercial",
+    elevatorCount: 8,
+    featured: true,
+    year: "2022",
+    status: "COMMISSIONED",
     imageUrl: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=85&w=900",
   },
   {
     projectName: "Urban Oasis Towers",
     projectType: "Mixed-use vertical transport",
     location: "Upper Hill, Nairobi",
+    category: "Commercial",
+    elevatorCount: 6,
+    featured: true,
+    year: "2023",
+    status: "ACTIVE",
     imageUrl: "https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&q=85&w=900",
   },
   {
     projectName: "Zuri Villas",
     projectType: "Residential home lifts",
     location: "Karen, Nairobi",
+    category: "Residential",
+    elevatorCount: 4,
+    year: "2021",
+    status: "COMMISSIONED",
     imageUrl: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&q=85&w=900",
   },
   {
     projectName: "Talanta Hela Complex",
     projectType: "Public transit escalator installation",
     location: "Nairobi CBD",
+    category: "Public / Transit",
+    elevatorCount: 10,
+    year: "2024",
+    status: "ACTIVE",
     imageUrl: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&q=85&w=900",
   },
   {
     projectName: "Greenpark Executive Offices",
     projectType: "Commercial passenger elevators",
     location: "Thika Road, Nairobi",
+    category: "Commercial",
+    elevatorCount: 5,
+    year: "2022",
+    status: "COMMISSIONED",
     imageUrl: "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?auto=format&fit=crop&q=85&w=900",
   },
 ];
@@ -194,15 +251,15 @@ const testimonials = [
   },
 ];
 
+const commitmentQuote = "“Specialized Engineering is committed to providing the highest engineering rigor in meeting your vertical transportation needs for the future.”";
+
 export function HomeMetricTransition({
-  project,
   yearsInOperation,
 }: {
-  project: HomeProject;
   yearsInOperation: number;
 }) {
   return (
-    <section className="mt-32 bg-[#F5F5F3] pb-20 pt-0 font-sans tracking-normal md:pb-28">
+    <section className="mt-32 bg-white pb-20 pt-0 font-sans tracking-normal md:pb-28">
       <div className="mx-auto grid w-full max-w-[1280px] items-center gap-10 px-4 sm:px-6 md:grid-cols-[0.9fr_1.1fr] md:gap-14 lg:px-8">
         <div data-home-reveal className="home-reveal order-2 md:order-1">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">
@@ -228,13 +285,10 @@ export function HomeMetricTransition({
         </div>
 
         <div className="order-1 md:order-2">
-          <div className="relative mx-auto -mt-24 aspect-[2/3] w-full max-w-[460px] md:-mt-32">
+          <div className="relative mx-auto -mt-24 aspect-[1.5/3] w-full max-w-[460px] md:-mt-32">
             <div aria-hidden="true" className="absolute -right-3 -top-3 h-[82%] w-[82%] bg-[#2563EB] sm:-right-5 sm:-top-5" />
             <div className="relative h-full overflow-hidden border border-[#E5E5E5] bg-white">
-              <Image src={project.imageUrl} alt={project.projectName} fill sizes="(min-width: 768px) 36vw, 90vw" className="object-cover" />
-              <span className="absolute bottom-0 left-0 bg-[#0F0F0F] px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-white">
-                {project.projectName}
-              </span>
+              <Image src={designImage} alt="Established in Nairobi, 2016" fill sizes="(min-width: 768px) 36vw, 100vw" className="object-cover" />
             </div>
           </div>
         </div>
@@ -254,9 +308,6 @@ export default function HomeLandingSections({
 }) {
   const products = systems.length > 0 ? systems : fallbackProducts;
   const featuredProjects = (projects.length > 0 ? projects : fallbackProjects).slice(0, 6);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const shouldReduceMotion = useReducedMotion();
-  const activeProduct = products[activeIndex % products.length];
 
   useEffect(() => {
     const revealItems = document.querySelectorAll<HTMLElement>("[data-home-reveal]");
@@ -276,37 +327,59 @@ export default function HomeLandingSections({
     return () => observer.disconnect();
   }, []);
 
-  const showProduct = useCallback((offset: number) => {
-    setActiveIndex((index) => (index + offset + products.length) % products.length);
-  }, [products.length]);
-
-  useEffect(() => {
-    if (shouldReduceMotion || products.length < 2) return;
-
-    const timer = window.setInterval(() => showProduct(1), 5000);
-    return () => window.clearInterval(timer);
-  }, [products.length, shouldReduceMotion, showProduct]);
-
   return (
     <>
-      <section id="systems" className="overflow-hidden bg-white py-20 font-sans tracking-normal md:py-28">
-        <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
-          <div className="mx-auto mb-8 flex max-w-3xl flex-col items-center gap-5 border-b border-[#E5E5E5] pb-6 text-center">
-            <div data-home-reveal className="home-reveal">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">Vertical transport systems</p>
-              <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-normal text-[#0F0F0F] sm:text-4xl md:text-5xl">Engineered for every journey</h2>
-            </div>
+      <section id="systems" className="relative left-1/2 h-[80vh] min-h-[520px] w-screen -translate-x-1/2 overflow-hidden bg-[#F5F5F3] font-sans tracking-normal">
+        <div className="flex h-full flex-col">
+          <div className="shrink-0 px-4 pb-4 pt-6 text-center sm:pb-5 sm:pt-8">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#2563EB]">Vertical transport systems</p>
+            <h2 className="mt-2 text-2xl font-semibold leading-tight tracking-normal text-[#0F0F0F] sm:text-3xl md:text-4xl">Engineered for every journey</h2>
           </div>
+          <div
+            className="systems-carousel relative min-h-0 flex-1 overflow-hidden"
+            aria-roledescription="carousel"
+            aria-label="Elevator systems"
+          >
+            <div
+              className="systems-carousel-track absolute inset-y-[8%] left-0 flex w-max items-center gap-4"
+              style={{
+                animationDuration: `${Math.max(products.length * 4, 18)}s`,
+              }}
+            >
+              {[0, 1].flatMap((copy) =>
+                products.map((product, index) => {
+                  const productKey = `${copy}-${index}`;
+                  const isClone = copy === 1;
 
-          <div data-home-reveal className="home-reveal relative" aria-roledescription="carousel" aria-label="Elevator systems">
-            <Link href={activeProduct.href} aria-label={`View more: ${activeProduct.title}`} className="group relative block h-[280px] w-full overflow-hidden border border-[#E5E5E5] bg-[#141414] sm:h-[380px] md:h-[520px]">
-              <AnimatePresence initial={false} mode="sync">
-                <motion.div key={`active-${activeIndex}`} initial={{ opacity: 0, x: shouldReduceMotion ? 0 : -44 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: shouldReduceMotion ? 0 : 32 }} transition={{ duration: shouldReduceMotion ? 0 : 0.9, ease: [0.22, 1, 0.36, 1] }} className="absolute inset-0">
-                  <Image src={activeProduct.image} alt={activeProduct.title} fill sizes="(min-width: 768px) 70vw, 100vw" className="object-cover transition-transform duration-700 group-hover:scale-[1.02]" />
-                </motion.div>
-              </AnimatePresence>
-              <span className="absolute inset-0 flex items-center justify-center bg-[#0F0F0F]/0 text-[11px] font-semibold uppercase tracking-[0.16em] text-white opacity-0 transition-all duration-300 group-hover:bg-[#0F0F0F]/20 group-hover:opacity-100 group-focus-visible:bg-[#0F0F0F]/20 group-focus-visible:opacity-100">View more <ArrowRight className="ml-2 h-4 w-4" /></span>
-            </Link>
+                  return (
+                    <div
+                      key={productKey}
+                      aria-hidden={isClone}
+                      className="systems-carousel-card group relative h-[78%] min-h-[220px] max-h-[440px] w-[clamp(220px,23vw,320px)] flex-none overflow-hidden"
+                    >
+                      <Link
+                        href={product.href}
+                        aria-label={`Explore ${product.title}`}
+                        tabIndex={isClone ? -1 : undefined}
+                        className="absolute inset-0 block overflow-hidden bg-[#F5F5F3] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-[#2563EB]"
+                      >
+                        <ElevatorProductImage product={product} isClone={isClone} />
+                        <span
+                          aria-hidden="true"
+                          className="systems-product-details absolute bottom-0 left-0 z-10 flex min-h-[116px] w-[156px] translate-y-3 flex-col justify-between bg-[#171717] p-4 text-white opacity-0 transition-[opacity,transform] duration-300 ease-out group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 sm:p-5"
+                        >
+                          <span className="text-[9px] font-semibold uppercase tracking-[0.18em] text-[#A9A9A9]">{product.series}</span>
+                          <span className="text-sm font-medium leading-snug sm:text-base">{product.title}</span>
+                          <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+                            Explore <ArrowRight aria-hidden="true" className="h-3.5 w-3.5 text-[#2563EB]" />
+                          </span>
+                        </span>
+                      </Link>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -314,8 +387,8 @@ export default function HomeLandingSections({
       <section className="bg-white py-20 font-sans tracking-normal md:py-28">
         <div data-home-reveal className="home-reveal mx-auto w-full max-w-[1100px] px-4 text-center sm:px-6 lg:px-8">
           <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">Our commitment</p>
-          <blockquote className="mx-auto mt-7 max-w-[1000px] text-3xl font-medium leading-[1.2] tracking-normal sm:text-4xl md:text-5xl lg:text-6xl">
-            &ldquo;Specialized Engineering is committed to providing the highest engineering rigor in meeting your vertical transportation needs for the future.&rdquo;
+          <blockquote aria-label={commitmentQuote} className="commitment-quote mx-auto mt-7 max-w-[1000px] text-3xl font-medium leading-[1.2] tracking-normal sm:text-4xl md:text-5xl lg:text-6xl">
+            {commitmentQuote}
           </blockquote>
           <div className="mx-auto mt-8 h-px w-20 bg-[#2563EB]" />
           <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-500">Specialized Engineering Kenya Ltd.</p>
@@ -353,8 +426,8 @@ export default function HomeLandingSections({
           </div>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {featuredProjects.map((project, index) => (
-              <article key={`${project.projectName}-${index}`} data-home-reveal className="home-reveal group flex h-full flex-col border border-[#E5E5E5] bg-white">
-                <div className="relative aspect-[4/3] overflow-hidden bg-[#F5F5F3]">
+              <article key={`${project.projectName}-${index}`} data-home-reveal className="home-reveal group flex h-full flex-col overflow-hidden border border-neutral-200 bg-white transition-all duration-300 hover:border-blue-600/40 hover:shadow-xl">
+                <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
                   <Image
                     src={project.imageUrl}
                     alt={project.projectName}
@@ -362,19 +435,35 @@ export default function HomeLandingSections({
                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
+                  <div aria-hidden="true" className="absolute inset-0 bg-black/25 transition-colors group-hover:bg-transparent" />
+                  <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between gap-3 text-xs text-white drop-shadow">
+                    <span className="flex min-w-0 items-center gap-1 truncate">
+                      <MapPin aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-blue-400" />
+                      <span className="truncate">{project.location || "Nairobi, Kenya"}</span>
+                    </span>
+                    {project.year && <span className="shrink-0 font-mono text-neutral-300">{project.year}</span>}
+                  </div>
                 </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <p className="flex items-center gap-2 text-xs font-medium text-neutral-500">
-                    <MapPin aria-hidden="true" className="h-4 w-4 shrink-0 text-[#2563EB]" />
-                    {project.location || "Kenya"}
-                  </p>
-                  <h3 className="mt-2 text-lg font-semibold leading-snug text-[#0F0F0F] transition-colors group-hover:text-[#2563EB]">{project.projectName}</h3>
-                  {project.projectType && <p className="mt-2 text-sm leading-6 text-neutral-600">{project.projectType}</p>}
+                <div className="flex flex-1 items-center justify-between gap-4 p-5 md:p-6">
+                  <div className="min-w-0 flex-1">
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                      <span className="truncate text-[11px] font-bold uppercase tracking-wider text-blue-600">
+                        {project.category || "Project"}
+                      </span>
+                    </div>
+                    <h3 className="truncate text-lg font-semibold leading-snug text-[#0F0F0F] transition-colors group-hover:text-[#2563EB]">
+                      {project.projectName}
+                    </h3>
+                    <p className="mt-2 truncate text-sm leading-6 text-neutral-600">
+                      {project.projectType || project.location || "Kenya"}
+                    </p>
+                  </div>
                   <Link
-                    href="/projects"
-                    className="mt-5 inline-flex h-11 w-full items-center justify-center gap-2 border border-[#0F0F0F] text-[11px] font-semibold uppercase tracking-[0.14em] text-[#0F0F0F] transition-colors hover:border-[#2563EB] hover:bg-[#2563EB] hover:text-white"
+                    href={project.href || "/projects"}
+                    aria-label={`Explore project: ${project.projectName}`}
+                    className="inline-flex h-10 w-10 shrink-0 items-center justify-center text-neutral-500 transition-colors hover:text-[#2563EB] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#2563EB]"
                   >
-                    Explore <ArrowRight aria-hidden="true" className="h-4 w-4" />
+                    <ArrowRight aria-hidden="true" className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                   </Link>
                 </div>
               </article>
@@ -388,8 +477,8 @@ export default function HomeLandingSections({
         </div>
       </section>
 
-      <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-neutral-100 py-20 font-sans tracking-normal text-neutral-900 md:py-28">
-        <div className="home-reveal mx-auto grid w-full max-w-[1280px] overflow-hidden bg-neutral-100 md:grid-cols-[1.05fr_0.95fr]" data-home-reveal>
+      <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-[#F5F5F3] py-20 font-sans tracking-normal text-neutral-900 md:py-28">
+        <div className="home-reveal mx-auto grid w-full max-w-[1280px] overflow-hidden bg-[#F5F5F3] md:grid-cols-[1.05fr_0.95fr]" data-home-reveal>
           <div className="flex flex-col justify-center px-6 py-9 sm:px-9 md:px-12 md:py-12">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-blue-700">Beyond the standard range</p>
             <h2 className="mt-4 max-w-xl text-3xl font-semibold leading-tight tracking-normal text-neutral-900 sm:text-4xl">{promotion.title}, engineered around your architecture.</h2>
@@ -407,7 +496,7 @@ export default function HomeLandingSections({
         </div>
       </section>
 
-      <section className="bg-[#F5F5F3] py-20 font-sans tracking-normal md:py-28">
+      <section className="bg-white py-20 font-sans tracking-normal md:py-28">
         <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
           <div data-home-reveal className="home-reveal mx-auto mb-12 max-w-3xl text-center">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">The SE standard</p>
@@ -452,7 +541,7 @@ export default function HomeLandingSections({
         </div>
       </section>
 
-      <section className="bg-white py-20 font-sans tracking-normal md:py-28">
+      <section className="bg-[#F5F5F3] py-20 font-sans tracking-normal md:py-28">
         <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
           <div data-home-reveal className="home-reveal mx-auto mb-12 max-w-3xl text-center">
             <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">Client perspectives</p>
