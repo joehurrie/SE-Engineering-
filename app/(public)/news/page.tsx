@@ -4,6 +4,7 @@ import { ArrowRight, Calendar, ArrowUpRight } from "lucide-react";
 import prisma from "@/lib/prisma";
 import ScrollRevealPage from "@/components/ScrollRevealPage";
 import { defaultArticles, type NewsArticleContent } from "@/lib/news-data";
+import { getContentValue, loadSiteContentMap } from "@/lib/home-content";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +16,13 @@ export const metadata: Metadata = {
 
 export default async function NewsPage() {
   let articles: NewsArticleContent[] = defaultArticles;
+  let content: Awaited<ReturnType<typeof loadSiteContentMap>> = {};
+
+  try {
+    content = await loadSiteContentMap(["news_hero", "news_featured", "news_archive", "news_cta"]);
+  } catch (error) {
+    console.error("Failed to load News page content:", error);
+  }
 
   try {
     const dbArticles = await prisma.newsArticle.findMany({
@@ -38,32 +46,36 @@ export default async function NewsPage() {
   }
 
   const featured = articles.filter((a) => a.featured);
+  const heroVideo = content.news_hero?.videoUrl?.trim();
 
   return (
     <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
 
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
-      <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
+      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-32">
         <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=1600"
-            alt="Engineering News & Insights"
-            className="w-full h-full object-cover brightness-[0.25]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+          {heroVideo ? (
+            <video src={heroVideo} autoPlay muted loop playsInline className="h-full w-full object-cover" />
+          ) : (
+            <img
+              src={getContentValue(content.news_hero, "imageUrl", "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=1600")}
+              alt="Engineering News & Insights"
+              className="w-full h-full object-cover"
+            />
+          )}
+          <div className="absolute inset-0 bg-black/50" />
         </div>
 
         <div className="max-w-4xl mx-auto px-6 relative z-10 w-full flex flex-col items-center justify-center text-center my-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest">
-            EDITORIAL &amp; INSIGHTS
+            {getContentValue(content.news_hero, "subtitle", "EDITORIAL & INSIGHTS")}
           </div>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-white mb-2 text-center">
-            News &amp; Insights.
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-white drop-shadow-lg mb-2 text-center">
+            {getContentValue(content.news_hero, "title", "News & Insights.")}
           </h1>
           <div className="w-20 h-1 bg-blue-600 mx-auto mb-4" />
-          <p className="text-neutral-400 text-base md:text-lg max-w-2xl mx-auto font-light leading-relaxed text-center">
-            Stay informed with the latest project completions, engineering updates, and vertical transportation
-            industry insights from our engineering division in Nairobi.
+          <p className="text-white drop-shadow-lg text-base md:text-lg max-w-2xl mx-auto font-light leading-relaxed text-center">
+            {getContentValue(content.news_hero, "bodyText", "Stay informed with the latest project completions, engineering updates, and vertical transportation industry insights from our engineering division in Nairobi.")}
           </p>
         </div>
       </section>
@@ -73,58 +85,64 @@ export default async function NewsPage() {
         <div className="w-full max-w-7xl mx-auto px-6 space-y-16 flex flex-col items-center justify-center">
           <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto">
             <div className="inline-block px-3 py-1 bg-white text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-4 border border-neutral-200">
-              Featured Coverage
+              {getContentValue(content.news_featured, "badge", "Featured Coverage")}
             </div>
             <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight text-black mb-4 text-center">
-              Featured Stories.
+              {getContentValue(content.news_featured, "title", "Featured Stories.")}
             </h2>
             <div className="w-20 h-1 bg-blue-600 mx-auto" />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {featured.map((article) => (
+            {featured.length > 0 ? featured.map((article) => (
               <Link
                 key={article.slug}
                 href={`/news/${article.slug}`}
-                className="group relative h-96 sm:h-[480px] rounded-none overflow-hidden border border-neutral-200 flex flex-col justify-end shadow-md"
+                className="group flex flex-col overflow-hidden rounded-none border border-neutral-200 bg-white transition-all duration-300 hover:border-blue-600/40 hover:shadow-xl"
               >
-                <img
-                  src={article.img}
-                  alt={article.title}
-                  className="w-full h-full object-cover brightness-[0.4] group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent" />
-
-                <div className="absolute bottom-0 left-0 right-0 p-10 sm:p-12 space-y-4 z-10">
-                  <div className="flex items-center gap-3">
-                    <span className="px-2.5 py-1 text-[10px] font-mono font-bold bg-blue-600 text-white">
+                <div className="relative aspect-[16/10] w-full overflow-hidden bg-neutral-100">
+                  <img
+                    src={article.img}
+                    alt={article.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
+                  <div aria-hidden="true" className="absolute inset-0 bg-black/25 group-hover:bg-transparent transition-colors" />
+                  <div className="absolute bottom-4 left-4 right-4 z-10 flex items-center justify-between text-xs text-white drop-shadow">
+                    <span className="flex items-center gap-1.5 font-mono text-[11px]">
+                      <Calendar className="w-3.5 h-3.5 text-blue-400" />
+                      {new Date(article.publishedAt).toLocaleDateString("en-KE", { day: "numeric", month: "long", year: "numeric" })}
+                    </span>
+                    <span className="bg-blue-600 px-2.5 py-0.5 text-[10px] font-mono font-bold text-white uppercase">
                       {article.category}
                     </span>
-                    <span className="text-neutral-400 text-xs font-mono">
-                      {article.publishedAt}
-                    </span>
                   </div>
+                </div>
 
-                  <h3 className="text-white text-2xl sm:text-3xl font-bold leading-tight">
-                    {article.title}
-                  </h3>
-
-                  <p className="text-neutral-300 text-base leading-relaxed font-light line-clamp-2">
-                    {article.excerpt}
-                  </p>
-
-                  <div className="pt-4 flex items-center justify-between text-xs text-neutral-400 border-t border-white/10">
-                    <span className="flex items-center gap-1.5 font-mono">
-                      <Calendar className="w-3.5 h-3.5 text-blue-400" />
+                <div className="flex flex-1 flex-col justify-between p-6 md:p-8 space-y-4">
+                  <div>
+                    <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 group-hover:text-blue-600 transition-colors leading-snug">
+                      {article.title}
+                    </h3>
+                    <p className="mt-3 text-sm text-neutral-600 font-light leading-relaxed line-clamp-2">
+                      {article.excerpt}
+                    </p>
+                  </div>
+                  <div className="pt-4 flex items-center justify-between text-xs text-neutral-400 border-t border-neutral-100">
+                    <span className="font-mono text-neutral-500">
                       Specialized Engineering Kenya
                     </span>
-                    <span className="text-white font-medium inline-flex items-center gap-1.5 group-hover:text-blue-400 transition-colors">
+                    <span className="text-blue-600 font-semibold inline-flex items-center gap-1.5 group-hover:translate-x-1 transition-transform">
                       Read Analysis <ArrowUpRight className="w-4 h-4" />
                     </span>
                   </div>
                 </div>
               </Link>
-            ))}
+            )) : (
+              <div className="col-span-full py-20 flex flex-col items-center justify-center text-center gap-4 border border-neutral-200 bg-white">
+                <p className="text-neutral-400 text-sm font-light">No featured articles published yet.</p>
+                <p className="text-neutral-300 text-xs">Check back soon for engineering insights from our Nairobi team.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -134,16 +152,16 @@ export default async function NewsPage() {
         <div className="w-full max-w-7xl mx-auto px-6 space-y-16 flex flex-col items-center justify-center">
           <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto">
             <div className="inline-block px-3 py-1 bg-neutral-100 text-neutral-600 text-[10px] font-bold uppercase tracking-widest mb-4 border border-neutral-200">
-              Industry Archive
+              {getContentValue(content.news_archive, "badge", "Industry Archive")}
             </div>
             <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight text-black mb-4 text-center">
-              Archive &amp; Insights.
+              {getContentValue(content.news_archive, "title", "Archive & Insights.")}
             </h2>
             <div className="w-20 h-1 bg-blue-600 mx-auto" />
           </div>
 
           <div className="divide-y divide-neutral-200 border-t border-b border-neutral-200">
-            {articles.map((article) => (
+            {articles.length > 0 ? articles.map((article) => (
               <Link
                 key={article.slug}
                 href={`/news/${article.slug}`}
@@ -160,7 +178,7 @@ export default async function NewsPage() {
                     </span>
                     <span className="text-neutral-300">·</span>
                     <span className="text-neutral-500 text-xs font-mono">
-                      {article.publishedAt}
+                      {new Date(article.publishedAt).toLocaleDateString("en-KE", { day: "numeric", month: "long", year: "numeric" })}
                     </span>
                   </div>
                   <h3 className="text-black font-bold text-xl sm:text-2xl leading-snug group-hover:text-blue-600 transition-colors">
@@ -175,7 +193,12 @@ export default async function NewsPage() {
                   <ArrowRight className="w-5 h-5" />
                 </div>
               </Link>
-            ))}
+            )) : (
+              <div className="py-24 flex flex-col items-center justify-center text-center gap-3">
+                <p className="text-neutral-400 text-base font-light">No articles published yet.</p>
+                <p className="text-neutral-300 text-sm">Engineering insights and project updates coming soon.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -184,21 +207,21 @@ export default async function NewsPage() {
       <section className="w-full min-h-[50vh] bg-neutral-100 py-28 md:py-36 text-center relative overflow-hidden flex items-center justify-center">
         <div className="max-w-2xl mx-auto px-6 relative z-10 space-y-6">
           <div className="inline-block px-3 py-1 bg-white text-blue-700 text-[10px] font-bold uppercase tracking-widest border border-neutral-200">
-            Direct Press &amp; Media
+            {getContentValue(content.news_cta, "badge", "Direct Press & Media")}
           </div>
           <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 uppercase tracking-tight">
-            Media &amp; Technical Inquiries.
+            {getContentValue(content.news_cta, "title", "Media & Technical Inquiries.")}
           </h2>
           <div className="w-16 h-1 bg-blue-600 mx-auto" />
           <p className="text-neutral-600 text-sm md:text-base font-light leading-relaxed">
-            For press briefings, architectural case studies, or technical documentation, contact our communications desk in Nairobi.
+            {getContentValue(content.news_cta, "bodyText", "For press briefings, architectural case studies, or technical documentation, contact our communications desk in Nairobi.")}
           </p>
           <div className="pt-2 flex justify-center">
             <Link
-              href="/contact"
+              href={getContentValue(content.news_cta, "buttonHref", "/contact")}
               className="h-14 px-8 bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 rounded-none transition-colors"
             >
-              <span>Contact Press Desk</span>
+              <span>{getContentValue(content.news_cta, "buttonLabel", "Contact Press Desk")}</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>

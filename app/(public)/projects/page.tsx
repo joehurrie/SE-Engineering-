@@ -5,6 +5,7 @@ import ProjectsGallery from "@/components/ProjectsGallery";
 import GoogleProjectsMap from "@/components/GoogleProjectsMap";
 import ScrollRevealPage from "@/components/ScrollRevealPage";
 import { defaultProjects, type ProjectData } from "@/lib/project-data";
+import { getContentValue, loadSiteContentMap } from "@/lib/home-content";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +17,13 @@ export const metadata: Metadata = {
 
 export default async function ProjectsPage() {
   let projectList: ProjectData[] = defaultProjects;
+  let content: Awaited<ReturnType<typeof loadSiteContentMap>> = {};
+
+  try {
+    content = await loadSiteContentMap(["projects_hero", "projects_gallery", "projects_map"]);
+  } catch (error) {
+    console.error("Failed to load Projects page content:", error);
+  }
 
   try {
     const dbProjects = await prisma.project.findMany({
@@ -53,42 +61,52 @@ export default async function ProjectsPage() {
     console.error("Failed to load projects from DB:", error);
   }
 
-  const heroImg = projectList[0]?.img || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=1600";
+  const hero = content.projects_hero;
+  const gallery = content.projects_gallery;
+  const heroImg = getContentValue(hero, "imageUrl", projectList[0]?.img || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=1600");
+  const videoUrl = hero?.videoUrl?.trim();
 
   return (
     <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
-      <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
+      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-32">
         <div className="absolute inset-0 z-0">
-          <Image
-            src={heroImg}
-            alt="Alina Harbor Towers Project"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover brightness-[0.25]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+          {videoUrl ? (
+            <video src={videoUrl} autoPlay muted loop playsInline className="h-full w-full object-cover" />
+          ) : (
+            <Image src={heroImg} alt="Alina Harbor Towers Project" fill priority sizes="100vw" className="object-cover" />
+          )}
+          <div className="absolute inset-0 bg-black/50" />
         </div>
 
         <div className="max-w-4xl mx-auto px-6 relative z-10 w-full flex flex-col items-center justify-center text-center my-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest">
-            INSTALLATION SHOWCASE
+            {getContentValue(hero, "subtitle", "INSTALLATION SHOWCASE")}
           </div>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-white mb-2 text-center">
-            Success Projects.
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-white drop-shadow-lg mb-2 text-center">
+            {getContentValue(hero, "title", "Success Projects.")}
           </h1>
           <div className="w-20 h-1 bg-blue-600 mx-auto mb-4" />
-          <p className="text-neutral-400 text-base md:text-lg max-w-2xl mx-auto font-light leading-relaxed text-center">
-            Over 200 precision vertical installations across residential high-rises, commercial headquarters,
-            and private luxury estates in Kenya and East Africa.
+          <p className="text-white drop-shadow-lg text-base md:text-lg max-w-2xl mx-auto font-light leading-relaxed text-center">
+            {getContentValue(hero, "bodyText", "Over 200 precision vertical installations across residential high-rises, commercial headquarters, and private luxury estates in Kenya and East Africa.")}
           </p>
         </div>
       </section>
 
       {/* ── 2. Filter Tabs & Projects Showcase ─────────────────── */}
-      <ProjectsGallery initialProjects={projectList} />
+      <ProjectsGallery
+        initialProjects={projectList}
+        badge={getContentValue(gallery, "badge", "Flagship Portfolio")}
+        title={getContentValue(gallery, "title", "Landmark Developments.")}
+        description={getContentValue(gallery, "bodyText", "Explore our completed and active vertical transportation projects across East Africa.")}
+        buttonLabel={getContentValue(gallery, "buttonLabel", "Discuss a project")}
+        buttonHref={getContentValue(gallery, "buttonHref", "/contact")}
+      />
       <GoogleProjectsMap
+        title={getContentValue(content.projects_map, "title", "Work across the region")}
+        description={getContentValue(content.projects_map, "bodyText", "Explore locations where our commissioned and active projects are making a difference.")}
+        buttonLabel={getContentValue(content.projects_map, "buttonLabel", "View map")}
+        buttonHref={getContentValue(content.projects_map, "buttonHref", "#project-map")}
         projects={projectList.flatMap((project) => {
           if (project.latitude === null || project.longitude === null) return [];
           return [{

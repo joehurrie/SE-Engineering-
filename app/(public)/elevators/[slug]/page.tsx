@@ -288,7 +288,7 @@ export default async function ElevatorDetailPage({ params }: Props) {
     <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
       {/* ── 1. Hero: 50vh View Height ───────────────────────── */}
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
-      <section className="min-h-[50vh] min-h-[50svh] min-h-[380px] relative pt-32 pb-16 flex items-center justify-center overflow-hidden border-b border-black bg-black">
+      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-32">
         <div className="absolute inset-0 z-0">
           <Image
             src={data.heroImg}
@@ -296,21 +296,20 @@ export default async function ElevatorDetailPage({ params }: Props) {
             fill
             priority
             sizes="100vw"
-            className="object-cover brightness-[0.3]"
+            className="object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
         </div>
         <div className="max-w-4xl mx-auto px-6 relative z-10 w-full flex flex-col items-center justify-center text-center my-auto space-y-4">
           <Link
             href="/elevators"
-            className="text-neutral-400 hover:text-white text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 font-mono mb-2"
+            className="text-white drop-shadow-lg hover:text-white text-xs font-semibold uppercase tracking-wider transition-colors inline-flex items-center gap-1.5 font-mono mb-2"
           >
             ← Back to All Elevators
           </Link>
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest">
             {data.tagline}
           </div>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-white text-center">
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-white drop-shadow-lg text-center">
             {data.title}<span className="text-blue-500">.</span>
           </h1>
           <div className="w-20 h-1 bg-blue-600 mx-auto" />

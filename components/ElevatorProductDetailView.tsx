@@ -52,28 +52,27 @@ export default function ElevatorProductDetailView({
   return (
     <ScrollRevealPage>
     <main className="min-h-screen bg-white text-[#111111]">
-      <section className="relative flex min-h-[62vh] items-end overflow-hidden bg-black pb-12 pt-32 text-white md:min-h-[72vh] md:pb-16">
+      <section className="relative flex min-h-[70vh] items-end overflow-hidden bg-[#F5F5F3] px-6 py-32 text-white">
         <Image
           src={product.imageUrl}
           alt={product.category}
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-50"
+          className="object-cover"
         />
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/10" />
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-6">
+        <div className="relative z-10 mx-auto w-full max-w-7xl">
           <Link
             href="/elevators"
-            className="mb-12 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/75 hover:text-white"
+            className="mb-12 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-white drop-shadow-lg hover:text-white"
           >
             <ArrowLeft aria-hidden="true" className="h-4 w-4" />
             All elevator products
           </Link>
-          <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-blue-300">
+          <p className="mb-4 text-xs font-bold uppercase tracking-[0.18em] text-white drop-shadow-lg">
             {product.category}
           </p>
-          <h1 className="max-w-4xl text-4xl font-bold uppercase leading-tight tracking-tight sm:text-5xl md:text-7xl">
+          <h1 className="max-w-4xl text-4xl font-bold uppercase leading-tight tracking-tight drop-shadow-lg sm:text-5xl md:text-7xl">
             {product.title}
           </h1>
         </div>

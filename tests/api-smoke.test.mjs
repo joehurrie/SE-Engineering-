@@ -74,6 +74,7 @@ test("administrator collection APIs reject requests without a valid session", as
     "/api/admin/news",
     "/api/admin/projects",
     "/api/admin/services",
+    "/api/admin/careers",
   ];
 
   for (const path of paths) {
@@ -90,6 +91,25 @@ test("malformed credentials are rejected before database lookup", async () => {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email: "", password: "" }),
+  });
+  assert.equal(response.status, 400);
+});
+
+test("career applications reject insecure resume links before database access", async () => {
+  const response = await fetch(`${baseUrl}/api/careers/applications`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      vacancyId: null,
+      name: "Test Applicant",
+      email: "applicant@example.com",
+      phone: "+254700000000",
+      resumeUrl: "http://example.com/resume",
+      portfolioUrl: "",
+      message: "Application test",
+      consent: true,
+      website: "",
+    }),
   });
   assert.equal(response.status, 400);
 });

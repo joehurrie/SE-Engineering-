@@ -47,7 +47,21 @@ declare global {
 
 const mapsScriptId = "google-maps-javascript-api";
 
-export default function GoogleProjectsMap({ projects }: { projects: ProjectLocation[] }) {
+type GoogleProjectsMapProps = {
+  projects: ProjectLocation[];
+  title?: string;
+  description?: string;
+  buttonLabel?: string;
+  buttonHref?: string;
+};
+
+export default function GoogleProjectsMap({
+  projects,
+  title = "Work across the region",
+  description = "Explore locations where our commissioned and active projects are making a difference.",
+  buttonLabel = "View map",
+  buttonHref = "#project-map",
+}: GoogleProjectsMapProps) {
   const mapElementRef = useRef<HTMLDivElement>(null);
   const [mapError, setMapError] = useState<string | null>(null);
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
@@ -114,17 +128,17 @@ export default function GoogleProjectsMap({ projects }: { projects: ProjectLocat
               Project locations
             </p>
             <h2 className="mt-3 text-3xl font-bold uppercase tracking-tight text-[#0F0F0F] sm:text-4xl">
-              Work across the region
+              {title}
             </h2>
             <p className="mt-4 text-sm leading-7 text-neutral-600">
-              Explore locations where our commissioned and active projects are making a difference.
+              {description}
             </p>
           </div>
           <Link
-            href="#project-map"
+            href={buttonHref}
             className="inline-flex w-fit items-center gap-2 text-xs font-semibold uppercase tracking-wider text-neutral-600 transition-colors hover:text-[#2563EB]"
           >
-            View map <ArrowRight aria-hidden="true" className="h-4 w-4" />
+            {buttonLabel} <ArrowRight aria-hidden="true" className="h-4 w-4" />
           </Link>
         </div>
 

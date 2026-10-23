@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { categoryToSlug } from "@/lib/slugs";
@@ -12,35 +13,36 @@ import HomeLandingSections, {
   type HomePromotion,
 } from "@/components/HomeLandingSections";
 import type { ElevatorProduct, Project, SiteContent } from "@prisma/client";
+import { getHomeContentMap } from "@/lib/home-content";
 
 export const dynamic = "force-dynamic";
 
 const defaultSystems: HomeProduct[] = [
   {
-    series: "SERIES H-300",
-    title: "Home lifts",
-    desc: "Whisper-quiet residential lifts configured around private homes, available space, and architectural finishes.",
-    specs: "Residential · Bespoke cabin options",
-    image: getElevatorProductAsset("Home lifts", "Residential").src,
-    fallbackImage: "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&q=85&w=1400",
+    series: "SERIES PASSENGE",
+    title: "Prestige Villa Home Lift",
+    desc: "Ultra-quiet residential hydraulic and traction home lift engineered for private villas.",
+    specs: "{\"capacity\":\"630kg\",\"speed\":\"1.0m/s\",\"stops\":\"2-5\"}",
+    image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1791926331777-design2.webp",
+    fallbackImage: getElevatorProductAsset("Prestige Villa Home Lift", "Passenger Elevator").src,
     href: "/elevators/home-lift",
   },
   {
-    series: "SERIES P-800",
-    title: "Passenger elevators",
-    desc: "Efficient vertical transport for commercial towers, apartments, and mixed-use developments.",
-    specs: "Commercial · Gearless traction",
-    image: getElevatorProductAsset("Passenger elevators", "Commercial").src,
-    fallbackImage: "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?auto=format&fit=crop&q=85&w=1400",
+    series: "SERIES PASSENGE",
+    title: "Commercial High-Rise Passenger Elevator",
+    desc: "High-capacity, smooth-ride passenger lifts engineered for commercial towers, hotels, and luxury multi-family developments with intelligent group dispatching.",
+    specs: "{\"capacity\":\"630kg - 1600kg (8-21 Passengers)\",\"speed\":\"1.0m/s - 4.0m/s\",\"drive\":\"Permanent Magnet Synchronous Machine (PMSM)\",\"control\":\"Microprocessor VVVF Full Collective Group Control\"}",
+    image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1791836306273-dsc01710.webp",
+    fallbackImage: getElevatorProductAsset("Commercial High-Rise Passenger Elevator", "Passenger Elevator").src,
     href: "/elevators/passenger-elevator",
   },
   {
-    series: "SERIES M-600",
-    title: "Hospital lifts",
-    desc: "Smooth, dependable movement for beds, clinical teams, and essential equipment.",
-    specs: "Healthcare · Stretcher-ready",
-    image: getElevatorProductAsset("Hospital lifts", "Healthcare").src,
-    fallbackImage: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=85&w=1400",
+    series: "SERIES HOSPITAL",
+    title: "Medical Stretcher & Bed Hospital Elevator",
+    desc: "Spacious, micro-leveling precision elevators designed specifically for medical facilities, hospital beds, delicate equipment, and intensive care transport.",
+    specs: "{\"capacity\":\"1600kg - 2500kg\",\"speed\":\"1.0m/s - 2.0m/s\",\"doorClearance\":\"1200mm - 1500mm Telescopic / Center Open\",\"features\":\"Antibacterial finishes, Priority Medical Emergency Dispatch\"}",
+    image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1791836420088-dsc01729.webp",
+    fallbackImage: getElevatorProductAsset("Medical Stretcher & Bed Hospital Elevator", "Hospital Elevator").src,
     href: "/elevators/hospital-elevator",
   },
   {
@@ -51,6 +53,33 @@ const defaultSystems: HomeProduct[] = [
     image: getElevatorProductAsset("Escalators", "Public spaces").src,
     fallbackImage: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&q=85&w=1400",
     href: "/elevators/escalator-moving-walk",
+  },
+  {
+    series: "SERIES PANORAMI",
+    title: "Scenic Curved Glass Panoramic Elevator",
+    desc: "Architectural observation lift with laminated safety curved glass walls, circular or diamond car profile, offering 180° to 360° exterior city and atrium views.",
+    specs: "{\"capacity\":\"800kg - 1350kg (10-18 Passengers)\",\"speed\":\"1.0m/s - 2.5m/s\",\"carStyle\":\"Curved Glass / Hexagonal / Diamond\",\"illumination\":\"Ambient LED Concealed Lighting\"}",
+    image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1791836382007-dsc01833.webp",
+    fallbackImage: getElevatorProductAsset("Scenic Curved Glass Panoramic Elevator", "Panoramic Elevator").src,
+    href: "/elevators/panoramic-elevator",
+  },
+  {
+    series: "SERIES DUMBWAIT",
+    title: "Commercial & Hospitality Service Dumbwaiter",
+    desc: "Stainless steel grade 304 food and service dumbwaiters for restaurants, hotels, banks, and healthcare facilities with heating and multi-shelf configurations.",
+    specs: "{\"capacity\":\"100kg - 300kg\",\"speed\":\"0.4m/s\",\"material\":\"Food-Grade Stainless Steel SUS304\",\"doors\":\"Bi-parting Vertical Sliding Shutter\"}",
+    image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1791836473398-dsc01709.webp",
+    fallbackImage: getElevatorProductAsset("Commercial & Hospitality Service Dumbwaiter", "Dumbwaiter").src,
+    href: "/elevators/dumbwaiter",
+  },
+  {
+    series: "SERIES HYDRAUL",
+    title: "3-1 Lift",
+    desc: "Description goes here",
+    specs: "max capacity 300kgs",
+    image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1791883873151-dsc01702.webp",
+    fallbackImage: getElevatorProductAsset("3-1 Lift", "Hydraulic Platform").src,
+    href: "/elevators/hydraulic-platform",
   },
 ];
 
@@ -73,26 +102,67 @@ const faqs = [
   },
 ];
 
+const heroFallback = {
+  subtitle: "Kenya's Premier Elevator & Lift Engineering Partner",
+  title: "Vertical Transportation Engineered for Excellence",
+  bodyText: "Specialized Engineering Kenya Ltd. delivers world-class elevator design, installation, modernization, and 24/7 preventative maintenance across commercial, residential, and industrial developments in East Africa.",
+};
+
 function warnHomeFallback(section: string, reason: unknown) {
   const detail = reason instanceof Error ? reason.message : String(reason);
   console.warn(`Could not load live home ${section}; using defaults: ${detail}`);
 }
 
+function renderHeroTitle(title: string) {
+  const highlightRegex = /(Excellence|Engineered|Precision|East Africa|Solutions|Engineering)/gi;
+  const parts = title.split(highlightRegex);
+  if (parts.length > 1) {
+    return parts.map((part, i) =>
+      highlightRegex.test(part) ? (
+        <span
+          key={i}
+          className="bg-gradient-to-r from-[#2563EB] to-blue-700 bg-clip-text text-transparent"
+        >
+          {part}
+        </span>
+      ) : (
+        <span key={i} className="text-[#0F0F0F]">
+          {part}
+        </span>
+      )
+    );
+  }
+  const words = title.split(" ");
+  if (words.length > 2) {
+    const main = words.slice(0, -1).join(" ");
+    const last = words[words.length - 1];
+    return (
+      <>
+        <span className="text-[#0F0F0F]">{main} </span>
+        <span className="bg-gradient-to-r from-[#2563EB] to-blue-700 bg-clip-text text-transparent">
+          {last}
+        </span>
+      </>
+    );
+  }
+  return <span className="text-[#0F0F0F]">{title}</span>;
+}
+
 export default async function HomePage() {
-  let heroContent: SiteContent | null = null;
+  let homeContentRecords: SiteContent[] = [];
   let dbElevators: ElevatorProduct[] = [];
   let dbProjects: Project[] = [];
 
-  const [heroResult, elevatorsResult, projectsResult] = await Promise.allSettled([
-    prisma.siteContent.findUnique({ where: { sectionKey: "home_hero" } }),
+  const [contentResult, elevatorsResult, projectsResult] = await Promise.allSettled([
+    prisma.siteContent.findMany({ where: { sectionKey: { startsWith: "home_" } } }),
     prisma.elevatorProduct.findMany({ orderBy: { id: "asc" } }),
     prisma.project.findMany({ orderBy: { id: "asc" } }),
   ]);
 
-  if (heroResult.status === "fulfilled") {
-    heroContent = heroResult.value;
+  if (contentResult.status === "fulfilled") {
+    homeContentRecords = contentResult.value;
   } else {
-    warnHomeFallback("hero content", heroResult.reason);
+    warnHomeFallback("homepage content", contentResult.reason);
   }
   if (elevatorsResult.status === "fulfilled") {
     dbElevators = elevatorsResult.value;
@@ -105,20 +175,22 @@ export default async function HomePage() {
     warnHomeFallback("projects", projectsResult.reason);
   }
 
-  const heroImage = heroContent?.imageUrl || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?q=85&w=1800&auto=format&fit=crop";
-  const heroBadge = heroContent?.subtitle || "PREMIER VERTICAL ENGINEERING";
-  const heroTitle = heroContent?.title || "Engineered for every level.";
-  const heroBody = heroContent?.bodyText || "High-performance elevator systems engineered for modern architecture. Exclusive XIZI partner delivering ISO safety, German-standard traction, and 24/7 Nairobi support.";
+  const content = getHomeContentMap(homeContentRecords);
+  const heroContent = content.home_hero;
+  const heroImage = heroContent?.imageUrl || "/uploads/hero1.jpg";
+  const heroBadge = heroContent?.subtitle || heroFallback.subtitle;
+  const heroTitle = heroContent?.title || heroFallback.title;
+  const heroBody = heroContent?.bodyText || heroFallback.bodyText;
 
   const databaseSystems: HomeProduct[] = dbElevators
     .filter((elevator) => elevator.category.trim().toLowerCase() !== "spare parts")
     .map((elevator) => ({
-        series: `SERIES ${elevator.category.toUpperCase().slice(0, 8)}`,
+        series: `SRS · ${elevator.category}`,
         title: elevator.title,
         desc: elevator.description,
         specs: elevator.specifications || "Engineered precision specification",
-        image: getElevatorProductAsset(elevator.title, elevator.category).src,
-        fallbackImage: elevator.imageUrl,
+        image: elevator.imageUrl,
+        fallbackImage: getElevatorProductAsset(elevator.title, elevator.category).src,
         href: `/elevators/${categoryToSlug(elevator.category)}`,
       }));
   const requiredSystemMatches = [/home|residential/i, /passenger|commercial/i, /hospital|medical/i, /escalator|moving walk/i];
@@ -147,47 +219,66 @@ export default async function HomePage() {
     status: project.status,
   }));
   const promotion: HomePromotion = {
-    title: "Custom solutions",
-    description: "Have a unique architectural vision? We fabricate bespoke panoramic glass capsules, low-pit configurations, and custom car interiors to architect drawings.",
+    title: content.home_video_banner?.title || "Elevator solutions, engineered for every journey.",
+    description: content.home_video_banner?.bodyText || "From a single home lift to high-capacity commercial systems, we tailor complete vertical transport solutions to the people and places they serve.",
     features: ["Curved glass capsules", "Low-pit shafts from 300 mm", "Smart destination dispatch"],
+    video: content.home_video_banner?.videoUrl || "/assets/video.mp4",
     image: bespokeFallbackImage.src,
   };
-  const yearsInOperation = new Date().getFullYear() - 2016;
-
+  const homepageFaqs = faqs.map((faq, index) => ({
+    q: content.home_faq?.[`question${index + 1}`] || faq.q,
+    a: content.home_faq?.[`answer${index + 1}`] || faq.a,
+  }));
   return (
-    <main className="font-sans tracking-normal text-[#0F0F0F]">
-      <div className="relative isolate bg-[#0F0F0F]">
-        <section className="sticky top-0 z-0 h-svh w-screen overflow-hidden bg-[#0F0F0F] text-white">
+    <div className="font-sans tracking-normal text-[#0F0F0F]">
+      <div className="relative isolate bg-white">
+        <section className="sticky top-0 z-0 h-svh w-screen overflow-hidden bg-[#F5F5F3]">
           <div className="absolute inset-0">
-            <img src={heroImage} alt="" className="h-full w-full object-cover" />
-            <div className="absolute inset-0 bg-[#0F0F0F]/35" />
+            <Image src={heroImage} alt="" fill priority sizes="100vw" className="object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/75 to-white/20 sm:w-3/4 md:w-2/3 lg:w-1/2" />
           </div>
           <div className="relative z-10 mx-auto grid h-full w-full max-w-[1280px] grid-cols-1 items-center px-4 sm:px-6 lg:px-8">
-            <div className="py-12 md:py-0">
-              <p className="mb-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-white/65">{heroBadge}</p>
-              <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] tracking-normal sm:text-5xl md:text-6xl lg:text-7xl">{heroTitle}</h1>
-              <p className="mt-6 max-w-xl text-sm leading-7 text-white/75 md:text-base">{heroBody}</p>
-              <Link href="#contact" className="mt-8 inline-flex h-14 items-center justify-center border border-white bg-white px-7 text-sm font-semibold text-[#0F0F0F] transition-colors hover:border-[#2563EB] hover:bg-[#2563EB] hover:text-white">
-                Get Started <ArrowRight aria-hidden="true" className="ml-3 h-4 w-4" />
+            <div className="max-w-3xl overflow-hidden">
+              <p className="mb-5 inline-flex items-center gap-2 border border-[#2563EB]/20 bg-white/90 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#2563EB] shadow-sm backdrop-blur-sm">
+                <span className="h-1.5 w-1.5 bg-[#2563EB]" />
+                {heroBadge}
+              </p>
+              <h1 className="max-w-3xl text-4xl font-bold leading-[1.05] tracking-tight text-[#0F0F0F] sm:text-5xl md:text-6xl lg:text-7xl">
+                {renderHeroTitle(heroTitle)}
+              </h1>
+              <p className="mt-6 max-w-xl text-base leading-relaxed text-neutral-800 md:text-lg">
+                {heroBody}
+              </p>
+              <Link
+                href={heroContent?.buttonHref || "#contact"}
+                className="mt-8 inline-flex h-14 items-center justify-center rounded-none border border-neutral-900 bg-neutral-950 px-8 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:border-[#2563EB] hover:bg-[#2563EB] active:bg-[#2563EB]"
+              >
+                {heroContent?.buttonLabel || "Get Started"} <ArrowRight aria-hidden="true" className="ml-3 h-4 w-4" />
               </Link>
             </div>
           </div>
         </section>
         <div className="relative z-10">
-          <HomeMetricTransition yearsInOperation={yearsInOperation} />
+          <HomeMetricTransition content={content.home_metrics} />
         </div>
       </div>
 
-      <HomeLandingSections systems={systems} projects={projects} promotion={promotion} />
+      <HomeLandingSections
+        systems={systems}
+        projects={projects}
+        promotion={promotion}
+        content={content}
+        commitmentBackground={bespokeFallbackImage.src}
+      />
 
       <section className="bg-white py-20 font-sans tracking-normal md:py-28">
         <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
           <div data-home-reveal className="home-reveal mx-auto mb-12 max-w-3xl text-center">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">Common inquiries</p>
-            <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-normal text-[#0F0F0F] sm:text-4xl md:text-5xl">Frequently asked questions</h2>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">{content.home_faq?.subtitle || "Common inquiries"}</p>
+            <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-normal text-[#0F0F0F] sm:text-4xl md:text-5xl">{content.home_faq?.title || "Frequently asked questions"}</h2>
           </div>
           <div className="mx-auto max-w-4xl space-y-4">
-            {faqs.map((faq, index) => (
+            {homepageFaqs.map((faq, index) => (
               <details key={faq.q} data-home-reveal className="home-reveal group" style={{ transitionDelay: `${index * 70}ms` }}>
                 <summary className="flex cursor-pointer list-none items-center justify-between gap-5 border-b border-[#E5E5E5] py-5">
                   <span className="text-base font-semibold text-[#0F0F0F] transition-colors group-hover:text-[#2563EB] sm:text-lg">{faq.q}</span>
@@ -203,20 +294,15 @@ export default async function HomePage() {
       <section id="contact" className="bg-[#F5F5F3] py-20 font-sans tracking-normal md:py-28">
         <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
           <div data-home-reveal className="home-reveal mx-auto mb-10 max-w-3xl text-center md:mb-12">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-500">Consultation and quote</p>
-            <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-normal text-[#0F0F0F] sm:text-4xl md:text-5xl">Let’s plan your next lift.</h2>
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 md:text-base">Share a few project details and our engineers will help define the right system and next steps.</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-500">{content.home_contact?.subtitle || "Consultation and quote"}</p>
+            <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-normal text-[#0F0F0F] sm:text-4xl md:text-5xl">{content.home_contact?.title || "Let’s plan your next lift."}</h2>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-neutral-600 md:text-base">{content.home_contact?.bodyText || "Share a few project details and our engineers will help define the right system and next steps."}</p>
           </div>
-          <div data-home-reveal className="home-reveal mx-auto max-w-4xl border border-[#E5E5E5] bg-white p-6 sm:p-8 md:p-10">
-            <div className="mb-7 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 border-b border-[#E5E5E5] pb-5 text-center text-xs text-neutral-600">
-              <span><strong className="font-semibold text-[#0F0F0F]">Based in</strong> Kilimani, Nairobi</span>
-              <span><strong className="font-semibold text-[#0F0F0F]">Response</strong> within one business day</span>
-              <span><strong className="font-semibold text-[#0F0F0F]">Emergency</strong> 24/7 standby</span>
-            </div>
+          <div data-home-reveal className="home-reveal mx-auto max-w-2xl border border-[#E5E5E5] bg-white p-6 sm:p-8 md:p-10">
             <HomeContactForm />
           </div>
         </div>
       </section>
-    </main>
+    </div>
   );
 }

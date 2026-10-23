@@ -79,20 +79,19 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
   return (
     <ScrollRevealPage>
     <main className="min-h-screen bg-white text-neutral-900">
-      <header className="relative flex min-h-[64vh] items-end overflow-hidden bg-neutral-950 pb-12 pt-32 text-white md:min-h-[76vh] md:pb-16">
+      <header className="relative flex min-h-[70vh] items-end overflow-hidden bg-[#F5F5F3] px-6 py-32 text-white">
         <Image
           src={article.img}
           alt=""
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-50"
+          className="object-cover"
         />
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-black/10" />
-        <div className="relative z-10 mx-auto w-full max-w-5xl px-6">
+        <div className="relative z-10 mx-auto w-full max-w-5xl">
           <Link
             href="/news"
-            className="mb-10 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/75 transition-colors hover:text-white"
+            className="mb-10 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white drop-shadow-lg transition-colors hover:text-white"
           >
             <ArrowLeft aria-hidden="true" className="h-4 w-4" />
             All news &amp; insights
@@ -106,10 +105,10 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
               {article.publishedAt}
             </span>
           </div>
-          <h1 className="max-w-4xl text-3xl font-bold leading-tight tracking-tight sm:text-4xl md:text-6xl">
+          <h1 className="max-w-4xl text-3xl font-bold leading-tight tracking-tight drop-shadow-lg sm:text-4xl md:text-6xl">
             {article.title}
           </h1>
-          <p className="mt-6 max-w-3xl text-base leading-7 text-white/75 md:text-lg">
+          <p className="mt-6 max-w-3xl text-base leading-7 text-white drop-shadow-lg md:text-lg">
             {article.excerpt}
           </p>
         </div>

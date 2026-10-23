@@ -75,8 +75,8 @@ export function AboutTimeline({ milestones }: { milestones: Milestone[] }) {
   );
 }
 
-export function CredentialsGallery() {
-  const galleryItems = [...credentials, ...credentials];
+export function CredentialsGallery({ items = credentials }: { items?: typeof credentials }) {
+  const galleryItems = [...items, ...items];
 
   return (
     <div
@@ -93,7 +93,7 @@ export function CredentialsGallery() {
           >
             <img
               src={credential.image}
-              alt={index >= credentials.length ? "" : `${credential.title} document placeholder`}
+              alt={index >= items.length ? "" : `${credential.title} document placeholder`}
               className="h-full w-full object-cover transition-transform duration-700 group-hover/card:scale-110"
             />
           </figure>

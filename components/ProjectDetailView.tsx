@@ -22,36 +22,35 @@ export default function ProjectDetailView({
 
   return (
     <main className="min-h-screen bg-white text-[#0F0F0F]">
-      <section className="relative flex min-h-[68vh] items-end overflow-hidden bg-[#0F0F0F] pb-14 pt-32 text-white md:min-h-[78vh] md:pb-20">
+      <section className="relative flex min-h-[70vh] items-end overflow-hidden bg-[#F5F5F3] px-6 py-32 text-white">
         <Image
           src={project.img}
           alt={project.projectName}
           fill
           priority
           sizes="100vw"
-          className="object-cover opacity-55"
+          className="object-cover"
         />
-        <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/45 to-[#0F0F0F]/10" />
-        <div className="relative z-10 mx-auto w-full max-w-7xl px-6">
+        <div className="relative z-10 mx-auto w-full max-w-7xl">
           <Link
             href="/projects"
-            className="mb-10 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-white/80 transition-colors hover:text-white"
+            className="mb-10 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-white drop-shadow-lg transition-colors hover:text-white"
           >
             <ArrowLeft aria-hidden="true" className="h-4 w-4" />
             All projects
           </Link>
           <div className="flex flex-wrap items-center gap-3 text-[10px] font-semibold uppercase tracking-[0.16em]">
             <span className="bg-[#2563EB] px-3 py-1.5 text-white">{project.projectType}</span>
-            <span className="inline-flex items-center gap-1.5 border border-white/30 bg-black/20 px-3 py-1.5 text-white">
+            <span className="inline-flex items-center gap-1.5 border border-white/60 px-3 py-1.5 text-white drop-shadow-lg">
               <CheckCircle2 aria-hidden="true" className="h-3.5 w-3.5 text-[#60A5FA]" />
               {statusLabel}
             </span>
           </div>
-          <h1 className="mt-5 max-w-4xl text-4xl font-bold uppercase leading-tight tracking-tight sm:text-5xl md:text-7xl">
+          <h1 className="mt-5 max-w-4xl text-4xl font-bold uppercase leading-tight tracking-tight drop-shadow-lg sm:text-5xl md:text-7xl">
             {project.projectName}
           </h1>
           {project.location && (
-            <p className="mt-5 flex items-center gap-2 text-sm text-white/80">
+            <p className="mt-5 flex items-center gap-2 text-sm text-white drop-shadow-lg">
               <MapPin aria-hidden="true" className="h-4 w-4 text-[#60A5FA]" />
               {project.location}
             </p>

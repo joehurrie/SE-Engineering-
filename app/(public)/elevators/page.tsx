@@ -7,6 +7,7 @@ import { categoryToSlug } from "@/lib/slugs";
 import ElevatorProductCard from "@/components/ElevatorProductCard";
 import ScrollRevealPage from "@/components/ScrollRevealPage";
 import { defaultSpareParts } from "@/lib/default-spare-parts";
+import { getContentValue, loadSiteContentMap } from "@/lib/home-content";
 
 export const dynamic = "force-dynamic";
 
@@ -108,6 +109,17 @@ type ElevatorsPageProps = {
 
 export default async function ElevatorsPage({ searchParams }: ElevatorsPageProps) {
   const { category: activeCategory = "all" } = await searchParams;
+  let content: Awaited<ReturnType<typeof loadSiteContentMap>> = {};
+  try {
+    content = await loadSiteContentMap([
+      "elevators_hero",
+      "elevators_catalog",
+      "elevators_spare_parts",
+      "elevators_cta",
+    ]);
+  } catch (error) {
+    console.error("Failed to load Elevators page content:", error);
+  }
   let dbProducts: Awaited<ReturnType<typeof prisma.elevatorProduct.findMany>> = [];
   let dbSpareParts: Awaited<ReturnType<typeof prisma.sparePartProduct.findMany>> = [];
 
@@ -172,35 +184,32 @@ export default async function ElevatorsPage({ searchParams }: ElevatorsPageProps
       ]),
     ).entries(),
   );
-  const heroImg = elevatorProducts[0]?.img || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=1600";
+  const heroImg = getContentValue(content.elevators_hero, "imageUrl", elevatorProducts[0]?.img || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=1600");
+  const heroVideo = content.elevators_hero?.videoUrl?.trim();
 
   return (
     <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
-      <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
+      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-32">
         <div className="absolute inset-0 z-0">
-          <Image
-            src={heroImg}
-            alt="Vertical Transportation Shaft"
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover brightness-[0.25]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+          {heroVideo ? (
+            <video src={heroVideo} autoPlay muted loop playsInline className="h-full w-full object-cover" />
+          ) : (
+            <Image src={heroImg} alt="Vertical Transportation Shaft" fill priority sizes="100vw" className="object-cover" />
+          )}
+          <div className="absolute inset-0 bg-black/50" />
         </div>
 
         <div className="max-w-4xl mx-auto px-6 relative z-10 w-full flex flex-col items-center justify-center text-center my-auto space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest">
-            CATALOG RANGE
+            {getContentValue(content.elevators_hero, "subtitle", "CATALOG RANGE")}
           </div>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-white mb-2 text-center">
-            Elevator Solutions.
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-white drop-shadow-lg mb-2 text-center">
+            {getContentValue(content.elevators_hero, "title", "Elevator Solutions.")}
           </h1>
           <div className="w-20 h-1 bg-blue-600 mx-auto mb-4" />
-          <p className="text-neutral-400 text-base md:text-lg max-w-2xl mx-auto font-light leading-relaxed text-center">
-            Engineered to international ISO specifications. From bespoke residential villa lifts to heavy commercial high-rise towers, 
-            explore all official elevator categories installed and maintained by Specialized Engineering.
+          <p className="text-white drop-shadow-lg text-base md:text-lg max-w-2xl mx-auto font-light leading-relaxed text-center">
+            {getContentValue(content.elevators_hero, "bodyText", "Engineered to international ISO specifications. From bespoke residential villa lifts to heavy commercial high-rise towers, explore all official elevator categories installed and maintained by Specialized Engineering.")}
           </p>
         </div>
       </section>
@@ -210,13 +219,13 @@ export default async function ElevatorsPage({ searchParams }: ElevatorsPageProps
           <div className="mb-12">
             <div className="mx-auto max-w-2xl text-center">
               <p className="inline-block border border-neutral-200 bg-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-600">
-                Product catalogue
+                {getContentValue(content.elevators_catalog, "badge", "Product catalogue")}
               </p>
               <h2 className="mt-5 text-4xl font-bold uppercase tracking-tight text-black md:text-5xl">
-                Find the right system.
+                {getContentValue(content.elevators_catalog, "title", "Find the right system.")}
               </h2>
               <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-neutral-600">
-                Browse our lift and elevator systems by category, then explore product images and technical specifications.
+                {getContentValue(content.elevators_catalog, "bodyText", "Browse our lift and elevator systems by category, then explore product images and technical specifications.")}
               </p>
             </div>
           </div>
@@ -265,72 +274,30 @@ export default async function ElevatorsPage({ searchParams }: ElevatorsPageProps
         </div>
       </section>
 
-      <section id="spare-parts" className="scroll-mt-24 border-t border-neutral-200 bg-white px-6 py-20 md:py-28">
-          <div className="mx-auto w-full max-w-7xl">
-            <div className="mx-auto mb-10 max-w-2xl text-center">
-              <p className="inline-block border border-neutral-200 bg-neutral-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-neutral-600">
-                Parts & components
-              </p>
-              <h2 className="mt-5 text-4xl font-bold uppercase tracking-tight text-black md:text-5xl">
-                Spare parts.
-              </h2>
-              <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-neutral-600">
-                Request genuine lift components and replacement parts from our technical team.
-              </p>
-            </div>
-            {sparePartProducts.length > 0 ? (
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {sparePartProducts.map((part) => (
-                  <ElevatorProductCard
-                    key={part.id}
-                    category="Spare Parts"
-                    title={part.title}
-                    description={part.description}
-                    imageUrl={part.imageUrl}
-                    href={part.href}
-                  />
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col gap-5 border border-neutral-200 bg-neutral-100 p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
-                <p className="max-w-2xl text-sm leading-6 text-neutral-700">
-                  Tell us what component you need and our team will help identify the right spare part for your system.
-                </p>
-                <Link
-                  href="/contact"
-                  className="inline-flex shrink-0 items-center gap-2 bg-blue-700 px-5 py-3 text-xs font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-blue-800"
-                >
-                  Request a spare part <ArrowRight aria-hidden="true" className="h-4 w-4" />
-                </Link>
-              </div>
-            )}
-          </div>
-        </section>
-
         {/* ── 3. Bottom CTA Section ───────────────────────────── */}
       <section className="flex w-full items-center justify-center bg-neutral-100 py-28 text-neutral-900 md:py-36">
         <div className="max-w-4xl mx-auto px-6 text-center space-y-8">
         <div className="inline-flex items-center gap-2 border border-neutral-200 bg-white px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-blue-700">
-            ENGINEERING SPECIFICATION
+            {getContentValue(content.elevators_cta, "badge", "ENGINEERING SPECIFICATION")}
           </div>
           <h2 className="text-3xl sm:text-5xl font-bold uppercase tracking-tight text-neutral-900">
-            Need Custom Dimensions or Low Pit Shafts?
+            {getContentValue(content.elevators_cta, "title", "Need Custom Dimensions or Low Pit Shafts?")}
           </h2>
           <p className="text-neutral-600 text-base md:text-lg max-w-xl mx-auto font-light leading-relaxed">
-            Our engineering team prepares detailed shaft CAD drawings, load calculations, and municipal approval documents.
+            {getContentValue(content.elevators_cta, "bodyText", "Our engineering team prepares detailed shaft CAD drawings, load calculations, and municipal approval documents.")}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
             <Link
-              href="/contact"
+              href={getContentValue(content.elevators_cta, "buttonHref", "/contact")}
               className="px-10 py-4 bg-blue-700 text-white hover:bg-blue-800 text-xs font-semibold uppercase tracking-wider transition-colors"
             >
-              Consult an Engineer
+              {getContentValue(content.elevators_cta, "buttonLabel", "Consult an Engineer")}
             </Link>
             <Link
-              href="/projects"
+              href={getContentValue(content.elevators_cta, "secondaryButtonHref", "/projects")}
               className="px-10 py-4 border border-neutral-300 hover:border-neutral-500 hover:bg-neutral-200 text-neutral-800 text-xs font-semibold uppercase tracking-wider transition-colors"
             >
-              View Installed Projects
+              {getContentValue(content.elevators_cta, "secondaryButtonLabel", "View Installed Projects")}
             </Link>
           </div>
         </div>

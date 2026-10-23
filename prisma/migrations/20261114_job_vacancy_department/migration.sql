@@ -1,0 +1,2 @@
+ALTER TABLE "JobVacancy"
+ADD COLUMN IF NOT EXISTS "department" TEXT NOT NULL DEFAULT 'Engineering';

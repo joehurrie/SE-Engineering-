@@ -10,7 +10,23 @@ export type ProjectItem = ProjectData;
 
 const categories = ["All Projects", "Residential", "Commercial", "Public / Transit"];
 
-export default function ProjectsGallery({ initialProjects }: { initialProjects: ProjectItem[] }) {
+type ProjectsGalleryProps = {
+  initialProjects: ProjectItem[];
+  badge?: string;
+  title?: string;
+  description?: string;
+  buttonLabel?: string;
+  buttonHref?: string;
+};
+
+export default function ProjectsGallery({
+  initialProjects,
+  badge = "Flagship Portfolio",
+  title = "Landmark Developments.",
+  description = "Explore our completed and active vertical transportation projects across East Africa.",
+  buttonLabel = "Discuss a project",
+  buttonHref = "/contact",
+}: ProjectsGalleryProps) {
   const [activeCategory, setActiveCategory] = useState("All Projects");
 
   const filteredProjects =
@@ -23,15 +39,22 @@ export default function ProjectsGallery({ initialProjects }: { initialProjects: 
       <div className="w-full max-w-7xl mx-auto px-6 space-y-20 flex flex-col justify-center">
         <div className="flex flex-col items-center justify-center text-center max-w-3xl mx-auto space-y-6">
           <div className="inline-block px-3.5 py-1.5 bg-white text-neutral-600 text-[10px] font-bold uppercase tracking-widest border border-neutral-200">
-            Flagship Portfolio
+            {badge}
           </div>
           <h2 className="text-4xl md:text-5xl font-bold uppercase tracking-tight text-black text-center">
-            Landmark Developments.
+            {title}
           </h2>
           <div className="w-20 h-1 bg-blue-600 mx-auto" />
           <p className="text-neutral-600 text-base md:text-lg font-light leading-relaxed text-center max-w-xl mx-auto">
-            Explore our completed and active vertical transportation projects across East Africa.
+            {description}
           </p>
+          <Link
+            href={buttonHref}
+            className="inline-flex min-h-11 items-center gap-2 border border-neutral-300 px-5 text-xs font-semibold uppercase tracking-wider text-neutral-800 transition-colors hover:border-blue-600 hover:bg-blue-600 hover:text-white"
+          >
+            {buttonLabel}
+            <ArrowRight aria-hidden="true" className="h-4 w-4" />
+          </Link>
 
           {/* Filter Buttons Centered */}
           <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
@@ -39,11 +62,10 @@ export default function ProjectsGallery({ initialProjects }: { initialProjects: 
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
-                className={`text-xs px-6 py-3.5 rounded-none transition-colors border ${
-                  activeCategory === cat
+                className={`text-xs px-6 py-3.5 rounded-none transition-colors border ${activeCategory === cat
                     ? "bg-black text-white border-black font-semibold"
                     : "bg-white text-neutral-600 border-neutral-200 hover:border-black hover:text-black"
-                }`}
+                  }`}
               >
                 {cat}
               </button>

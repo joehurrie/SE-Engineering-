@@ -14,10 +14,10 @@ export default function PublicLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <div className="public-site">
       <Navbar />
       <main className="bg-[#f5f5f5] text-[#0a0a0a]">{children}</main>
       <Footer />
-    </>
+    </div>
   );
 }

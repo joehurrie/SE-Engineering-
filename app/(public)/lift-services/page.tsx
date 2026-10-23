@@ -1,174 +1,191 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import prisma from "@/lib/prisma";
 import LiftServicesShowcase, {
   type LiftServiceContent,
-  type LiftServicePart,
 } from "@/components/LiftServicesShowcase";
 import ScrollRevealPage from "@/components/ScrollRevealPage";
-import { defaultSpareParts } from "@/lib/default-spare-parts";
+import { getContentValue, getHomeContentMap, loadSiteContentMap, type HomeContentSection } from "@/lib/home-content";
+import prisma from "@/lib/prisma";
+import {
+  serviceClientOutcomes,
+  serviceLifecycleCopy,
+  servicePillars,
+} from "@/lib/service-pillars";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Lift Services",
+  title: "Supply, Installation & Maintenance",
   description:
-    "Comprehensive lift services: genuine spare parts supply, elevator modernization, and custom engineering solutions in Kenya.",
+    "End-to-end elevator supply, precision installation and proactive maintenance from Specialized Engineering Kenya Ltd.",
 };
 
-const defaultServices = [
-  {
-    slug: "spare-parts",
-    num: "01",
-    title: "Spare Parts Supply",
-    tagline: "Genuine OEM Component Inventory",
-    desc: "We maintain a comprehensive inventory of genuine factory-certified components for all major elevator brands. From emergency breakdown response to scheduled overhauls, our rapid parts network minimizes equipment downtime.",
-    features: [
-      "Authentic OEM components with test certs",
-      "Emergency 24/7 parts dispatch in Nairobi",
-      "All major traction machine brands supported",
-      "Expert diagnostic parts identification",
-      "Nationwide East Africa delivery network",
-      "Warranty backed components",
-    ],
-    img: "https://images.unsplash.com/photo-1581092335397-9583fe92d232?auto=format&fit=crop&q=80&w=1200",
-  },
-  {
-    slug: "lift-modernization",
-    num: "02",
-    title: "Lift Modernization",
-    tagline: "Upgrade for Safety, Ride Quality & Energy Efficiency",
-    desc: "Transform aging, energy-consuming elevator systems into quiet, modern architectural assets. We upgrade microprocessor controllers, install regenerative VVVF drives, and modernize cabin aesthetics to international standards.",
-    features: [
-      "Microprocessor VVVF controller overhauls",
-      "Energy regenerative PMSM drive retrofits",
-      "Architectural cabin interior refurbishment",
-      "BS EN 81 safety compliance updates",
-      "Reduced wait times and intelligent dispatch",
-      "Minimal disruption staged modernization",
-    ],
-    img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=1200",
-  },
-  {
-    slug: "solution-customization",
-    num: "03",
-    title: "Solution Customization",
-    tagline: "Tailored Architectural & Industrial Engineering",
-    desc: "Every architectural design has unique structural parameters. Our engineering department designs bespoke shaft configurations, curved glass observation panoramic elevators, and heavy industrial freight mechanisms tailored to your building blueprint.",
-    features: [
-      "Bespoke structural shaft design & engineering",
-      "Custom curved glass & timber cab finishes",
-      "Non-standard payload & dimension engineering",
-      "Seamless architectural building integration",
-      "Retrofitting in existing structures without major civil work",
-      "Full engineering documentation & sign-off",
-    ],
-    img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1200",
-  },
-];
+const sectionText = (section: HomeContentSection, key: string, fallback: string) =>
+  section[key]?.trim() || fallback;
 
 export default async function LiftServicesPage() {
-  let services: LiftServiceContent[] = defaultServices;
-  let spareParts: LiftServicePart[] = defaultSpareParts.map((part) => ({
-    id: part.slug,
-    title: part.title,
-    description: part.description,
-    image: part.imageUrl,
-    href: `/elevators/spare-parts/${part.slug}`,
-  }));
+  let content: HomeContentSection = {};
+  let pageContent: Awaited<ReturnType<typeof loadSiteContentMap>> = {};
 
   try {
-    const [dbServices, dbSpareParts] = await Promise.all([
-      prisma.liftService.findMany({ orderBy: { id: "asc" } }),
-      prisma.sparePartProduct.findMany({ orderBy: { id: "asc" } }),
+    const [savedContent, savedPageContent] = await Promise.all([
+      prisma.siteContent.findUnique({ where: { sectionKey: "home_services" } }),
+      loadSiteContentMap(["services_hero", "services_lifecycle", "services_outcomes"]),
     ]);
-
-    if (dbServices && dbServices.length > 0) {
-      services = defaultServices.map((s) => {
-        const match = dbServices.find(
-          (d) =>
-            d.category.toLowerCase().includes(s.title.toLowerCase()) ||
-            s.title.toLowerCase().includes(d.category.toLowerCase()) ||
-            d.title.toLowerCase().includes(s.title.toLowerCase())
-        );
-        if (match) {
-          return {
-            ...s,
-            title: match.title,
-            desc: match.description,
-            img: match.imageUrl || s.img,
-          };
-        }
-        return s;
-      });
-    }
-
-    const databaseSpareParts = dbSpareParts
-      .map((product) => ({
-        id: product.id,
-        title: product.title,
-        description: product.description,
-        image: product.imageUrl,
-        href: `/elevators/spare-parts/${product.slug}`,
-      }));
-    if (databaseSpareParts.length > 0) spareParts = databaseSpareParts;
+    if (savedContent) content = getHomeContentMap([savedContent]).home_services || {};
+    pageContent = savedPageContent;
   } catch (error) {
-    console.error("Failed to fetch lift service content:", error);
+    console.error("Failed to fetch CMS-managed service content:", error);
   }
+  const hero = pageContent.services_hero;
+  const lifecycle = pageContent.services_lifecycle;
+  const outcomesContent = pageContent.services_outcomes;
+
+  const services: LiftServiceContent[] = servicePillars.map((service, index) => ({
+    slug: service.slug,
+    num: service.number,
+    title: sectionText(content, `service${index + 1}Title`, service.title),
+    tagline: service.tagline,
+    desc: sectionText(content, `service${index + 1}Description`, service.description),
+    features: service.features.map((feature, featureIndex) =>
+      sectionText(content, `service${index + 1}Feature${featureIndex + 1}`, feature)
+    ),
+    img: service.image,
+    ...(index === 2
+      ? {
+          partsTitle: sectionText(content, "maintenancePartsTitle", service.partsTitle || ""),
+          partsDescription: sectionText(
+            content,
+            "maintenancePartsDescription",
+            service.partsDescription || ""
+          ),
+          partsFeatures: (service.partsFeatures || []).map((feature, featureIndex) =>
+            sectionText(content, `maintenancePartsFeature${featureIndex + 1}`, feature)
+          ),
+        }
+      : {}),
+  }));
+  const outcomes = serviceClientOutcomes.map((outcome, index) =>
+    sectionText(content, `serviceOutcome${index + 1}`, outcome)
+  );
+
   return (
-    <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
-
-      {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
-      <section className="min-h-screen pt-32 pb-16 relative overflow-hidden border-b border-neutral-900 flex items-center justify-center bg-black">
+    <ScrollRevealPage className="min-h-screen bg-white text-neutral-950">
+      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-[#F5F5F3] px-6 py-32 text-center">
         <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=1600"
-            alt="Elevator Engineering Facility"
-            className="w-full h-full object-cover brightness-[0.25]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+          {hero?.videoUrl?.trim() ? (
+            <video src={hero.videoUrl} autoPlay muted loop playsInline className="h-full w-full object-cover" />
+          ) : (
+            <img
+              src={getContentValue(hero, "imageUrl", "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=85&w=1800")}
+              alt=""
+              className="h-full w-full object-cover"
+            />
+          )}
+          <div className="absolute inset-0 bg-black/50" />
         </div>
-
-        <div className="max-w-4xl mx-auto px-6 relative z-10 w-full flex flex-col items-center justify-center text-center my-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest">
-            ENGINEERING &amp; LIFECYCLE
-          </div>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-white mb-2 text-center">
-            Lift Services.
-          </h1>
-          <div className="w-20 h-1 bg-blue-600 mx-auto mb-4" />
-          <p className="text-neutral-400 text-base md:text-lg max-w-2xl mx-auto font-light leading-relaxed text-center">
-            Beyond installation, Specialized Engineering supports your vertical assets across their entire operational lifecycle: 
-            genuine OEM parts supply, state-of-the-art modernization, and bespoke architectural adaptations.
+        <div className="relative z-10 mx-auto max-w-4xl">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-white drop-shadow-lg">
+            {getContentValue(hero, "subtitle", "ENGINEERING & LIFECYCLE")}
           </p>
+          <h1 className="mt-5 text-4xl font-semibold tracking-tight text-white drop-shadow-lg sm:text-6xl md:text-7xl">
+            {getContentValue(hero, "title", "Lift services, end to end.")}
+          </h1>
+          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white drop-shadow-lg md:text-lg">
+            {getContentValue(hero, "bodyText", "From choosing the right system to keeping it safe and dependable for years to come, one team is accountable throughout.")}
+          </p>
+          <Link
+            href={getContentValue(hero, "buttonHref", "#supply")}
+            className="mt-8 inline-flex min-h-12 items-center gap-2 border border-white/60 px-6 text-xs font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:border-[#2563EB] hover:bg-[#2563EB]"
+          >
+            {getContentValue(hero, "buttonLabel", "Explore our services")} <ArrowRight aria-hidden="true" className="h-4 w-4" />
+          </Link>
         </div>
       </section>
 
-      <LiftServicesShowcase services={services} spareParts={spareParts} />
+      <LiftServicesShowcase
+        services={services}
+        lifecycleCopy={sectionText(content, "bodyText", serviceLifecycleCopy)}
+        outcomes={outcomes}
+      />
 
-      {/* ── 3. Consultation CTA ───────────────────────────────── */}
-      <section className="w-full min-h-[50vh] bg-neutral-100 py-32 md:py-44 text-center relative overflow-hidden flex items-center justify-center">
-        <div className="max-w-2xl mx-auto px-6 relative z-10 space-y-8">
-          <div className="inline-block px-3 py-1 bg-white text-blue-700 text-[10px] font-bold uppercase tracking-widest border border-neutral-200">
-            Rapid Technical Dispatch
+      <section id="lifecycle" className="border-t border-neutral-200 bg-white px-6 py-20 md:py-28">
+        <div className="mx-auto w-full max-w-7xl">
+          <div className="grid gap-10 border-b border-neutral-200 pb-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">
+                {getContentValue(lifecycle, "subtitle", "ENGINEERED THROUGH THE LIFECYCLE")}
+              </p>
+              <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-tight text-neutral-950 sm:text-4xl">
+                {getContentValue(lifecycle, "title", "Every stage strengthens the next.")}
+              </h2>
+            </div>
+            <p className="max-w-2xl text-base leading-7 text-neutral-600">
+              {getContentValue(lifecycle, "bodyText", "Equipment choice, installation quality and aftercare are connected decisions. Keeping them with one engineering partner helps control whole-life costs, preserve safety standards and protect the availability of your lift.")}
+            </p>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold text-neutral-900 uppercase tracking-tight text-center">
-            Need Expert Lift Support or Modernization?
-          </h2>
-          <div className="w-16 h-1 bg-blue-600 mx-auto" />
-          <p className="text-neutral-600 text-sm md:text-base font-light leading-relaxed text-center">
-            Contact our certified engineering department in Kilimani for a free technical assessment and tailored proposal.
-          </p>
-          <div className="pt-4 flex justify-center">
+
+          <div className="grid gap-px border-b border-neutral-200 bg-neutral-200 md:grid-cols-3">
+            {[
+              {
+                number: "01",
+                title: getContentValue(lifecycle, "stage1Title", "Specify for lifetime value"),
+                description: getContentValue(lifecycle, "stage1Description", "We assess building use, traffic demand and performance needs before recommending a system. Selecting the right capacity and configuration can limit avoidable energy, repair and replacement costs over time."),
+              },
+              {
+                number: "02",
+                title: getContentValue(lifecycle, "stage2Title", "Install with documented quality"),
+                description: getContentValue(lifecycle, "stage2Description", "Experienced engineers coordinate site readiness, installation checks, testing and commissioning. Recorded inspections and a structured handover make engineering compliance, quality and safety requirements visible before operation."),
+              },
+              {
+                number: "03",
+                title: getContentValue(lifecycle, "stage3Title", "Maintain before issues grow"),
+                description: getContentValue(lifecycle, "stage3Description", "Preventative maintenance schedules follow manufacturer guidance, equipment usage and observed condition. Routine servicing, genuine parts and clear records help detect wear early, reduce unplanned downtime and extend service life."),
+              },
+            ].map((stage) => (
+              <article key={stage.number} className="bg-[#F7F8FA] p-6 sm:p-8 md:p-9">
+                <span className="font-mono text-xs font-semibold text-[#2563EB]">{stage.number}</span>
+                <h3 className="mt-5 text-xl font-semibold tracking-tight text-neutral-950">{stage.title}</h3>
+                <p className="mt-4 text-sm leading-7 text-neutral-600">{stage.description}</p>
+              </article>
+            ))}
+          </div>
+
+          <div className="grid gap-8 py-10 md:grid-cols-[1fr_auto] md:items-center">
+            <div className="max-w-3xl">
+              <h3 className="text-lg font-semibold text-neutral-950">{getContentValue(lifecycle, "assuranceTitle", "Quality assurance that carries through.")}</h3>
+              <p className="mt-3 text-sm leading-7 text-neutral-600">
+                {getContentValue(lifecycle, "assuranceCopy", "From supply documentation to installation records and scheduled service reports, a consistent technical history supports safer decisions, clearer accountability and better-informed lifecycle planning.")}
+              </p>
+            </div>
             <Link
-              href="/contact"
-              className="h-14 px-8 bg-blue-700 hover:bg-blue-800 text-white text-xs font-semibold uppercase tracking-wider inline-flex items-center gap-2 rounded-none transition-colors"
+              href={getContentValue(lifecycle, "buttonHref", "/contact")}
+              className="inline-flex min-h-12 w-fit items-center gap-2 border border-neutral-300 px-6 text-xs font-semibold uppercase tracking-[0.12em] text-neutral-900 transition-colors hover:border-[#2563EB] hover:bg-[#2563EB] hover:text-white"
             >
-              <span>Request Service Proposal</span>
-              <ArrowRight className="w-4 h-4" />
+              {getContentValue(lifecycle, "buttonLabel", "Plan a service programme")} <ArrowRight aria-hidden="true" className="h-4 w-4" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      <section className="bg-white px-6 py-20 md:py-28">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">
+            {getContentValue(outcomesContent, "subtitle", "ONE ENGINEERING PARTNER")}
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl">
+            {getContentValue(outcomesContent, "title", "A better lifecycle starts with a conversation.")}
+          </h2>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-neutral-600">
+            {getContentValue(outcomesContent, "bodyText", "Tell us about your building, equipment or project. Our engineering team will help define the right next step.")}
+          </p>
+          <Link
+            href={getContentValue(outcomesContent, "buttonHref", "/contact")}
+            className="mt-8 inline-flex min-h-12 items-center gap-2 bg-neutral-950 px-7 text-xs font-semibold uppercase tracking-[0.12em] text-white transition-colors hover:bg-[#2563EB]"
+          >
+            {getContentValue(outcomesContent, "buttonLabel", "Request a consultation")} <ArrowRight aria-hidden="true" className="h-4 w-4" />
+          </Link>
         </div>
       </section>
     </ScrollRevealPage>

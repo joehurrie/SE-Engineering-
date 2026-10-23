@@ -9,6 +9,7 @@ import {
   FolderGit2,
   Newspaper,
   Mail,
+  BriefcaseBusiness,
   FileEdit,
   ExternalLink,
   LogOut,
@@ -20,11 +21,12 @@ import { useState, useEffect } from "react";
 
 const navigation = [
   { name: "Overview", href: "/admin", icon: LayoutDashboard },
-  { name: "Site Content & Copy", href: "/admin/content", icon: FileEdit },
+  { name: "Site & Content", href: "/admin/content", icon: FileEdit },
   { name: "Elevator Products", href: "/admin/elevators", icon: Layers },
-  { name: "Lift Services", href: "/admin/services", icon: Wrench },
+  { name: "Services Content", href: "/admin/services", icon: Wrench },
   { name: "Projects Portfolio", href: "/admin/projects", icon: FolderGit2 },
   { name: "News & Insights", href: "/admin/news", icon: Newspaper },
+  { name: "Careers", href: "/admin/careers", icon: BriefcaseBusiness },
   { name: "Client Inquiries", href: "/admin/inquiries", icon: Mail },
 ];
 

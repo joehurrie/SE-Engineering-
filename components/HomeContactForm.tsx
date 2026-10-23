@@ -13,7 +13,6 @@ export default function HomeContactForm() {
     const data = {
       name: (form.elements.namedItem("name") as HTMLInputElement).value,
       email: (form.elements.namedItem("email") as HTMLInputElement).value,
-      phone: (form.elements.namedItem("phone") as HTMLInputElement).value,
       subject: "WEBSITE HOME INQUIRY",
       message: (form.elements.namedItem("message") as HTMLTextAreaElement).value,
     };
@@ -37,21 +36,21 @@ export default function HomeContactForm() {
   return (
     <>
       {formStatus === "success" && (
-        <div role="status" className="flex items-center gap-3 border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+        <div role="status" className="mb-6 flex items-center gap-3 border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
           <CheckCircle2 className="h-5 w-5 shrink-0 text-emerald-600" />
           <span>Inquiry received. Our team will respond within one business day.</span>
         </div>
       )}
       {formStatus === "error" && (
-        <div role="alert" className="flex items-center gap-3 border border-red-200 bg-red-50 p-4 text-sm text-red-800">
+        <div role="alert" className="mb-6 flex items-center gap-3 border border-red-200 bg-red-50 p-4 text-sm text-red-800">
           <AlertCircle className="h-5 w-5 shrink-0 text-red-600" />
           <span>We could not send your inquiry. Please try again or contact our team directly.</span>
         </div>
       )}
 
-      <form onSubmit={handleContactSubmit} className="w-full space-y-6">
+      <form onSubmit={handleContactSubmit} className="w-full space-y-5">
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label htmlFor="home-name" className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">
               Full Name *
             </label>
@@ -61,60 +60,53 @@ export default function HomeContactForm() {
               name="name"
               required
               placeholder="Eng. John Kamau"
-              className="h-12 w-full rounded-none border border-[#E5E5E5] bg-white px-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
+              className="h-11 w-full rounded-none border border-[#E5E5E5] bg-white px-3.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
             />
           </div>
-          <div className="space-y-2">
-            <label htmlFor="home-phone" className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">
-              Phone Number *
+
+          <div className="space-y-1.5">
+            <label htmlFor="home-email" className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">
+              Email Address *
             </label>
             <input
-              type="text"
-              id="home-phone"
-              name="phone"
+              type="email"
+              id="home-email"
+              name="email"
               required
-              placeholder="+254 700 000 000"
-              className="h-12 w-full rounded-none border border-[#E5E5E5] bg-white px-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
+              placeholder="john@development.co.ke"
+              className="h-11 w-full rounded-none border border-[#E5E5E5] bg-white px-3.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
             />
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label htmlFor="home-email" className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">
-            Email Address *
-          </label>
-          <input
-            type="email"
-            id="home-email"
-            name="email"
-            required
-            placeholder="john@development.co.ke"
-            className="h-12 w-full rounded-none border border-[#E5E5E5] bg-white px-4 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
-          />
-        </div>
-
-        <div className="space-y-2">
+        <div className="space-y-1.5">
           <label htmlFor="home-message" className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">
-            Project Details / Shaft Dimensions *
+            Project Details *
           </label>
           <textarea
             id="home-message"
             name="message"
             required
-            rows={5}
+            rows={4}
             placeholder="Building shaft dimensions, number of floors, or elevator type..."
-            className="w-full resize-y rounded-none border border-[#E5E5E5] bg-white p-4 text-sm leading-relaxed text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
+            className="w-full resize-y rounded-none border border-[#E5E5E5] bg-white p-3.5 text-sm leading-relaxed text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
           />
         </div>
 
-        <button
-          type="submit"
-          disabled={formStatus === "sending"}
-          className={`flex h-13 w-full cursor-pointer items-center justify-center gap-3 rounded-none text-xs font-bold uppercase tracking-[0.16em] text-white transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${formStatus === "success" ? "bg-emerald-700 hover:bg-emerald-700" : "bg-[#2563EB] hover:bg-[#1D4ED8]"}`}
-        >
-          <span>{formStatus === "sending" ? "Submitting..." : formStatus === "success" ? "Request received" : "Request callback"}</span>
-          <ArrowRight className="w-5 h-5" />
-        </button>
+        <div className="pt-2">
+          <button
+            type="submit"
+            disabled={formStatus === "sending"}
+            className={`inline-flex h-11 w-auto cursor-pointer items-center justify-center gap-2.5 px-7 rounded-none border text-xs font-semibold uppercase tracking-[0.14em] transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
+              formStatus === "success"
+                ? "border-emerald-700 bg-emerald-700 text-white"
+                : "border-[#0F0F0F] bg-[#0F0F0F] text-white hover:border-[#2563EB] hover:bg-[#2563EB]"
+            }`}
+          >
+            <span>{formStatus === "sending" ? "Submitting..." : formStatus === "success" ? "Request received" : "Get in touch"}</span>
+            <ArrowRight className="h-4 w-4" />
+          </button>
+        </div>
       </form>
     </>
   );

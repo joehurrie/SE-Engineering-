@@ -13,7 +13,7 @@ datasource db {
 model AdminUser {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  password  String   // Hashed via bcrypt
+  password  String // Hashed via bcrypt
   name      String
   role      String   @default("EDITOR") // SUPER_ADMIN, EDITOR
   createdAt DateTime @default(now())
@@ -24,14 +24,15 @@ model SiteContent {
   sectionKey  String   @unique // e.g., 'home_hero', 'about_intro', 'contact_info'
   title       String?
   subtitle    String?
-  bodyText    String?  // Rich text or markdown
-  imageUrl    String?  // Cloud storage link
+  bodyText    String? // Rich text or markdown
+  imageUrl    String? // Cloud storage link
+  contentJson String?
   updatedAt   DateTime @updatedAt
 }
 
 model ElevatorProduct {
   id             Int      @id @default(autoincrement())
-  category       String   // Elevator product category
+  category       String // Elevator product category
   title          String
   description    String
   specifications String?
@@ -54,8 +55,8 @@ model SparePartProduct {
 }
 
 model LiftService {
-  id          Int      @id @default(autoincrement())
-  category    String   // "Spare Parts", "Lift Modernization", "Solution Customization"
+  id          Int     @id @default(autoincrement())
+  category    String // "Spare Parts", "Lift Modernization", "Solution Customization"
   title       String
   description String
   imageUrl    String?
@@ -95,4 +96,34 @@ model Inquiry {
   message   String
   createdAt DateTime @default(now())
   read      Boolean  @default(false)
+}
+
+model JobVacancy {
+  id             Int              @id @default(autoincrement())
+  title          String
+  department     String           @default("Engineering")
+  location       String
+  employmentType String
+  description    String
+  requirements   String
+  published      Boolean          @default(false)
+  applications   JobApplication[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+model JobApplication {
+  id           Int         @id @default(autoincrement())
+  vacancyId    Int?
+  vacancyTitle String
+  name         String
+  email        String
+  phone        String
+  resumeUrl    String
+  portfolioUrl String?
+  message      String
+  consentAt    DateTime    @default(now())
+  status       String      @default("NEW")
+  createdAt    DateTime    @default(now())
+  vacancy      JobVacancy? @relation(fields: [vacancyId], references: [id], onDelete: SetNull)
 }

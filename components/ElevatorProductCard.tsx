@@ -20,7 +20,7 @@ export default function ElevatorProductCard({
   const productAsset = isSparePart ? null : getElevatorProductAsset(title, category);
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden border border-neutral-200 bg-white transition-all duration-300 hover:border-blue-600/40 hover:shadow-xl">
+    <article className="group flex h-full flex-col overflow-hidden rounded-none border border-neutral-200 bg-white transition-all duration-300 hover:border-blue-600/40 hover:shadow-xl">
       <Link href={href} className="flex h-full flex-col">
         <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
           <Image
@@ -32,12 +32,12 @@ export default function ElevatorProductCard({
           />
           <div aria-hidden="true" className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/5 to-transparent" />
         </div>
-        <div className="flex flex-1 items-center gap-4 p-5 md:p-6">
+        <div className="flex flex-1 items-center justify-between gap-4 p-6 md:p-7">
           <div className="min-w-0 flex-1">
-            <h3 className="truncate text-xl font-bold uppercase tracking-tight text-black group-hover:text-blue-600">
+            <h3 className="truncate text-xl font-bold uppercase tracking-tight text-neutral-900 group-hover:text-blue-600 transition-colors">
               {title}
             </h3>
-            <p className="mt-2 truncate text-sm leading-6 text-neutral-500">
+            <p className="mt-2 truncate text-sm leading-6 text-neutral-500 font-light">
               {description}
             </p>
           </div>
