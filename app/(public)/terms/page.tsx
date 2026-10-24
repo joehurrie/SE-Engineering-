@@ -1,33 +1,22 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { getContentValue, loadSiteContentMap } from "@/lib/home-content";
+import { getTermsOfService } from "@/lib/footer-content";
 
 export const metadata: Metadata = {
-  title: "Terms of Service",
-  description: "Terms of service for Specialized Engineering Kenya Ltd.",
+  title: "Terms of Service | Specialized Engineering Kenya Ltd.",
+  description: "Terms of service and engineering mandate for Specialized Engineering Kenya Ltd.",
 };
 
 export default async function TermsPage() {
-  let content: Awaited<ReturnType<typeof loadSiteContentMap>> = {};
-  try {
-    content = await loadSiteContentMap([
-      "terms_hero",
-      "terms_section_1",
-      "terms_section_2",
-      "terms_section_3",
-      "terms_section_4",
-    ]);
-  } catch (error) {
-    console.error("Failed to load Terms page content:", error);
-  }
+  const terms = await getTermsOfService();
+
+  const paragraphs = terms.bodyText.split(/\n\n+/).map((p) => p.trim()).filter(Boolean);
+
   return (
-    <div className="bg-white text-[#111111] min-h-screen">
-      {/* Hero: 50vh Centered */}
-      <section
-        className="min-h-screen pt-32 pb-16 bg-black border-b border-neutral-900 flex items-center justify-center text-center relative overflow-hidden bg-cover bg-center"
-        style={content.terms_hero?.imageUrl ? { backgroundImage: `url("${content.terms_hero.imageUrl}")` } : undefined}
-      >
+    <div className="bg-white text-[#111111] min-h-screen font-sans">
+      {/* Hero: Centered Editorial */}
+      <section className="min-h-[50vh] pt-36 pb-20 bg-neutral-950 border-b border-neutral-900 flex items-center justify-center text-center relative overflow-hidden">
         <div className="max-w-4xl mx-auto px-6 relative z-10 w-full flex flex-col items-center justify-center text-center my-auto space-y-4">
           <Link
             href="/"
@@ -35,42 +24,52 @@ export default async function TermsPage() {
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Home
           </Link>
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-600 text-white text-[10px] font-bold uppercase tracking-widest">
-            {getContentValue(content.terms_hero, "subtitle", "LEGAL & COMPLIANCE")}
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#2563EB] text-white text-[10px] font-bold uppercase tracking-widest rounded-none">
+            {terms.subtitle}
           </div>
           <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold uppercase tracking-tight text-white text-center">
-            {getContentValue(content.terms_hero, "title", "Terms of Service")}<span className="text-blue-500">.</span>
+            {terms.title}<span className="text-[#2563EB]">.</span>
           </h1>
-          <div className="w-20 h-1 bg-blue-600 mx-auto" />
+          <div className="w-20 h-1 bg-[#2563EB] mx-auto rounded-none" />
           <p className="text-neutral-400 text-sm font-light">
-            {getContentValue(content.terms_hero, "updatedAt", "Last updated: October 2026 · Specialized Engineering Kenya Ltd.")}
+            {terms.updatedAt}
           </p>
         </div>
       </section>
 
-      {/* Content */}
-      <section className="py-24 md:py-36 bg-neutral-50 border-b border-neutral-200 flex items-center justify-center">
+      {/* Content Sections */}
+      <section className="py-20 md:py-28 bg-[#F8FAFC] border-b border-[#E2E8F0] flex items-center justify-center">
         <div className="w-full max-w-4xl mx-auto px-6">
-          <div className="bg-white border border-neutral-200 p-10 md:p-14 space-y-10 text-neutral-600 text-base leading-relaxed shadow-sm">
-            <div className="space-y-3">
-              <h2 className="text-xl font-bold text-black uppercase tracking-tight">{getContentValue(content.terms_section_1, "title", "1. Engineering Mandate")}</h2>
-              <p className="whitespace-pre-line">{getContentValue(content.terms_section_1, "bodyText", "Specialized Engineering Kenya Ltd. provides vertical transportation engineering, procurement, installation, commissioning, modernization, and preventative maintenance services in compliance with Kenyan building standards and international BS EN 81 safety codes.")}</p>
-            </div>
+          <div className="bg-white border border-[#E2E8F0] p-8 md:p-14 space-y-10 text-neutral-600 text-base leading-relaxed shadow-sm rounded-none">
+            {paragraphs.map((para, idx) => {
+              const lines = para.split("\n");
+              const firstLine = lines[0] || "";
+              const isNumberedSection = /^\d+\.\s+/.test(firstLine);
 
-            <div className="space-y-3">
-              <h2 className="text-xl font-bold text-black uppercase tracking-tight">{getContentValue(content.terms_section_2, "title", "2. Quotations & Tenders")}</h2>
-              <p className="whitespace-pre-line">{getContentValue(content.terms_section_2, "bodyText", "All preliminary quotations and technical specifications provided via this portal are valid for 30 calendar days from the date of issuance and remain subject to physical site structural verification by our certified field engineering corps.")}</p>
-            </div>
+              if (isNumberedSection) {
+                const restOfParagraph = lines.slice(1).join("\n");
+                return (
+                  <div key={idx} className="space-y-3 border-b border-[#F1F5F9] pb-8 last:border-b-0 last:pb-0">
+                    <h2 className="text-xl font-bold text-[#0F172A] uppercase tracking-tight">
+                      {firstLine}
+                    </h2>
+                    {restOfParagraph && (
+                      <p className="whitespace-pre-line text-[#475569] leading-relaxed">
+                        {restOfParagraph}
+                      </p>
+                    )}
+                  </div>
+                );
+              }
 
-            <div className="space-y-3">
-              <h2 className="text-xl font-bold text-black uppercase tracking-tight">{getContentValue(content.terms_section_3, "title", "3. Warranty & Guarantees")}</h2>
-              <p className="whitespace-pre-line">{getContentValue(content.terms_section_3, "bodyText", "All new installations carry our standard 10-year structural workmanship guarantee alongside original manufacturer warranties on certified traction motors, microprocessors, and drive controllers.")}</p>
-            </div>
-
-            <div className="space-y-3">
-              <h2 className="text-xl font-bold text-black uppercase tracking-tight">{getContentValue(content.terms_section_4, "title", "4. Jurisdiction")}</h2>
-              <p className="whitespace-pre-line">{getContentValue(content.terms_section_4, "bodyText", "These terms are governed by the laws of the Republic of Kenya. For inquiries, reach out to our legal department at Kilimani Business Hub, Nairobi, Kenya.")}</p>
-            </div>
+              return (
+                <div key={idx} className="space-y-3">
+                  <p className="whitespace-pre-line text-[#475569] leading-relaxed">
+                    {para}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

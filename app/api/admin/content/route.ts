@@ -125,26 +125,37 @@ export async function POST(request: Request) {
       },
     });
 
-    const pagePath = sectionKey.trim().startsWith("home_")
-      ? "/"
-      : sectionKey.trim().startsWith("about_")
-        ? "/about"
-        : sectionKey.trim().startsWith("projects_")
-          ? "/projects"
-          : sectionKey.trim().startsWith("elevators_")
-            ? "/elevators"
-            : sectionKey.trim().startsWith("services_")
-              ? "/lift-services"
-              : sectionKey.trim().startsWith("news_")
-                ? "/news"
-                : sectionKey.trim().startsWith("contact_")
-                  ? "/contact"
-                  : sectionKey.trim().startsWith("privacy_")
-                    ? "/privacy"
-                    : sectionKey.trim().startsWith("terms_")
-                      ? "/terms"
-                      : "/";
-    revalidatePath(pagePath, "page");
+    const trimmedKey = sectionKey.trim();
+    if (trimmedKey.startsWith("footer_") || trimmedKey.startsWith("legal_")) {
+      try {
+        revalidatePath("/", "layout");
+        revalidatePath("/privacy");
+        revalidatePath("/terms");
+      } catch (e) {
+        console.warn("Revalidation error:", e);
+      }
+    } else {
+      const pagePath = trimmedKey.startsWith("home_")
+        ? "/"
+        : trimmedKey.startsWith("about_")
+          ? "/about"
+          : trimmedKey.startsWith("projects_")
+            ? "/projects"
+            : trimmedKey.startsWith("elevators_")
+              ? "/elevators"
+              : trimmedKey.startsWith("services_")
+                ? "/lift-services"
+                : trimmedKey.startsWith("news_")
+                  ? "/news"
+                  : trimmedKey.startsWith("contact_")
+                    ? "/contact"
+                    : trimmedKey.startsWith("privacy_")
+                      ? "/privacy"
+                      : trimmedKey.startsWith("terms_")
+                        ? "/terms"
+                        : "/";
+      revalidatePath(pagePath, "page");
+    }
 
     return NextResponse.json({ success: true, content: updated });
   } catch (error) {

@@ -1,12 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import Link from "next/link";
 import {
   CheckCircle,
+  CheckCircle2,
   ChevronDown,
+  ChevronsUpDown,
+  ExternalLink,
   FileEdit,
   Loader2,
   Save,
+  Scale,
+  Search,
 } from "lucide-react";
 import ImageDropzone from "@/components/ImageDropzone";
 import {
@@ -573,14 +579,12 @@ const contentSections = [
 
 const pages = [
   { name: "Home", href: "/", sections: homeSections },
+  { name: "About", href: "/about", sections: aboutSections },
+  { name: "Services", href: "/lift-services", sections: servicesSections },
   { name: "Projects", href: "/projects", sections: projectsSections },
   { name: "Elevators", href: "/elevators", sections: elevatorsSections },
-  { name: "Services", href: "/lift-services", sections: servicesSections },
-  { name: "About", href: "/about", sections: aboutSections },
   { name: "News", href: "/news", sections: newsSections },
   { name: "Contact", href: "/contact", sections: contactSections },
-  { name: "Privacy", href: "/privacy", sections: privacySections },
-  { name: "Terms", href: "/terms", sections: termsSections },
 ];
 
 const iconOptions = ["PackageCheck", "Wrench", "Settings", "ShieldCheck", "Clock3", "Headphones", "BadgeCheck", "ClipboardCheck", "DraftingCompass"];
@@ -620,7 +624,8 @@ export default function AdminContentPage() {
     Object.fromEntries(contentSections.map((section) => [section.key, getInitialValues(section)]))
   );
   const [selectedPage, setSelectedPage] = useState("Home");
-  const [openSection, setOpenSection] = useState<string | null>(null);
+  const [openSections, setOpenSections] = useState<Set<string>>(() => new Set(["home_hero"]));
+  const [filterQuery, setFilterQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [savedKey, setSavedKey] = useState<string | null>(null);
@@ -630,9 +635,11 @@ export default function AdminContentPage() {
     let active = true;
     const requestedSection = new URLSearchParams(window.location.search).get("section");
     if (requestedSection && contentSections.some((section) => section.key === requestedSection)) {
-      // Read the query after hydration so the server and browser render the same initial accordion state.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setOpenSection(requestedSection);
+      setOpenSections(new Set([requestedSection]));
+      const parentPage = pages.find((p) => p.sections.some((s) => s.key === requestedSection));
+      if (parentPage) {
+        setSelectedPage(parentPage.name);
+      }
     }
 
     fetch("/api/admin/content")
@@ -666,6 +673,26 @@ export default function AdminContentPage() {
       active = false;
     };
   }, []);
+
+  const toggleSection = (sectionKey: string) => {
+    setOpenSections((prev) => {
+      const next = new Set(prev);
+      if (next.has(sectionKey)) {
+        next.delete(sectionKey);
+      } else {
+        next.add(sectionKey);
+      }
+      return next;
+    });
+  };
+
+  const expandAll = (sections: HomeSection[]) => {
+    setOpenSections(new Set(sections.map((s) => s.key)));
+  };
+
+  const collapseAll = () => {
+    setOpenSections(new Set());
+  };
 
   const updateField = (sectionKey: string, field: string, value: string) => {
     setValues((current) => ({
@@ -704,7 +731,7 @@ export default function AdminContentPage() {
 
   const renderField = (section: HomeSection, field: SectionField) => {
     const value = values[section.key]?.[field.name] || "";
-    const inputClass = "w-full border border-[#CBD5E1] bg-white px-3 py-2.5 text-sm text-[#0F172A] outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]";
+    const inputClass = "w-full border border-[#CBD5E1] bg-white px-3.5 py-2.5 text-sm text-[#0F172A] outline-none rounded-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB]";
 
     return (
       <div key={field.name} className={field.type === "textarea" ? "md:col-span-2" : ""}>
@@ -747,112 +774,249 @@ export default function AdminContentPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-64 items-center justify-center gap-2 p-12 text-[#64748B]">
-        <Loader2 className="h-5 w-5 animate-spin text-[#2563EB]" />
-        <span>Loading site content…</span>
+      <div className="flex min-h-[50vh] flex-col items-center justify-center gap-3 p-12 text-[#64748B]">
+        <Loader2 className="h-6 w-6 animate-spin text-[#2563EB]" />
+        <span className="text-xs uppercase tracking-wider font-semibold">Loading Site Content…</span>
       </div>
     );
   }
 
   const currentPage = pages.find((page) => page.name === selectedPage) || pages[0];
 
+  const filteredSections = currentPage.sections.filter((section) => {
+    if (!filterQuery.trim()) return true;
+    const query = filterQuery.toLowerCase();
+    return (
+      section.label.toLowerCase().includes(query) ||
+      section.key.toLowerCase().includes(query) ||
+      section.fields.some((f) => f.label.toLowerCase().includes(query))
+    );
+  });
+
   return (
-    <div className="mx-auto w-full max-w-7xl space-y-8 p-6 md:p-8">
-      <header className="border-b border-[#E2E8F0] pb-6">
-        <div className="mb-2 inline-flex items-center gap-2 border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-[#2563EB]">
-          <FileEdit className="h-3.5 w-3.5" />
-          Site &amp; Content
+    <div className="mx-auto w-full max-w-7xl space-y-8 p-6 md:p-8 font-sans">
+      <header className="border-b border-[#E2E8F0] pb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="mb-2 inline-flex items-center gap-2 border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-[#2563EB] rounded-none">
+            <FileEdit className="h-3.5 w-3.5" />
+            Site &amp; Content Management
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-[#0F172A] md:text-3xl">Manage Website Content</h1>
+          <p className="mt-1 text-sm text-[#475569]">
+            Configure modular section copy, media, and banners with zero-radius precision and immediate public revalidation.
+          </p>
         </div>
-        <h1 className="text-2xl font-bold tracking-tight text-[#0F172A] md:text-3xl">Manage website content</h1>
-        <p className="mt-2 text-sm text-[#475569]">Edit homepage copy and media without changing the site’s layout or design system.</p>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href={currentPage.href}
+            target="_blank"
+            className="inline-flex items-center gap-1.5 border border-[#CBD5E1] bg-white px-3 py-2 text-xs font-medium text-[#475569] hover:text-[#0F172A] hover:bg-slate-50 transition rounded-none"
+          >
+            <span>View {currentPage.name} Live</span>
+            <ExternalLink className="h-3 w-3" />
+          </Link>
+        </div>
       </header>
 
-      {error && <div role="alert" className="border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
+      {error && <div role="alert" className="border border-red-200 bg-red-50 p-4 text-sm text-red-700 rounded-none">{error}</div>}
 
-      <div className="grid gap-8 lg:grid-cols-[240px_minmax(0,1fr)]">
-        <aside className="space-y-2">
-          <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#64748B]">Pages</h2>
-          {pages.map((page) => (
-            <div key={page.name}>
+      <div className="grid gap-8 lg:grid-cols-[260px_minmax(0,1fr)]">
+        {/* Left Navigation: Clean, non-redundant page selector */}
+        <aside className="space-y-5">
+          <div className="border border-[#E2E8F0] bg-white p-3 rounded-none shadow-sm">
+            <h2 className="mb-2.5 px-2 text-[11px] font-bold uppercase tracking-wider text-[#64748B]">
+              Pages ({pages.length})
+            </h2>
+            <div className="space-y-1">
+              {pages.map((page) => {
+                const isSelected = selectedPage === page.name;
+                return (
+                  <button
+                    key={page.name}
+                    type="button"
+                    onClick={() => {
+                      setSelectedPage(page.name);
+                      setFilterQuery("");
+                      if (page.sections && page.sections.length > 0) {
+                        setOpenSections(new Set([page.sections[0].key]));
+                      } else {
+                        setOpenSections(new Set());
+                      }
+                    }}
+                    className={`flex w-full items-center justify-between px-3.5 py-3 text-left text-xs font-semibold uppercase tracking-wider transition-all rounded-none ${
+                      isSelected
+                        ? "border-l-4 border-l-[#2563EB] bg-blue-50 text-[#2563EB]"
+                        : "border-l-4 border-l-transparent text-[#475569] hover:bg-slate-50 hover:text-[#0F172A]"
+                    }`}
+                  >
+                    <span>{page.name}</span>
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded-none ${
+                        isSelected ? "bg-blue-200/60 text-[#1D4ED8]" : "bg-slate-100 text-[#64748B]"
+                      }`}
+                    >
+                      {page.sections.length}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Footer & Legal Hub Callout */}
+          <div className="border border-blue-200 bg-blue-50/50 p-4 rounded-none space-y-2">
+            <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#2563EB]">
+              <Scale className="h-4 w-4" />
+              <span>Footer &amp; Legal Portal</span>
+            </div>
+            <p className="text-[11px] text-[#475569] leading-relaxed">
+              Looking to edit global contact numbers, operating hours, quick links, Privacy Policy, or Terms of Service?
+            </p>
+            <Link
+              href="/admin/footer-legal"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#2563EB] hover:text-[#1D4ED8] uppercase tracking-wider pt-1"
+            >
+              <span>Open Footer &amp; Legal</span>
+              <ExternalLink className="h-3 w-3" />
+            </Link>
+          </div>
+        </aside>
+
+        {/* Right Main Column: Clean Accordion Section Hierarchy */}
+        <div className="min-w-0 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-[#E2E8F0] bg-white p-4 rounded-none">
+            <div>
+              <h2 className="text-base font-bold uppercase tracking-wider text-[#0F172A]">
+                {currentPage.name} Page Sections
+              </h2>
+              <p className="text-xs text-[#64748B]">
+                {filteredSections.length} of {currentPage.sections.length} section{currentPage.sections.length !== 1 ? "s" : ""} available
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <div className="relative">
+                <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#94A3B8]" />
+                <input
+                  type="text"
+                  value={filterQuery}
+                  onChange={(e) => setFilterQuery(e.target.value)}
+                  placeholder="Filter sections..."
+                  className="pl-8 pr-3 py-1.5 text-xs border border-[#CBD5E1] bg-white text-[#0F172A] outline-none rounded-none focus:border-[#2563EB] w-40 sm:w-48"
+                />
+              </div>
+
               <button
                 type="button"
                 onClick={() => {
-                  setSelectedPage(page.name);
-                  setOpenSection(null);
+                  const allOpen = currentPage.sections.every((s) => openSections.has(s.key));
+                  if (allOpen) {
+                    collapseAll();
+                  } else {
+                    expandAll(currentPage.sections);
+                  }
                 }}
-                className={`flex w-full items-center justify-between border px-3 py-3 text-left text-sm font-semibold transition-colors ${
-                  selectedPage === page.name
-                    ? "border-[#2563EB] bg-blue-50 text-[#2563EB]"
-                    : "border-[#E2E8F0] bg-white text-[#334155] hover:border-[#94A3B8]"
-                }`}
+                className="inline-flex items-center gap-1.5 border border-[#CBD5E1] bg-white px-3 py-1.5 text-xs font-medium text-[#475569] hover:bg-slate-50 transition rounded-none"
               >
-                {page.name}
-                {page.sections && <ChevronDown className={`h-4 w-4 transition-transform ${selectedPage === page.name ? "rotate-180" : ""}`} />}
+                <ChevronsUpDown className="h-3.5 w-3.5" />
+                <span>
+                  {currentPage.sections.every((s) => openSections.has(s.key))
+                    ? "Collapse All"
+                    : "Expand All"}
+                </span>
               </button>
-              {selectedPage === page.name && page.sections && (
-                <div className="ml-3 space-y-1 border-l border-[#CBD5E1] py-2 pl-3">
-                  {page.sections.map((section) => (
-                    <button
-                      key={section.key}
-                      type="button"
-                      onClick={() => setOpenSection(section.key)}
-                      className={`block w-full border-l-2 py-2 pl-3 text-left text-xs transition-colors ${
-                        openSection === section.key
-                          ? "border-[#2563EB] font-semibold text-[#2563EB]"
-                          : "border-transparent text-[#475569] hover:text-[#2563EB]"
-                      }`}
-                    >
-                      {section.label}
-                    </button>
-                  ))}
-                </div>
-              )}
             </div>
-          ))}
-        </aside>
+          </div>
 
-        <div className="min-w-0">
-          <h2 className="mb-4 text-xl font-semibold text-[#0F172A]">{currentPage.name} page sections</h2>
-          {currentPage.sections ? (
+          {filteredSections.length > 0 ? (
             <div className="space-y-3">
-              {currentPage.sections.map((section) => {
-                const isOpen = openSection === section.key;
+              {filteredSections.map((section) => {
+                const isOpen = openSections.has(section.key);
+                const isSaved = savedKey === section.key;
+                const isSaving = savingKey === section.key;
+
                 return (
-                  <section key={section.key} className="border border-[#E2E8F0] bg-white">
+                  <div
+                    key={section.key}
+                    className="border border-[#E2E8F0] bg-white rounded-none transition shadow-sm overflow-hidden min-w-0"
+                  >
+                    {/* Clean Section Header */}
                     <button
                       type="button"
                       aria-expanded={isOpen}
-                      onClick={() => setOpenSection(isOpen ? null : section.key)}
-                      className="flex w-full items-center justify-between gap-4 px-4 py-4 text-left"
+                      onClick={() => toggleSection(section.key)}
+                      className={`flex w-full items-center justify-between gap-4 px-5 py-4 text-left transition-colors rounded-none ${
+                        isOpen
+                          ? "bg-slate-50 border-l-4 border-l-[#2563EB]"
+                          : "border-l-4 border-l-transparent hover:bg-[#F8FAFC]"
+                      }`}
                     >
-                      <span className="font-semibold text-[#0F172A]">{section.label}</span>
-                      <ChevronDown className={`h-4 w-4 text-[#64748B] transition-transform ${isOpen ? "rotate-180" : ""}`} />
+                      <div className="flex items-center gap-3 min-w-0 flex-wrap">
+                        <span className="font-bold text-sm text-[#0F172A] tracking-tight truncate">
+                          {section.label}
+                        </span>
+                        <span className="font-mono text-[10px] bg-slate-100 text-[#475569] px-2 py-0.5 border border-slate-200 rounded-none shrink-0">
+                          {section.key}
+                        </span>
+                        <span className="text-[11px] text-[#64748B] font-medium shrink-0">
+                          {section.fields.length} field{section.fields.length !== 1 ? "s" : ""}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3 shrink-0">
+                        {isSaved && (
+                          <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 border border-emerald-200 rounded-none">
+                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                            <span>Saved</span>
+                          </span>
+                        )}
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform duration-200 ${
+                            isOpen ? "rotate-180 text-[#2563EB]" : "text-[#64748B]"
+                          }`}
+                        />
+                      </div>
                     </button>
+
+                    {/* Distinct Section Form Container */}
                     {isOpen && (
-                      <div className="border-t border-[#E2E8F0] p-4 md:p-6">
-                        <div className="grid gap-5 md:grid-cols-2">
+                      <div className="border-t border-[#E2E8F0] bg-white p-6 md:p-8 space-y-6 min-w-0 overflow-hidden">
+                        <div className="grid gap-5 md:grid-cols-2 min-w-0">
                           {section.fields.map((field) => renderField(section, field))}
                         </div>
-                        <div className="mt-6 flex justify-end border-t border-[#E2E8F0] pt-5">
+
+                        {/* Pinned Save Action Bar */}
+                        <div className="mt-8 flex items-center justify-between flex-wrap gap-4 border-t border-[#E2E8F0] pt-5">
+                          <span className="text-xs text-[#64748B]">
+                            Changes will immediately update the live public {currentPage.name.toLowerCase()} page.
+                          </span>
+
                           <button
                             type="button"
                             onClick={() => saveSection(section)}
-                            disabled={savingKey === section.key}
-                            className="inline-flex min-h-11 items-center gap-2 bg-[#2563EB] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#1D4ED8] disabled:opacity-60"
+                            disabled={isSaving}
+                            className="inline-flex min-h-11 items-center gap-2 bg-[#2563EB] px-6 text-xs font-semibold uppercase tracking-wider text-white shadow-sm transition hover:bg-[#1D4ED8] disabled:opacity-60 rounded-none"
                           >
-                            {savingKey === section.key ? <Loader2 className="h-4 w-4 animate-spin" /> : savedKey === section.key ? <CheckCircle className="h-4 w-4" /> : <Save className="h-4 w-4" />}
-                            {savingKey === section.key ? "Saving…" : savedKey === section.key ? "Saved" : "Save section"}
+                            {isSaving ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : isSaved ? (
+                              <CheckCircle className="h-4 w-4" />
+                            ) : (
+                              <Save className="h-4 w-4" />
+                            )}
+                            <span>{isSaving ? "Saving…" : isSaved ? "Saved" : "Save Section"}</span>
                           </button>
                         </div>
                       </div>
                     )}
-                  </section>
+                  </div>
                 );
               })}
             </div>
           ) : (
-            <div className="border border-[#E2E8F0] bg-white p-5 text-sm leading-6 text-[#475569]">
-              This page’s structured records are managed in its dedicated admin area. Homepage content is edited section by section here.
+            <div className="border border-[#E2E8F0] bg-white p-8 text-center text-sm text-[#64748B] rounded-none">
+              No sections match &ldquo;{filterQuery}&rdquo;. Try another search term.
             </div>
           )}
         </div>

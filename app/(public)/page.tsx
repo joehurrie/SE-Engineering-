@@ -185,23 +185,23 @@ export default async function HomePage() {
   const databaseSystems: HomeProduct[] = dbElevators
     .filter((elevator) => elevator.category.trim().toLowerCase() !== "spare parts")
     .map((elevator) => ({
-        series: `SRS · ${elevator.category}`,
-        title: elevator.title,
-        desc: elevator.description,
-        specs: elevator.specifications || "Engineered precision specification",
-        image: elevator.imageUrl,
-        fallbackImage: getElevatorProductAsset(elevator.title, elevator.category).src,
-        href: `/elevators/${categoryToSlug(elevator.category)}`,
-      }));
+      series: `SRS · ${elevator.category}`,
+      title: elevator.title,
+      desc: elevator.description,
+      specs: elevator.specifications || "Engineered precision specification",
+      image: elevator.imageUrl,
+      fallbackImage: getElevatorProductAsset(elevator.title, elevator.category).src,
+      href: `/elevators/${categoryToSlug(elevator.category)}`,
+    }));
   const requiredSystemMatches = [/home|residential/i, /passenger|commercial/i, /hospital|medical/i, /escalator|moving walk/i];
   const selectedDatabaseSystems = requiredSystemMatches.map((matcher, index) =>
     databaseSystems.find((system) => matcher.test(system.title)) || defaultSystems[index]
   );
   const systems: HomeProduct[] = dbElevators.length > 0
     ? [
-        ...selectedDatabaseSystems,
-        ...databaseSystems.filter((system) => !requiredSystemMatches.some((matcher) => matcher.test(system.title))),
-      ]
+      ...selectedDatabaseSystems,
+      ...databaseSystems.filter((system) => !requiredSystemMatches.some((matcher) => matcher.test(system.title))),
+    ]
     : defaultSystems;
   const projects: HomeProject[] = dbProjects.map((project) => ({
     projectName: project.projectName,
