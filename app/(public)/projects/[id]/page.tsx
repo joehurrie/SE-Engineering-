@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import prisma from "@/lib/prisma";
 import ProjectDetailView from "@/components/ProjectDetailView";
 import ScrollRevealPage from "@/components/ScrollRevealPage";
-import { defaultProjects } from "@/lib/project-data";
+import { defaultProjects, type ProjectData } from "@/lib/project-data";
 
 export const dynamic = "force-dynamic";
 
@@ -64,11 +64,11 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
         featured: dbProject.featured,
         status: dbProject.status,
       }
-    : defaultProjects.find((item) => item.id === projectId);
+    : null;
 
   if (!project) notFound();
 
-  const relatedProjects = (dbProjects.length > 0
+  const relatedProjects: ProjectData[] = (dbProjects.length > 0
     ? dbProjects.map((item) => ({
         id: item.id,
         projectName: item.projectName,

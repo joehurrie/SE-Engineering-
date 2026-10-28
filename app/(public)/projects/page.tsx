@@ -3,7 +3,7 @@ import Image from "next/image";
 import prisma from "@/lib/prisma";
 import ProjectsGallery from "@/components/ProjectsGallery";
 import ScrollRevealPage from "@/components/ScrollRevealPage";
-import { defaultProjects, type ProjectData } from "@/lib/project-data";
+import type { ProjectData } from "@/lib/project-data";
 import { getContentValue, loadSiteContentMap } from "@/lib/home-content";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProjectsPage() {
-  let projectList: ProjectData[] = defaultProjects;
+  let projectList: ProjectData[] = [];
   let content: Awaited<ReturnType<typeof loadSiteContentMap>> = {};
 
   try {
@@ -30,7 +30,8 @@ export default async function ProjectsPage() {
     });
 
     if (dbProjects && dbProjects.length > 0) {
-      projectList = dbProjects.map((p) => {
+      const withImages = dbProjects.filter((p) => Boolean(p.imageUrl && p.imageUrl.trim()));
+      projectList = withImages.map((p) => {
         // Try to match or infer category
         let cat = "Commercial";
         if (p.projectType.toLowerCase().includes("residential") || p.projectName.toLowerCase().includes("villa") || p.projectName.toLowerCase().includes("apartment")) {
@@ -62,13 +63,13 @@ export default async function ProjectsPage() {
 
   const hero = content.projects_hero;
   const gallery = content.projects_gallery;
-  const heroImg = getContentValue(hero, "imageUrl", projectList[0]?.img || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=1600");
+  const heroImg = getContentValue(hero, "imageUrl", projectList[0]?.img || "/uploads/hero1.jpg");
   const videoUrl = hero?.videoUrl?.trim();
 
   return (
     <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
-      {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
-      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-32">
+      {/* ── 1. Hero: Standardized Dimensions (100% view height on mobile, 70vh on desktop) ── */}
+      <section className="relative flex min-h-[100svh] md:min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-20 md:py-32">
         <div className="absolute inset-0 z-0">
           {videoUrl ? (
             <video src={videoUrl} autoPlay muted loop playsInline className="h-full w-full object-cover" />

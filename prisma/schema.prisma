@@ -83,7 +83,10 @@ model NewsArticle {
   title       String
   slug        String   @unique
   content     String
+  excerpt     String?
   imageUrl    String?
+  category    String   @default("Engineering News")
+  featured    Boolean  @default(false)
   publishedAt DateTime @default(now())
 }
 

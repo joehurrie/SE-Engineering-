@@ -44,17 +44,14 @@ export default function ProjectsGallery({
               className="group rounded-none overflow-hidden bg-white border border-neutral-200 hover:border-blue-600/40 flex flex-col justify-between relative h-full transition-all duration-300 hover:shadow-xl"
             >
               <div>
-                <div className="h-64 w-full relative overflow-hidden bg-neutral-100">
+                <div className="h-72 sm:h-80 md:h-96 lg:h-[420px] w-full relative overflow-hidden bg-neutral-100">
                   <Image
                     src={proj.img}
                     alt={proj.projectName}
                     fill
-                    sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                    quality={95}
+                    sizes="(min-width: 1280px) 420px, (min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-700"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=800";
-                    }}
                   />
                   <div className="absolute inset-0 bg-black/25 group-hover:bg-transparent transition-colors" />
 

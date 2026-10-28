@@ -57,125 +57,18 @@ export type HomePromotion = {
   image: string;
 };
 
-const fallbackProducts: HomeProduct[] = [
-  {
-    series: "SERIES H-300",
-    title: "Home lifts",
-    desc: "Quiet, space-conscious lifts designed around the character and structure of private homes.",
-    specs: "Residential · Bespoke cabin options",
-    image: "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&q=85&w=1400",
-    href: "/elevators/home-lift",
-  },
-  {
-    series: "SERIES P-800",
-    title: "Passenger elevators",
-    desc: "Efficient vertical transport for commercial towers, apartments, and mixed-use developments.",
-    specs: "Commercial · Gearless traction",
-    image: "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?auto=format&fit=crop&q=85&w=1400",
-    href: "/elevators/passenger-elevator",
-  },
-  {
-    series: "SERIES M-600",
-    title: "Hospital lifts",
-    desc: "Smooth, dependable movement for beds, clinical teams, and essential equipment.",
-    specs: "Healthcare · Stretcher-ready",
-    image: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=85&w=1400",
-    href: "/elevators/hospital-elevator",
-  },
-  {
-    series: "SERIES E-400",
-    title: "Escalators",
-    desc: "High-capacity people movement for retail, hospitality, and public transport environments.",
-    specs: "Public spaces · Heavy transit duty",
-    image: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&q=85&w=1400",
-    href: "/elevators/escalator-moving-walk",
-  },
-];
-
 function ElevatorProductImage({ product, isClone }: { product: HomeProduct; isClone: boolean }) {
-  const [imageSource, setImageSource] = useState(product.image);
-  const [usingFallback, setUsingFallback] = useState(false);
-
   return (
     <Image
-      src={imageSource}
+      src={product.image}
       alt={isClone ? "" : product.title}
       fill
-      sizes="(max-width: 767px) 85vw, (min-width: 1400px) 400px, 30vw"
-      className="object-center object-cover transition-all duration-700 ease-out group-hover:scale-105 group-hover:brightness-110"
-      onError={() => {
-        if (!usingFallback && product.fallbackImage && product.fallbackImage !== imageSource) {
-          setUsingFallback(true);
-          setImageSource(product.fallbackImage);
-          return;
-        }
-        console.error(`Failed to load image for elevator product "${product.title}".`);
-      }}
+      quality={95}
+      sizes="(max-width: 767px) 85vw, (min-width: 1400px) 600px, 450px"
+      className="object-cover object-center transition-all duration-700 ease-out group-hover:scale-105 group-hover:brightness-105"
     />
   );
 }
-
-const fallbackProjects: HomeProject[] = [
-  {
-    projectName: "Alina Harbor Apartment",
-    projectType: "Luxury Multi-Family Residential",
-    location: "Kilimani, Nairobi",
-    category: "Residential",
-    elevatorCount: 4,
-    featured: true,
-    status: "COMMISSIONED",
-    imageUrl: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1792002993752-dsc01793.webp",
-  },
-  {
-    projectName: "Apple Tree Apartments",
-    projectType: "Modern High-Rise Development",
-    location: "Westlands, Nairobi",
-    category: "Commercial",
-    elevatorCount: 6,
-    featured: true,
-    status: "COMMISSIONED",
-    imageUrl: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1792003042583-dsc01858.webp",
-  },
-  {
-    projectName: "Urban Oasis Towers",
-    projectType: "Mixed-Use Commercial & Residential",
-    location: "Kileleshwa, Nairobi",
-    category: "Residential",
-    elevatorCount: 8,
-    featured: true,
-    status: "COMMISSIONED",
-    imageUrl: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1792002733141-dsc01781.webp",
-  },
-  {
-    projectName: "Zuri Villas Gated Community",
-    projectType: "Exclusive Residential Private Villas",
-    location: "Karen, Nairobi",
-    category: "Residential",
-    elevatorCount: 5,
-    status: "COMMISSIONED",
-    imageUrl: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1792002951429-dsc01817.webp",
-  },
-  {
-    projectName: "Emerald Peak Commercial Center",
-    projectType: "Grade-A Corporate Headquarters",
-    location: "Upper Hill",
-    category: "Commercial",
-    elevatorCount: 6,
-    featured: false,
-    status: "COMMISSIONED",
-    imageUrl: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1792002798162-dsc01808.webp",
-  },
-  {
-    projectName: "Test",
-    projectType: "High-Rise Commercial Tower",
-    location: "Westlands, Nairobi",
-    category: "Commercial",
-    elevatorCount: 20,
-    featured: true,
-    status: "COMMISSIONED",
-    imageUrl: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1792002908193-dsc01813.webp",
-  },
-];
 
 function AnimatedMetric({ value, suffix = "", id }: { value: number; suffix?: string; id: number }) {
   const [displayValue, setDisplayValue] = useState(0);
@@ -342,14 +235,14 @@ export default function HomeLandingSections({
   const [visibleCardCount, setVisibleCardCount] = useState(3);
   const [selectedMobileCard, setSelectedMobileCard] = useState<number | null>(null);
   const systemsContent = content.home_systems;
-  const products = (systems.length > 0 ? systems : fallbackProducts).map((product, index) => ({
+  const products = systems.map((product, index) => ({
     ...product,
     title: sectionText(systemsContent, `product${index + 1}Title`, product.title),
     desc: sectionText(systemsContent, `product${index + 1}Description`, product.desc),
     image: sectionText(systemsContent, `product${index + 1}Image`, product.image),
     href: sectionText(systemsContent, `product${index + 1}Href`, product.href),
   }));
-  const featuredProjects = (projects.length > 0 ? projects : fallbackProjects).slice(0, 6);
+  const featuredProjects = projects.filter((p) => Boolean(p.imageUrl && p.imageUrl.trim())).slice(0, 6);
   const projectsHeading = sectionText(content.home_projects, "title", "Our Projects") === "Projects in motion"
     ? "Our Projects"
     : sectionText(content.home_projects, "title", "Our Projects");
@@ -489,24 +382,24 @@ export default function HomeLandingSections({
                     aria-hidden={!isVisible}
                     className="systems-carousel-card group relative flex-none px-3 sm:px-4 md:px-5 w-[85vw] sm:w-[340px] md:w-[380px] lg:w-[400px]"
                   >
-                    <div className="relative flex flex-col h-[460px] sm:h-[500px] md:h-[520px] w-full overflow-hidden border border-neutral-200 bg-white rounded-none transition-all duration-500 ease-out group-hover:scale-[1.02] group-hover:z-30 group-hover:shadow-2xl group-hover:border-[#2563EB]">
+                    <div className="relative flex flex-col aspect-square w-full overflow-hidden border border-neutral-200 bg-white rounded-none transition-all duration-500 ease-out group-hover:scale-[1.02] group-hover:z-30 group-hover:shadow-2xl group-hover:border-[#2563EB]">
                       {/* Image-Only Default (Clean full cover with zero text clutter) */}
                       <div className="relative w-full h-full overflow-hidden bg-neutral-100">
                         <ElevatorProductImage product={product} isClone={!isVisible} />
                       </div>
 
                       {/* White Almost-Glassmorphism Overlay (News-card style hover reveal) */}
-                      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end bg-white/90 backdrop-blur-md p-6 border-t border-neutral-200/60 shadow-lg opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0 transition-all duration-400 ease-out pointer-events-none group-hover:pointer-events-auto">
+                      <div className="absolute inset-x-0 bottom-0 z-20 flex flex-col justify-end bg-white/95 backdrop-blur-md p-5 sm:p-6 border-t border-neutral-200/60 shadow-lg opacity-0 translate-y-3 group-hover:opacity-100 group-hover:translate-y-0 group-focus-within:opacity-100 group-focus-within:translate-y-0 transition-all duration-400 ease-out pointer-events-none group-hover:pointer-events-auto">
                         <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-neutral-500">
                           {product.series}
                         </span>
-                        <h3 className="mt-1 text-lg font-bold text-[#2563EB] tracking-tight leading-snug">
+                        <h3 className="mt-1 text-base sm:text-lg font-bold text-[#2563EB] tracking-tight leading-snug">
                           {product.title}
                         </h3>
                         <p className="mt-2 text-xs sm:text-sm text-neutral-800 line-clamp-2 leading-relaxed font-normal">
                           {product.desc}
                         </p>
-                        <div className="mt-4 flex items-center justify-between border-t border-neutral-200/80 pt-3">
+                        <div className="mt-3 flex items-center justify-between border-t border-neutral-200/80 pt-2.5">
                           <span className="text-[10px] font-mono uppercase tracking-wider text-neutral-400">
                             ISO Certified
                           </span>
@@ -628,12 +521,13 @@ export default function HomeLandingSections({
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {featuredProjects.map((project, index) => (
               <article key={`${project.projectName}-${index}`} data-home-reveal className="home-reveal group flex h-full flex-col overflow-hidden border border-neutral-200 bg-white transition-all duration-300 hover:border-blue-600/40 hover:shadow-xl">
-                <div className="relative aspect-[4/3] overflow-hidden bg-neutral-100">
+                <div className="relative aspect-[4/3] md:aspect-auto md:h-80 lg:h-[380px] overflow-hidden bg-neutral-100">
                   <Image
                     src={project.imageUrl}
                     alt={project.projectName}
                     fill
                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    quality={95}
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div aria-hidden="true" className="absolute inset-0 bg-black/25 transition-colors group-hover:bg-transparent" />
@@ -678,7 +572,7 @@ export default function HomeLandingSections({
         </div>
       </section>
 
-      
+
 
       <section className="bg-white py-20 font-sans tracking-normal md:py-28">
         <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">

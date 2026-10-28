@@ -162,17 +162,12 @@ export default async function HomePage() {
       fallbackImage: getElevatorProductAsset(elevator.title, elevator.category).src,
       href: `/elevators/${categoryToSlug(elevator.category)}`,
     }));
-  const requiredSystemMatches = [/home|residential/i, /passenger|commercial/i, /hospital|medical/i, /escalator|moving walk/i];
-  const selectedDatabaseSystems = requiredSystemMatches.map((matcher, index) =>
-    databaseSystems.find((system) => matcher.test(system.title)) || defaultSystems[index]
-  );
   const systems: HomeProduct[] = dbElevators.length > 0
-    ? [
-      ...selectedDatabaseSystems,
-      ...databaseSystems.filter((system) => !requiredSystemMatches.some((matcher) => matcher.test(system.title))),
-    ]
+    ? databaseSystems
     : defaultSystems;
-  const projects: HomeProject[] = dbProjects.map((project) => ({
+  const projects: HomeProject[] = dbProjects
+    .filter((project) => Boolean(project.imageUrl && project.imageUrl.trim()))
+    .map((project) => ({
     projectName: project.projectName,
     imageUrl: project.imageUrl,
     projectType: project.projectType,

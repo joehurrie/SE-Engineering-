@@ -7,22 +7,31 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 export type LiftServiceContent = {
   slug: string;
   num: string;
+  badge?: string;
   title: string;
   tagline: string;
   desc: string;
   features: string[];
   img: string;
+  buttonLabel?: string;
+  buttonHref?: string;
   partsTitle?: string;
   partsDescription?: string;
   partsFeatures?: string[];
+  partsButtonLabel?: string;
+  partsButtonHref?: string;
 };
 
 export default function LiftServicesShowcase({
   services,
+  subtitle = "SUPPLY · INSTALLATION · MAINTENANCE",
+  title = "Three services. One accountable partner.",
   lifecycleCopy,
   outcomes,
 }: {
   services: LiftServiceContent[];
+  subtitle?: string;
+  title?: string;
   lifecycleCopy: string;
   outcomes: string[];
 }) {
@@ -33,10 +42,10 @@ export default function LiftServicesShowcase({
         <div className="mx-auto w-full max-w-7xl">
           <header className="mx-auto mb-14 max-w-3xl text-center">
             <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">
-              SUPPLY · INSTALLATION · MAINTENANCE
+              {subtitle}
             </p>
             <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-tight text-neutral-950 sm:text-4xl md:text-5xl">
-              Three services. One accountable partner.
+              {title}
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-neutral-600">
               {lifecycleCopy}
@@ -60,7 +69,7 @@ export default function LiftServicesShowcase({
                   />
                   <div aria-hidden="true" className="absolute inset-0 bg-black/20 transition-colors group-hover:bg-transparent" />
                   <span className="absolute left-5 top-5 bg-white px-3 py-2 text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-900 border border-neutral-200">
-                    SE-{service.num}
+                    {service.badge || `SE-${service.num}`}
                   </span>
                 </div>
                 <div className="flex flex-1 flex-col p-6 sm:p-8">
@@ -99,20 +108,20 @@ export default function LiftServicesShowcase({
                         </ul>
                       )}
                       <Link
-                        href="/elevators#spare-parts"
+                        href={service.partsButtonHref || "/elevators#spare-parts"}
                         className="mt-4 inline-flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-neutral-700 transition-colors hover:text-[#2563EB]"
                       >
-                        Browse genuine components
+                        {service.partsButtonLabel || "Browse genuine components"}
                         <ArrowRight aria-hidden="true" className="h-3.5 w-3.5" />
                       </Link>
                     </aside>
                   )}
 
                   <Link
-                    href={`/contact?service=${service.slug}`}
+                    href={service.buttonHref || `/contact?service=${service.slug}`}
                     className="mt-7 inline-flex min-h-11 w-fit items-center gap-2 bg-neutral-950 px-5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white transition-colors hover:bg-[#2563EB]"
                   >
-                    Discuss {service.title.toLowerCase()}
+                    {service.buttonLabel || `Discuss ${service.title.toLowerCase()}`}
                     <ArrowRight aria-hidden="true" className="h-4 w-4" />
                   </Link>
                 </div>

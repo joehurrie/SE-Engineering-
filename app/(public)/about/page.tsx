@@ -113,41 +113,19 @@ export default async function AboutPage() {
       caption: "Service and maintenance",
     },
   ];
-  const gallery = galleryDefaults.map((fallback, index) => ({
-    image: getContentValue(team, `galleryImage${index + 1}`, fallback.image),
-    caption: getContentValue(team, `galleryCaption${index + 1}`, fallback.caption),
+  // Read _entryCount saved by the CMS; fall back to 4 for backwards compatibility
+  const galleryCount = typeof team?._entryCount === "number" && team._entryCount > 0
+    ? team._entryCount
+    : 4;
+  const gallery = Array.from({ length: galleryCount }, (_, index) => ({
+    image: getContentValue(team, `galleryImage${index + 1}`, galleryDefaults[index]?.image ?? ""),
+    caption: getContentValue(team, `galleryCaption${index + 1}`, galleryDefaults[index]?.caption ?? ""),
   }));
-  const leaderDefaults = [
-    {
-      name: "Sales leadership",
-      role: "Head of Sales",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&h=160&q=80",
-    },
-    {
-      name: "Managing Director",
-      role: "Lead Engineer / Managing Director",
-      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=160&h=160&q=80",
-    },
-    {
-      name: "Operations leadership",
-      role: "Operations Manager",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&h=160&q=80",
-    },
-  ];
-  const leaders = leaderDefaults.map((fallback, index) => {
-    const number = index + 1;
-    return {
-      name: getContentValue(team, `leader${number}Name`, fallback.name),
-      role: getContentValue(team, `leader${number}Title`, fallback.role),
-      image: getContentValue(team, `leader${number}Image`, fallback.image),
-    };
-  });
-
   return (
     <ScrollRevealPage className="about-page min-h-screen bg-white text-neutral-900 selection:bg-blue-600 selection:text-white">
 
-      {/* ── 1. Hero: Compact (standardized inner-page dimensions) ───────── */}
-      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-32 text-center">
+      {/* ── 1. Hero: 70% View Height (matching Services and News) ── */}
+      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-14 sm:py-16 md:py-20 text-center">
         <div className="absolute inset-0 z-0">
           <img
             src={heroImg}
@@ -221,7 +199,7 @@ export default async function AboutPage() {
                 <img
                   src={getContentValue(overview, "imageUrl", "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=1200")}
                   alt="Elevator tower engineering"
-                  className="w-full h-[460px] object-cover grayscale hover:grayscale-0 transition-all duration-700"
+                  className="w-full h-[460px] object-cover transition-all duration-700"
                 />
               </div>
             </div>
@@ -305,67 +283,42 @@ export default async function AboutPage() {
             </p>
           </div>
           <CredentialsGallery
-            items={[0, 1, 2, 3].map((index) => ({
-              title: getContentValue(certifications, `caption${index + 1}`, ["Quality Management", "Safety Compliance", "Technical Certification", "Industry Credentials"][index]),
-              image: getContentValue(certifications, `image${index + 1}`, [
-                "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=85&w=900",
-                "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=85&w=900",
-                "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=85&w=900",
-                "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&q=85&w=900",
-              ][index]),
-            }))}
+            items={(() => {
+              // Determine entry count: prefer _entryCount saved in CMS, fall back to 4
+              const defaultFallbacks = [
+                { title: "Quality Management", image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&q=85&w=900" },
+                { title: "Safety Compliance", image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=85&w=900" },
+                { title: "Technical Certification", image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&q=85&w=900" },
+                { title: "Industry Credentials", image: "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&q=85&w=900" },
+              ];
+              const savedCount = typeof certifications?._entryCount === "number" && certifications._entryCount > 0
+                ? certifications._entryCount
+                : 4;
+              return Array.from({ length: savedCount }, (_, i) => ({
+                title: getContentValue(certifications, `caption${i + 1}`, defaultFallbacks[i]?.title ?? `Certification ${i + 1}`),
+                image: getContentValue(certifications, `image${i + 1}`, defaultFallbacks[i]?.image ?? ""),
+              }));
+            })()}
           />
         </div>
       </section>
 
-      {/* ── 6. Team gallery & leadership ─ */}
-      <section className="w-full bg-neutral-50 px-6 py-20 md:py-28">
+      {/* ── 6. Team gallery ─ */}
+      <section className="w-full bg-neutral-50 px-6 py-20 md:py-28 overflow-hidden">
         <div className="mx-auto w-full max-w-7xl">
-          <div className="mb-12 max-w-2xl">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#2563EB]">{getContentValue(team, "badge", "People & practice")}</p>
-            <h2 className="mt-4 text-3xl font-semibold tracking-tight text-neutral-950 md:text-5xl">
-              {getContentValue(team, "title", getContentValue(team, "galleryTitle", "Our team"))}
+          <div className="mb-14 mx-auto max-w-3xl text-center flex flex-col items-center justify-center">
+            <div className="mb-4 inline-block border border-neutral-200 bg-white px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest text-[#2563EB]">
+              {getContentValue(team, "badge", "People & practice")}
+            </div>
+            <h2 className="text-3xl md:text-5xl font-bold uppercase tracking-tight text-neutral-950 text-center">
+              {getContentValue(team, "title", getContentValue(team, "galleryTitle", "Our people"))}
             </h2>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-neutral-600">
+            <div className="w-20 h-1 bg-blue-600 mx-auto my-5" />
+            <p className="text-sm md:text-base text-neutral-600 max-w-2xl mx-auto font-light leading-relaxed text-center">
               {getContentValue(team, "bodyText", "The engineers and specialists behind each project, working together from planning through ongoing service.")}
             </p>
           </div>
           <AboutTeamBento photos={gallery} />
-
-          <div className="mt-16 border-t border-neutral-200 pt-10">
-            <h3 className="mb-7 text-xs font-semibold uppercase tracking-[0.16em] text-neutral-600">Leadership</h3>
-            <div className="grid gap-6 md:grid-cols-3 md:gap-8">
-              {leaders.map((leader) => (
-                <article
-                  key={`${leader.name}-${leader.role}`}
-                  className="group flex flex-col overflow-hidden rounded-none border border-neutral-200 bg-white transition-all duration-300 hover:border-blue-600/40 hover:shadow-xl"
-                >
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-neutral-100">
-                    <img
-                      src={leader.image}
-                      alt={leader.name}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div aria-hidden="true" className="absolute inset-0 bg-black/20 transition-colors group-hover:bg-transparent" />
-                  </div>
-                  <div className="flex flex-1 flex-col justify-between p-6 md:p-7">
-                    <div>
-                      <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#2563EB]">
-                        {leader.role}
-                      </span>
-                      <h4 className="mt-2 text-xl font-bold uppercase tracking-tight text-neutral-900 group-hover:text-[#2563EB] transition-colors">
-                        {leader.name}
-                      </h4>
-                    </div>
-                    <div className="mt-6 flex items-center justify-between border-t border-neutral-100 pt-4 text-xs font-light text-neutral-500">
-                      <span>Specialized Engineering</span>
-                      <span className="font-mono text-[10px] uppercase text-neutral-400">Kilimani Hub</span>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 

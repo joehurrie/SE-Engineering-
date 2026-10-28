@@ -31,7 +31,7 @@ export default async function LiftServicesPage() {
   try {
     const [savedContent, savedPageContent] = await Promise.all([
       prisma.siteContent.findUnique({ where: { sectionKey: "home_services" } }),
-      loadSiteContentMap(["services_hero", "services_lifecycle", "services_outcomes"]),
+      loadSiteContentMap(["services_hero", "services_showcase", "services_lifecycle", "services_outcomes"]),
     ]);
     if (savedContent) content = getHomeContentMap([savedContent]).home_services || {};
     pageContent = savedPageContent;
@@ -39,40 +39,45 @@ export default async function LiftServicesPage() {
     console.error("Failed to fetch CMS-managed service content:", error);
   }
   const hero = pageContent.services_hero;
+  const showcase = pageContent.services_showcase;
   const lifecycle = pageContent.services_lifecycle;
   const outcomesContent = pageContent.services_outcomes;
 
-  const services: LiftServiceContent[] = servicePillars.map((service, index) => ({
-    slug: service.slug,
-    num: service.number,
-    title: sectionText(content, `service${index + 1}Title`, service.title),
-    tagline: service.tagline,
-    desc: sectionText(content, `service${index + 1}Description`, service.description),
-    features: service.features.map((feature, featureIndex) =>
-      sectionText(content, `service${index + 1}Feature${featureIndex + 1}`, feature)
-    ),
-    img: service.image,
-    ...(index === 2
-      ? {
-          partsTitle: sectionText(content, "maintenancePartsTitle", service.partsTitle || ""),
-          partsDescription: sectionText(
-            content,
-            "maintenancePartsDescription",
-            service.partsDescription || ""
-          ),
-          partsFeatures: (service.partsFeatures || []).map((feature, featureIndex) =>
-            sectionText(content, `maintenancePartsFeature${featureIndex + 1}`, feature)
-          ),
-        }
-      : {}),
-  }));
+  const services: LiftServiceContent[] = servicePillars.map((service, index) => {
+    const pNum = index + 1;
+    return {
+      slug: service.slug,
+      num: service.number,
+      badge: getContentValue(showcase, `service${pNum}Badge`, `SE-${service.number}`),
+      title: getContentValue(showcase, `service${pNum}Title`, sectionText(content, `service${pNum}Title`, service.title)),
+      tagline: getContentValue(showcase, `service${pNum}Tagline`, service.tagline),
+      desc: getContentValue(showcase, `service${pNum}Description`, sectionText(content, `service${pNum}Description`, service.description)),
+      features: service.features.map((feature, featureIndex) =>
+        getContentValue(showcase, `service${pNum}Feature${featureIndex + 1}`, sectionText(content, `service${pNum}Feature${featureIndex + 1}`, feature))
+      ),
+      img: getContentValue(showcase, `service${pNum}Image`, service.image),
+      buttonLabel: getContentValue(showcase, `service${pNum}ButtonLabel`, `Discuss ${service.title.toLowerCase()}`),
+      buttonHref: getContentValue(showcase, `service${pNum}ButtonHref`, `/contact?service=${service.slug}`),
+      ...(index === 2
+        ? {
+            partsTitle: getContentValue(showcase, "partsTitle", sectionText(content, "maintenancePartsTitle", service.partsTitle || "")),
+            partsDescription: getContentValue(showcase, "partsDescription", sectionText(content, "maintenancePartsDescription", service.partsDescription || "")),
+            partsFeatures: (service.partsFeatures || []).map((feature, featureIndex) =>
+              getContentValue(showcase, `partsFeature${featureIndex + 1}`, sectionText(content, `maintenancePartsFeature${featureIndex + 1}`, feature))
+            ),
+            partsButtonLabel: getContentValue(showcase, "partsButtonLabel", "Browse genuine components"),
+            partsButtonHref: getContentValue(showcase, "partsButtonHref", "/elevators#spare-parts"),
+          }
+        : {}),
+    };
+  });
   const outcomes = serviceClientOutcomes.map((outcome, index) =>
-    sectionText(content, `serviceOutcome${index + 1}`, outcome)
+    getContentValue(showcase, `serviceOutcome${index + 1}`, sectionText(content, `serviceOutcome${index + 1}`, outcome))
   );
 
   return (
     <ScrollRevealPage className="min-h-screen bg-white text-neutral-950">
-      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-[#F5F5F3] px-6 py-32 text-center">
+      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-14 sm:py-16 md:py-20 text-center">
         <div className="absolute inset-0 z-0">
           {hero?.videoUrl?.trim() ? (
             <video src={hero.videoUrl} autoPlay muted loop playsInline className="h-full w-full object-cover" />
@@ -106,7 +111,9 @@ export default async function LiftServicesPage() {
 
       <LiftServicesShowcase
         services={services}
-        lifecycleCopy={sectionText(content, "bodyText", serviceLifecycleCopy)}
+        subtitle={getContentValue(showcase, "subtitle", "SUPPLY · INSTALLATION · MAINTENANCE")}
+        title={getContentValue(showcase, "title", "Three services. One accountable partner.")}
+        lifecycleCopy={getContentValue(showcase, "bodyText", sectionText(content, "bodyText", serviceLifecycleCopy))}
         outcomes={outcomes}
       />
 
@@ -129,17 +136,17 @@ export default async function LiftServicesPage() {
           <div className="grid gap-px border-b border-neutral-200 bg-neutral-200 md:grid-cols-3">
             {[
               {
-                number: "01",
+                number: getContentValue(lifecycle, "stage1Number", "01"),
                 title: getContentValue(lifecycle, "stage1Title", "Specify for lifetime value"),
                 description: getContentValue(lifecycle, "stage1Description", "We assess building use, traffic demand and performance needs before recommending a system. Selecting the right capacity and configuration can limit avoidable energy, repair and replacement costs over time."),
               },
               {
-                number: "02",
+                number: getContentValue(lifecycle, "stage2Number", "02"),
                 title: getContentValue(lifecycle, "stage2Title", "Install with documented quality"),
                 description: getContentValue(lifecycle, "stage2Description", "Experienced engineers coordinate site readiness, installation checks, testing and commissioning. Recorded inspections and a structured handover make engineering compliance, quality and safety requirements visible before operation."),
               },
               {
-                number: "03",
+                number: getContentValue(lifecycle, "stage3Number", "03"),
                 title: getContentValue(lifecycle, "stage3Title", "Maintain before issues grow"),
                 description: getContentValue(lifecycle, "stage3Description", "Preventative maintenance schedules follow manufacturer guidance, equipment usage and observed condition. Routine servicing, genuine parts and clear records help detect wear early, reduce unplanned downtime and extend service life."),
               },

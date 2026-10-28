@@ -10,9 +10,11 @@ import {
   ExternalLink,
   FileEdit,
   Loader2,
+  Plus,
   Save,
   Scale,
   Search,
+  Trash2,
 } from "lucide-react";
 import ImageDropzone from "@/components/ImageDropzone";
 import {
@@ -49,6 +51,39 @@ const paragraph = (name: string, label: string, initial = ""): SectionField => (
 const image = (name: string, label: string, initial = ""): SectionField => ({ name, label, type: "image", initial });
 const url = (name: string, label: string, initial = ""): SectionField => ({ name, label, type: "url", initial });
 const icon = (name: string, label: string, initial = "ShieldCheck"): SectionField => ({ name, label, type: "icon", initial });
+
+// Keys for sections that support unlimited repeatable entries
+const REPEATABLE_SECTION_KEYS = ["about_certifications", "about_team"] as const;
+type RepeatableSectionKey = (typeof REPEATABLE_SECTION_KEYS)[number];
+
+// Minimum and default entry counts per repeatable section
+const REPEATABLE_MIN_COUNT: Record<RepeatableSectionKey, number> = {
+  about_certifications: 1,
+  about_team: 1,
+};
+const REPEATABLE_DEFAULT_COUNT: Record<RepeatableSectionKey, number> = {
+  about_certifications: 4,
+  about_team: 4,
+};
+
+function isRepeatableKey(key: string): key is RepeatableSectionKey {
+  return (REPEATABLE_SECTION_KEYS as readonly string[]).includes(key);
+}
+
+// Build repeatable-entry fields for a section given the current count
+function buildRepeatableFields(sectionKey: RepeatableSectionKey, count: number): SectionField[] {
+  if (sectionKey === "about_certifications") {
+    return Array.from({ length: count }, (_, i) => i + 1).flatMap((n) => [
+      image(`image${n}`, `Certification image ${n}`),
+      text(`caption${n}`, `Certification caption ${n}`),
+    ]);
+  }
+  // about_team gallery
+  return Array.from({ length: count }, (_, i) => i + 1).flatMap((n) => [
+    image(`galleryImage${n}`, `Team gallery image ${n}`),
+    text(`galleryCaption${n}`, `Team gallery caption ${n}`),
+  ]);
+}
 
 const homeSections: HomeSection[] = [
   {
@@ -278,33 +313,17 @@ const aboutSections: HomeSection[] = [
       text("badge", "Badge label", "Quality, safety & compliance"),
       text("title", "Section heading", "Our Certifications"),
       paragraph("bodyText", "Section description"),
-      ...[1, 2, 3, 4].flatMap((number) => [
-        image(`image${number}`, `Certification image ${number}`),
-        text(`caption${number}`, `Certification caption ${number}`),
-      ]),
+      // Repeatable entries — rendered dynamically from entryCounts state
     ],
   },
   {
     key: "about_team",
-    label: "Team & Leadership",
+    label: "Team Gallery",
     fields: [
       text("badge", "Eyebrow label", "People & practice"),
       text("title", "Team gallery heading", "Our people in practice"),
       paragraph("bodyText", "Team introduction"),
-      text("galleryTitle", "Team gallery heading", "Our people in practice"),
-      ...[1, 2, 3, 4].flatMap((number) => [
-        image(`galleryImage${number}`, `Team gallery image ${number}`),
-        text(`galleryCaption${number}`, `Team gallery caption ${number}`),
-      ]),
-      text("leader1Title", "Leadership position 1", "Head of Sales"),
-      text("leader1Name", "Leadership name 1"),
-      image("leader1Image", "Leadership portrait 1"),
-      text("leader2Title", "Leadership position 2", "Lead Engineer / Managing Director"),
-      text("leader2Name", "Leadership name 2"),
-      image("leader2Image", "Leadership portrait 2"),
-      text("leader3Title", "Leadership position 3", "Operations Manager"),
-      text("leader3Name", "Leadership name 3"),
-      image("leader3Image", "Leadership portrait 3"),
+      // Repeatable gallery entries — rendered dynamically from entryCounts state
     ],
   },
   {
@@ -416,41 +435,110 @@ const elevatorsSections: HomeSection[] = [
 const servicesSections: HomeSection[] = [
   {
     key: "services_hero",
-    label: "Hero",
+    label: "Services Hero",
     fields: [
       text("subtitle", "Eyebrow label", "ENGINEERING & LIFECYCLE"),
       text("title", "Main heading", "Lift services, end to end."),
-      paragraph("bodyText", "Introductory copy"),
-      image("imageUrl", "Hero background image"),
-      { name: "videoUrl", label: "Background video source", type: "video" },
+      paragraph("bodyText", "Introductory copy", "From choosing the right system to keeping it safe and dependable for years to come, one team is accountable throughout."),
+      image("imageUrl", "Hero background image", "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=85&w=1800"),
+      { name: "videoUrl", label: "Background video source (optional)", type: "video" },
       text("buttonLabel", "Button label", "Explore our services"),
       url("buttonHref", "Button destination", "#supply"),
     ],
   },
   {
+    key: "services_showcase",
+    label: "Supply, Installation & Maintenance",
+    fields: [
+      text("subtitle", "Section eyebrow", "SUPPLY · INSTALLATION · MAINTENANCE"),
+      text("title", "Section heading", "Three services. One accountable partner."),
+      paragraph("bodyText", "Lifecycle narrative", serviceLifecycleCopy),
+
+      // ── Service 1: Supply ──
+      text("service1Badge", "Supply badge", "SE-01"),
+      text("service1Tagline", "Supply tagline", "Global systems, selected for your project"),
+      text("service1Title", "Supply title", "Supply"),
+      paragraph("service1Description", "Supply description", servicePillars[0].description),
+      image("service1Image", "Supply image", servicePillars[0].image),
+      text("service1Feature1", "Supply feature 1", servicePillars[0].features[0]),
+      text("service1Feature2", "Supply feature 2", servicePillars[0].features[1]),
+      text("service1Feature3", "Supply feature 3", servicePillars[0].features[2]),
+      text("service1ButtonLabel", "Supply button label", "Discuss supply"),
+      url("service1ButtonHref", "Supply button destination", "/contact?service=supply"),
+
+      // ── Service 2: Installation ──
+      text("service2Badge", "Installation badge", "SE-02"),
+      text("service2Tagline", "Installation tagline", "Precision engineering, professionally installed"),
+      text("service2Title", "Installation title", "Installation"),
+      paragraph("service2Description", "Installation description", servicePillars[1].description),
+      image("service2Image", "Installation image", servicePillars[1].image),
+      text("service2Feature1", "Installation feature 1", servicePillars[1].features[0]),
+      text("service2Feature2", "Installation feature 2", servicePillars[1].features[1]),
+      text("service2Feature3", "Installation feature 3", servicePillars[1].features[2]),
+      text("service2ButtonLabel", "Installation button label", "Discuss installation"),
+      url("service2ButtonHref", "Installation button destination", "/contact?service=installation"),
+
+      // ── Service 3: Maintenance ──
+      text("service3Badge", "Maintenance badge", "SE-03"),
+      text("service3Tagline", "Maintenance tagline", "Proactive care throughout the equipment lifecycle"),
+      text("service3Title", "Maintenance title", "Maintenance"),
+      paragraph("service3Description", "Maintenance description", servicePillars[2].description),
+      image("service3Image", "Maintenance image", servicePillars[2].image),
+      text("service3Feature1", "Maintenance feature 1", servicePillars[2].features[0]),
+      text("service3Feature2", "Maintenance feature 2", servicePillars[2].features[1]),
+      text("service3Feature3", "Maintenance feature 3", servicePillars[2].features[2]),
+      text("service3ButtonLabel", "Maintenance button label", "Discuss maintenance"),
+      url("service3ButtonHref", "Maintenance button destination", "/contact?service=maintenance"),
+
+      // ── Genuine Parts Subsection ──
+      text("partsTitle", "Parts subsection title", servicePillars[2].partsTitle || "Genuine parts, built into maintenance"),
+      paragraph("partsDescription", "Parts subsection description", servicePillars[2].partsDescription || "Certified components and genuine spares support reliable repairs, reduce downtime and help extend equipment life."),
+      text("partsFeature1", "Parts feature 1", servicePillars[2].partsFeatures?.[0] || "Genuine and certified lift components"),
+      text("partsFeature2", "Parts feature 2", servicePillars[2].partsFeatures?.[1] || "Parts selected for the installed equipment"),
+      text("partsFeature3", "Parts feature 3", servicePillars[2].partsFeatures?.[2] || "Technical support for repair and replacement"),
+      text("partsButtonLabel", "Parts button label", "Browse genuine components"),
+      url("partsButtonHref", "Parts button destination", "/elevators#spare-parts"),
+
+      // ── Client Outcomes Bar ──
+      text("serviceOutcome1", "Client outcome 1", serviceClientOutcomes[0]),
+      text("serviceOutcome2", "Client outcome 2", serviceClientOutcomes[1]),
+      text("serviceOutcome3", "Client outcome 3", serviceClientOutcomes[2]),
+      text("serviceOutcome4", "Client outcome 4", serviceClientOutcomes[3]),
+    ],
+  },
+  {
     key: "services_lifecycle",
-    label: "Lifecycle",
+    label: "Lifecycle Stages",
     fields: [
       text("subtitle", "Eyebrow label", "ENGINEERED THROUGH THE LIFECYCLE"),
       text("title", "Section heading", "Every stage strengthens the next."),
-      paragraph("bodyText", "Lifecycle introduction"),
-      ...[1, 2, 3].flatMap((number) => [
-        text(`stage${number}Title`, `Stage ${number} heading`),
-        paragraph(`stage${number}Description`, `Stage ${number} description`),
-      ]),
-      text("assuranceTitle", "Quality assurance heading"),
-      paragraph("assuranceCopy", "Quality assurance copy"),
+      paragraph("bodyText", "Lifecycle overview copy", "Equipment choice, installation quality and aftercare are connected decisions. Keeping them with one engineering partner helps control whole-life costs, preserve safety standards and protect the availability of your lift."),
+
+      text("stage1Number", "Stage 1 number", "01"),
+      text("stage1Title", "Stage 1 heading", "Specify for lifetime value"),
+      paragraph("stage1Description", "Stage 1 description", "We assess building use, traffic demand and performance needs before recommending a system. Selecting the right capacity and configuration can limit avoidable energy, repair and replacement costs over time."),
+
+      text("stage2Number", "Stage 2 number", "02"),
+      text("stage2Title", "Stage 2 heading", "Install with documented quality"),
+      paragraph("stage2Description", "Stage 2 description", "Experienced engineers coordinate site readiness, installation checks, testing and commissioning. Recorded inspections and a structured handover make engineering compliance, quality and safety requirements visible before operation."),
+
+      text("stage3Number", "Stage 3 number", "03"),
+      text("stage3Title", "Stage 3 heading", "Maintain before issues grow"),
+      paragraph("stage3Description", "Stage 3 description", "Preventative maintenance schedules follow manufacturer guidance, equipment usage and observed condition. Routine servicing, genuine parts and clear records help detect wear early, reduce unplanned downtime and extend service life."),
+
+      text("assuranceTitle", "Quality assurance heading", "Quality assurance that carries through."),
+      paragraph("assuranceCopy", "Quality assurance copy", "From supply documentation to installation records and scheduled service reports, a consistent technical history supports safer decisions, clearer accountability and better-informed lifecycle planning."),
       text("buttonLabel", "Button label", "Plan a service programme"),
       url("buttonHref", "Button destination", "/contact"),
     ],
   },
   {
     key: "services_outcomes",
-    label: "Client Outcomes",
+    label: "Client Outcomes & Consultation",
     fields: [
       text("subtitle", "Eyebrow label", "ONE ENGINEERING PARTNER"),
       text("title", "Section heading", "A better lifecycle starts with a conversation."),
-      paragraph("bodyText", "Section introduction"),
+      paragraph("bodyText", "Section introduction", "Tell us about your building, equipment or project. Our engineering team will help define the right next step."),
       text("buttonLabel", "Button label", "Request a consultation"),
       url("buttonHref", "Button destination", "/contact"),
     ],
@@ -630,17 +718,27 @@ export default function AdminContentPage() {
   const [savingKey, setSavingKey] = useState<string | null>(null);
   const [savedKey, setSavedKey] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Track the number of repeatable entries per section
+  const [entryCounts, setEntryCounts] = useState<Record<RepeatableSectionKey, number>>(
+    () => ({ ...REPEATABLE_DEFAULT_COUNT })
+  );
 
   useEffect(() => {
     let active = true;
-    const requestedSection = new URLSearchParams(window.location.search).get("section");
-    if (requestedSection && contentSections.some((section) => section.key === requestedSection)) {
-      // Read the query after hydration so the server and browser render the same initial accordion state.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+    const params = new URLSearchParams(window.location.search);
+    const requestedSection = params.get("section");
+    const requestedPage = params.get("page");
+
+    if (requestedPage) {
+      const pageMatch = pages.find((p) => p.name.toLowerCase() === requestedPage.toLowerCase());
+      if (pageMatch) {
+        setSelectedPage(pageMatch.name);
+        setOpenSections(new Set(pageMatch.sections.map((s) => s.key)));
+      }
+    } else if (requestedSection && contentSections.some((section) => section.key === requestedSection)) {
       setOpenSections(new Set([requestedSection]));
       const parentPage = pages.find((p) => p.sections.some((s) => s.key === requestedSection));
       if (parentPage) {
-        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedPage(parentPage.name);
       }
     }
@@ -663,6 +761,21 @@ export default function AdminContentPage() {
             getInitialValues(section, items.find((item) => item.sectionKey === section.key)),
           ])
         ));
+        // Restore repeatable-entry counts from saved contentJson
+        const restoredCounts = { ...REPEATABLE_DEFAULT_COUNT };
+        for (const key of REPEATABLE_SECTION_KEYS) {
+          const saved = items.find((i) => i.sectionKey === key);
+          if (saved?.contentJson) {
+            try {
+              const parsed = JSON.parse(saved.contentJson) as Record<string, unknown>;
+              const countVal = parsed["_entryCount"];
+              if (typeof countVal === "number" && countVal >= REPEATABLE_MIN_COUNT[key]) {
+                restoredCounts[key] = countVal;
+              }
+            } catch { /* ignore */ }
+          }
+        }
+        setEntryCounts(restoredCounts);
         setError(null);
       })
       .catch((err: unknown) => {
@@ -718,7 +831,11 @@ export default function AdminContentPage() {
           subtitle: sectionValues.subtitle || null,
           bodyText: sectionValues.bodyText || null,
           imageUrl: sectionValues.imageUrl || null,
-          contentJson: JSON.stringify(sectionValues),
+          contentJson: JSON.stringify(
+            isRepeatableKey(section.key)
+              ? { ...sectionValues, _entryCount: entryCounts[section.key as RepeatableSectionKey] }
+              : sectionValues
+          ),
         }),
       });
       const data = await response.json();
@@ -985,9 +1102,92 @@ export default function AdminContentPage() {
                     {/* Distinct Section Form Container */}
                     {isOpen && (
                       <div className="border-t border-[#E2E8F0] bg-white p-6 md:p-8 space-y-6 min-w-0 overflow-hidden">
-                        <div className="grid gap-5 md:grid-cols-2 min-w-0">
-                          {section.fields.map((field) => renderField(section, field))}
-                        </div>
+                        {isRepeatableKey(section.key) ? (
+                          // ── Repeatable section (certifications / team gallery) ──
+                          <div className="space-y-6">
+                            {/* Static header fields */}
+                            <div className="grid gap-5 md:grid-cols-2 min-w-0">
+                              {section.fields.map((field) => renderField(section, field))}
+                            </div>
+
+                            {/* Repeatable entries */}
+                            <div className="space-y-4">
+                              <div className="flex items-center justify-between border-t border-[#E2E8F0] pt-5">
+                                <p className="text-xs font-semibold uppercase tracking-wider text-[#475569]">
+                                  {section.key === "about_certifications" ? "Certification Entries" : "Gallery Images"}
+                                  <span className="ml-2 font-mono text-[10px] bg-slate-100 text-[#475569] px-1.5 py-0.5 border border-slate-200">
+                                    {entryCounts[section.key as RepeatableSectionKey]}
+                                  </span>
+                                </p>
+                              </div>
+
+                              {buildRepeatableFields(section.key, entryCounts[section.key as RepeatableSectionKey]).reduce<SectionField[][]>(
+                                (groups, field, idx) => {
+                                  if (idx % 2 === 0) groups.push([field]);
+                                  else groups[groups.length - 1].push(field);
+                                  return groups;
+                                },
+                                [],
+                              ).map((pair, entryIdx) => (
+                                <div key={entryIdx} className="border border-[#E2E8F0] bg-slate-50/60 p-4 space-y-3">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#64748B]">
+                                      {section.key === "about_certifications" ? `Certification ${entryIdx + 1}` : `Image ${entryIdx + 1}`}
+                                    </span>
+                                    {entryCounts[section.key as RepeatableSectionKey] > REPEATABLE_MIN_COUNT[section.key as RepeatableSectionKey] && entryIdx === entryCounts[section.key as RepeatableSectionKey] - 1 && (
+                                      <button
+                                        type="button"
+                                        onClick={() => {
+                                          const removedN = entryCounts[section.key as RepeatableSectionKey];
+                                          setEntryCounts((prev) => ({ ...prev, [section.key]: removedN - 1 }));
+                                          setValues((prev) => {
+                                            const sectionVals = { ...prev[section.key] };
+                                            if (section.key === "about_certifications") {
+                                              delete sectionVals[`image${removedN}`];
+                                              delete sectionVals[`caption${removedN}`];
+                                            } else {
+                                              delete sectionVals[`galleryImage${removedN}`];
+                                              delete sectionVals[`galleryCaption${removedN}`];
+                                            }
+                                            return { ...prev, [section.key]: sectionVals };
+                                          });
+                                        }}
+                                        className="inline-flex items-center gap-1 text-[11px] font-medium text-red-600 hover:text-red-700 border border-red-200 bg-red-50 px-2 py-0.5 rounded-none transition"
+                                        title="Remove last entry"
+                                      >
+                                        <Trash2 className="h-3 w-3" />
+                                        Remove
+                                      </button>
+                                    )}
+                                  </div>
+                                  <div className="grid gap-4 md:grid-cols-2">
+                                    {pair.map((field) => renderField(section, field))}
+                                  </div>
+                                </div>
+                              ))}
+
+                              {/* Add entry button */}
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setEntryCounts((prev) => ({
+                                    ...prev,
+                                    [section.key]: prev[section.key as RepeatableSectionKey] + 1,
+                                  }))
+                                }
+                                className="inline-flex w-full items-center justify-center gap-2 border border-dashed border-[#CBD5E1] bg-white py-3 text-xs font-semibold uppercase tracking-wider text-[#475569] hover:border-[#2563EB] hover:text-[#2563EB] transition rounded-none"
+                              >
+                                <Plus className="h-3.5 w-3.5" />
+                                Add {section.key === "about_certifications" ? "Certification" : "Gallery Image"}
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          // ── Standard section ──
+                          <div className="grid gap-5 md:grid-cols-2 min-w-0">
+                            {section.fields.map((field) => renderField(section, field))}
+                          </div>
+                        )}
 
                         {/* Pinned Save Action Bar */}
                         <div className="mt-8 flex items-center justify-between flex-wrap gap-4 border-t border-[#E2E8F0] pt-5">

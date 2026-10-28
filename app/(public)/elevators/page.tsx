@@ -189,8 +189,8 @@ export default async function ElevatorsPage({ searchParams }: ElevatorsPageProps
 
   return (
     <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
-      {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
-      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-32">
+      {/* ── 1. Hero: Standardized Dimensions (100% view height on mobile, 70vh on desktop) ── */}
+      <section className="relative flex min-h-[100svh] md:min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-20 md:py-32">
         <div className="absolute inset-0 z-0">
           {heroVideo ? (
             <video src={heroVideo} autoPlay muted loop playsInline className="h-full w-full object-cover" />
