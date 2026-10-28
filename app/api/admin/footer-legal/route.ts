@@ -3,7 +3,6 @@ import { revalidatePath } from "next/cache";
 import prisma from "@/lib/prisma";
 import { getCurrentAdmin } from "@/lib/auth";
 import {
-  defaultFooterSettings,
   defaultPrivacyPolicy,
   defaultTermsOfService,
   getFooterSettings,

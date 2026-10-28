@@ -114,38 +114,7 @@ function warnHomeFallback(section: string, reason: unknown) {
 }
 
 function renderHeroTitle(title: string) {
-  const highlightRegex = /(Excellence|Engineered|Precision|East Africa|Solutions|Engineering)/gi;
-  const parts = title.split(highlightRegex);
-  if (parts.length > 1) {
-    return parts.map((part, i) =>
-      highlightRegex.test(part) ? (
-        <span
-          key={i}
-          className="bg-gradient-to-r from-[#2563EB] to-blue-700 bg-clip-text text-transparent"
-        >
-          {part}
-        </span>
-      ) : (
-        <span key={i} className="text-[#0F0F0F]">
-          {part}
-        </span>
-      )
-    );
-  }
-  const words = title.split(" ");
-  if (words.length > 2) {
-    const main = words.slice(0, -1).join(" ");
-    const last = words[words.length - 1];
-    return (
-      <>
-        <span className="text-[#0F0F0F]">{main} </span>
-        <span className="bg-gradient-to-r from-[#2563EB] to-blue-700 bg-clip-text text-transparent">
-          {last}
-        </span>
-      </>
-    );
-  }
-  return <span className="text-[#0F0F0F]">{title}</span>;
+  return <span className="text-white">{title}</span>;
 }
 
 export default async function HomePage() {
@@ -231,42 +200,40 @@ export default async function HomePage() {
   }));
   return (
     <div className="font-sans tracking-normal text-[#0F0F0F]">
-      <div className="relative isolate bg-white">
-        <section className="sticky top-0 z-0 h-svh w-screen overflow-hidden bg-[#F5F5F3]">
-          <div className="absolute inset-0">
-            <Image src={heroImage} alt="" fill priority sizes="100vw" className="object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-r from-white/95 via-white/75 to-white/20 sm:w-3/4 md:w-2/3 lg:w-1/2" />
-          </div>
-          <div className="relative z-10 mx-auto grid h-full w-full max-w-[1280px] grid-cols-1 items-center px-4 sm:px-6 lg:px-8">
-            <div className="max-w-3xl overflow-hidden">
-              <p className="mb-5 inline-flex items-center gap-2 border border-[#2563EB]/20 bg-white/90 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-[#2563EB] shadow-sm backdrop-blur-sm">
-                <span className="h-1.5 w-1.5 bg-[#2563EB]" />
-                {heroBadge}
-              </p>
-              <h1 className="max-w-3xl text-4xl font-bold leading-[1.05] tracking-tight text-[#0F0F0F] sm:text-5xl md:text-6xl lg:text-7xl">
-                {renderHeroTitle(heroTitle)}
-              </h1>
-              <p className="mt-6 max-w-xl text-base leading-relaxed text-neutral-800 md:text-lg">
-                {heroBody}
-              </p>
-              <Link
-                href={heroContent?.buttonHref || "#contact"}
-                className="mt-8 inline-flex h-14 items-center justify-center rounded-none border border-neutral-900 bg-neutral-950 px-8 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:border-[#2563EB] hover:bg-[#2563EB] active:bg-[#2563EB]"
-              >
-                {heroContent?.buttonLabel || "Get Started"} <ArrowRight aria-hidden="true" className="ml-3 h-4 w-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
-        <div className="relative z-10">
-          <HomeMetricTransition content={content.home_metrics} />
+      {/* Hero */}
+      <section className="relative h-screen w-full overflow-hidden bg-[#0F0F0F]">
+        <div className="absolute inset-0">
+          <Image src={heroImage} alt="" fill priority sizes="100vw" className="object-cover object-center" />
+          <div className="absolute inset-0 bg-black/40" />
         </div>
-      </div>
+        <div className="relative z-10 mx-auto grid h-full w-full max-w-[1280px] grid-cols-1 items-center px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl overflow-hidden">
+            <p className="mb-5 inline-flex items-center gap-2 border border-white/40 bg-white/20 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-white shadow-sm backdrop-blur-sm">
+              <span className="h-1.5 w-1.5 bg-white" />
+              {heroBadge}
+            </p>
+            <h1 className="max-w-3xl text-4xl font-bold leading-[1.05] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+              {renderHeroTitle(heroTitle)}
+            </h1>
+            <p className="mt-6 max-w-xl text-base leading-relaxed text-white/90 md:text-lg">
+              {heroBody}
+            </p>
+            <Link
+              href={heroContent?.buttonHref || "#contact"}
+              className="mt-8 inline-flex h-14 items-center justify-center rounded-none border border-neutral-900 bg-neutral-950 px-8 text-sm font-semibold uppercase tracking-wider text-white transition-colors hover:border-[#2563EB] hover:bg-[#2563EB] active:bg-[#2563EB]"
+            >
+              {heroContent?.buttonLabel || "Get Started"} <ArrowRight aria-hidden="true" className="ml-3 h-4 w-4" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <HomeMetricTransition content={content.home_metrics} />
 
       <HomeLandingSections
         systems={systems}
-        projects={projects}
         promotion={promotion}
+        projects={projects}
         content={content}
         commitmentBackground={bespokeFallbackImage.src}
       />

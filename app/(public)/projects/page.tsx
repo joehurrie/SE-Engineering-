@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import prisma from "@/lib/prisma";
 import ProjectsGallery from "@/components/ProjectsGallery";
-import GoogleProjectsMap from "@/components/GoogleProjectsMap";
 import ScrollRevealPage from "@/components/ScrollRevealPage";
 import { defaultProjects, type ProjectData } from "@/lib/project-data";
 import { getContentValue, loadSiteContentMap } from "@/lib/home-content";
@@ -20,7 +19,7 @@ export default async function ProjectsPage() {
   let content: Awaited<ReturnType<typeof loadSiteContentMap>> = {};
 
   try {
-    content = await loadSiteContentMap(["projects_hero", "projects_gallery", "projects_map"]);
+    content = await loadSiteContentMap(["projects_hero", "projects_gallery"]);
   } catch (error) {
     console.error("Failed to load Projects page content:", error);
   }
@@ -93,31 +92,14 @@ export default async function ProjectsPage() {
         </div>
       </section>
 
-      {/* ── 2. Filter Tabs & Projects Showcase ─────────────────── */}
+      {/* ── 2. Projects Showcase ─────────────────── */}
       <ProjectsGallery
         initialProjects={projectList}
         badge={getContentValue(gallery, "badge", "Flagship Portfolio")}
         title={getContentValue(gallery, "title", "Landmark Developments.")}
         description={getContentValue(gallery, "bodyText", "Explore our completed and active vertical transportation projects across East Africa.")}
-        buttonLabel={getContentValue(gallery, "buttonLabel", "Discuss a project")}
-        buttonHref={getContentValue(gallery, "buttonHref", "/contact")}
       />
-      <GoogleProjectsMap
-        title={getContentValue(content.projects_map, "title", "Work across the region")}
-        description={getContentValue(content.projects_map, "bodyText", "Explore locations where our commissioned and active projects are making a difference.")}
-        buttonLabel={getContentValue(content.projects_map, "buttonLabel", "View map")}
-        buttonHref={getContentValue(content.projects_map, "buttonHref", "#project-map")}
-        projects={projectList.flatMap((project) => {
-          if (project.latitude === null || project.longitude === null) return [];
-          return [{
-            id: project.id,
-            projectName: project.projectName,
-            location: project.location,
-            latitude: project.latitude,
-            longitude: project.longitude,
-          }];
-        })}
-      />
+
     </ScrollRevealPage>
   );
 }

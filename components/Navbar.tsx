@@ -86,14 +86,16 @@ function NavbarContent({ pathname }: { pathname: string }) {
 
   return (
     <>
-      {/* ── Fixed Header (Nexia Layout & Aesthetic) ─────────────── */}
+      {/* ── Fixed Header ─────────────── */}
       <header
-        className={`fixed top-0 left-0 w-full z-50 border-b border-neutral-200 bg-white transition-all duration-300 ${
-          scrolled ? "py-3 shadow-sm" : "py-4 md:py-5"
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+          scrolled
+            ? "bg-white/95 backdrop-blur-md border-b border-neutral-200 shadow-sm py-3"
+            : "bg-transparent border-b border-white/10 py-4 md:py-5"
         }`}
       >
         <div className="w-full px-6 sm:px-8 md:px-12 lg:px-16 h-14 flex items-center justify-between">
-          {/* Brand Mark (Sharp Nexia Box) */}
+          {/* Brand Mark */}
           <div className="flex-1 flex items-center justify-start">
             <Link href="/" className="flex items-center gap-3 group shrink-0">
               <img
@@ -105,24 +107,24 @@ function NavbarContent({ pathname }: { pathname: string }) {
                 style={{ display: "block" }}
               />
               <div className="flex flex-col text-left">
-                <span className="text-neutral-900 font-bold tracking-tight text-base group-hover:text-[#2563EB] transition-colors">
+                <span className={`font-bold tracking-tight text-base transition-colors group-hover:text-[#2563EB] ${scrolled ? "text-neutral-900" : "text-white"}`}>
                   SPECIALIZED
                 </span>
-                <span className="text-[10px] tracking-widest text-neutral-500 uppercase font-medium -mt-1">
+                <span className={`text-[10px] tracking-widest uppercase font-medium -mt-1 transition-colors ${scrolled ? "text-neutral-500" : "text-white/70"}`}>
                   Engineering Kenya
                 </span>
               </div>
             </Link>
           </div>
 
-          {/* Desktop Horizontal Menu (Centered 100% Width) */}
+          {/* Desktop Horizontal Menu */}
           <nav className="hidden lg:flex items-center justify-center gap-8 flex-none">
             <Link
               href="/"
               className={`text-sm font-medium transition-colors ${
                 pathname === "/"
                   ? "text-[#2563EB] font-semibold"
-                  : "text-neutral-900 hover:text-[#2563EB]"
+                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
               }`}
             >
               Home
@@ -133,7 +135,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
               className={`text-sm font-medium transition-colors ${
                 isActive("/projects")
                   ? "text-[#2563EB] font-semibold"
-                  : "text-neutral-900 hover:text-[#2563EB]"
+                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
               }`}
             >
               Projects
@@ -152,7 +154,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                   className={`text-sm font-medium transition-colors ${
                     isActive("/elevators")
                       ? "text-[#2563EB] font-semibold"
-                      : "text-neutral-900 hover:text-[#2563EB]"
+                      : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
                   }`}
                 >
                   Elevators
@@ -162,7 +164,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                   onClick={() => (elevatorsOpen ? closeElevatorsMenu() : openElevatorsMenu())}
                   aria-label="Toggle elevator categories menu"
                   aria-expanded={elevatorsOpen}
-                  className="text-neutral-500 hover:text-[#2563EB]"
+                  className={`transition-colors ${scrolled ? "text-neutral-500 hover:text-[#2563EB]" : "text-white/60 hover:text-white"}`}
                 >
                   <ChevronDown
                     className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -216,7 +218,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                   className={`text-sm font-medium transition-colors ${
                     isActive("/lift-services")
                       ? "text-[#2563EB] font-semibold"
-                      : "text-neutral-900 hover:text-[#2563EB]"
+                      : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
                   }`}
                 >
                   Services
@@ -225,7 +227,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                   type="button"
                   onClick={() => setServicesOpen(!servicesOpen)}
                   aria-label="Toggle lift services menu"
-                  className="text-neutral-500 hover:text-[#2563EB]"
+                  className={`transition-colors ${scrolled ? "text-neutral-500 hover:text-[#2563EB]" : "text-white/60 hover:text-white"}`}
                 >
                   <ChevronDown
                     className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -269,7 +271,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
               className={`text-sm font-medium transition-colors ${
                 isActive("/about")
                   ? "text-[#2563EB] font-semibold"
-                  : "text-neutral-900 hover:text-[#2563EB]"
+                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
               }`}
             >
               About
@@ -280,7 +282,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
               className={`text-sm font-medium transition-colors ${
                 isActive("/news")
                   ? "text-[#2563EB] font-semibold"
-                  : "text-neutral-900 hover:text-[#2563EB]"
+                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
               }`}
             >
               News
@@ -291,18 +293,22 @@ function NavbarContent({ pathname }: { pathname: string }) {
               className={`text-sm font-medium transition-colors ${
                 isActive("/contact")
                   ? "text-[#2563EB] font-semibold"
-                  : "text-neutral-900 hover:text-[#2563EB]"
+                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
               }`}
             >
               Contact
             </Link>
           </nav>
 
-          {/* Right: Sharp Nexia CTA Button */}
+          {/* Right: CTA Button */}
           <div className="flex-1 flex items-center justify-end gap-4">
             <Link
               href="/contact#form"
-              className="hidden sm:flex group px-5 py-2.5 rounded-none bg-white border border-[#E5E5E5] text-[#0F0F0F] hover:bg-[#2563EB] hover:border-[#2563EB] hover:text-white active:bg-[#2563EB] active:border-[#2563EB] active:text-white text-xs font-semibold uppercase tracking-wide transition-all duration-300"
+              className={`hidden sm:flex group px-5 py-2.5 rounded-none text-xs font-semibold uppercase tracking-wide transition-all duration-300 border ${
+                scrolled
+                  ? "bg-white border-[#E5E5E5] text-[#0F0F0F] hover:bg-[#2563EB] hover:border-[#2563EB] hover:text-white"
+                  : "bg-white/10 border-white/30 text-white hover:bg-white hover:border-white hover:text-[#0F0F0F]"
+              }`}
             >
               <span className="flex items-center gap-2">
                 Get Quote
@@ -313,7 +319,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(true)}
-              className="lg:hidden p-2 text-neutral-900 hover:text-[#2563EB] transition-colors"
+              className={`lg:hidden p-2 transition-colors ${scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white hover:text-white/70"}`}
               aria-label="Open mobile navigation"
             >
               <Menu className="w-6 h-6" />

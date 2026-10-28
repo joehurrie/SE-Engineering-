@@ -247,28 +247,6 @@ const commitmentQuote = "“Specialized Engineering is committed to providing th
 
 function renderCommitmentQuote(rawQuote: string) {
   const clean = rawQuote.replace(/[“”]/g, "").trim();
-  const regex = /(highest engineering rigor|vertical transportation|engineering rigor|safety and reliability|ISO specifications)/gi;
-  const parts = clean.split(regex);
-  if (parts.length > 1) {
-    return (
-      <>
-        “
-        {parts.map((part, i) =>
-          regex.test(part) ? (
-            <span
-              key={i}
-              className="bg-gradient-to-r from-[#2563EB] to-blue-700 bg-clip-text text-transparent font-semibold"
-            >
-              {part}
-            </span>
-          ) : (
-            <span key={i} className="text-[#0F0F0F]">{part}</span>
-          )
-        )}
-        ”
-      </>
-    );
-  }
   return <span className="text-[#0F0F0F]">“{clean}”</span>;
 }
 
@@ -553,20 +531,40 @@ export default function HomeLandingSections({
         </div>
       </section>
 
-      <section className="commitment-section relative isolate flex min-h-[60vh] items-center overflow-hidden bg-white py-20 font-sans tracking-normal md:h-[80vh] md:min-h-0 md:py-0 border-b border-neutral-100">
-        <div
-          aria-hidden="true"
-          className="commitment-parallax absolute inset-0 bg-white"
-          style={{ backgroundImage: `url("${commitmentBackground}")` }}
-        />
-        <div aria-hidden="true" className="absolute inset-0 bg-white/50 backdrop-blur-[0.5px]" />
+      <section className="commitment-section relative isolate flex min-h-[60vh] items-center overflow-hidden bg-[#F5F5F3] py-20 font-sans tracking-normal md:h-[80vh] md:min-h-0 md:py-0 border-b border-neutral-200">
         <div data-home-reveal data-home-reveal-instant className="home-reveal relative z-10 mx-auto w-full max-w-[1100px] px-4 text-center sm:px-6 lg:px-8">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#2563EB]">{sectionText(content.home_commitment, "subtitle", "Our commitment")}</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0F0F0F]">{sectionText(content.home_commitment, "subtitle", "Our commitment")}</p>
           <blockquote aria-label={sectionText(content.home_commitment, "bodyText", commitmentQuote)} className="commitment-quote mx-auto mt-7 max-w-[1000px] text-3xl font-medium leading-[1.25] tracking-normal text-[#0F0F0F] sm:text-4xl md:text-5xl lg:text-6xl">
             {renderCommitmentQuote(sectionText(content.home_commitment, "bodyText", commitmentQuote))}
           </blockquote>
-          <div className="mx-auto mt-8 h-1 w-20 bg-[#2563EB]" />
-          <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">Specialized Engineering Kenya Ltd.</p>
+          <div className="mx-auto mt-8 h-1 w-20 bg-[#0F0F0F]" />
+          <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#0F0F0F]">Specialized Engineering Kenya Ltd.</p>
+        </div>
+      </section>
+
+      <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-white py-16 font-sans tracking-normal text-neutral-900 md:py-24">
+        <div className="relative mx-auto flex min-h-[520px] w-full max-w-[1440px] items-center px-4 sm:px-8 lg:px-12" data-home-reveal>
+          <video
+            className="absolute inset-0 h-full w-full object-cover"
+            src={promotion.video}
+            poster={promotion.image}
+            autoPlay
+            muted
+            loop
+            playsInline
+            aria-hidden="true"
+          />
+          <div className="home-reveal relative z-10 w-full max-w-2xl border border-white/70 bg-white/90 p-6 shadow-lg backdrop-blur-sm sm:p-9 md:p-12">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">{sectionText(content.home_video_banner, "subtitle", "Beyond the standard range")}</p>
+            <h2 className="mt-4 max-w-xl text-3xl font-semibold leading-tight tracking-normal text-neutral-900 sm:text-4xl">{sectionText(content.home_video_banner, "title", "Elevator solutions, engineered for every journey.")}</h2>
+            <p className="mt-4 max-w-xl text-sm leading-7 text-neutral-600">{sectionText(content.home_video_banner, "bodyText", promotion.description)}</p>
+            <ul className="mt-6 grid gap-x-6 gap-y-3 sm:grid-cols-2">
+              {promotion.features.map((feature) => <li key={feature} className="flex items-center gap-3 text-sm text-neutral-700"><span className="h-1.5 w-1.5 shrink-0 bg-[#2563EB]" />{feature}</li>)}
+            </ul>
+            <Link href={sectionText(content.home_video_banner, "buttonHref", "/contact")} className="mt-8 inline-flex h-12 w-fit items-center gap-3 rounded-none border border-[#E5E5E5] bg-white px-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#0F0F0F] transition-colors hover:border-[#2563EB] hover:bg-[#2563EB] hover:text-white active:border-[#2563EB] active:bg-[#2563EB] active:text-white">
+              {sectionText(content.home_video_banner, "buttonLabel", "Get started")} <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -680,31 +678,7 @@ export default function HomeLandingSections({
         </div>
       </section>
 
-      <section className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-white py-16 font-sans tracking-normal text-neutral-900 md:py-24">
-        <div className="relative mx-auto flex min-h-[520px] w-full max-w-[1440px] items-center px-4 sm:px-8 lg:px-12" data-home-reveal>
-          <video
-            className="absolute inset-0 h-full w-full object-cover"
-            src={promotion.video}
-            poster={promotion.image}
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-hidden="true"
-          />
-          <div className="home-reveal relative z-10 w-full max-w-2xl border border-white/70 bg-white/90 p-6 shadow-lg backdrop-blur-sm sm:p-9 md:p-12">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">{sectionText(content.home_video_banner, "subtitle", "Beyond the standard range")}</p>
-            <h2 className="mt-4 max-w-xl text-3xl font-semibold leading-tight tracking-normal text-neutral-900 sm:text-4xl">{sectionText(content.home_video_banner, "title", "Elevator solutions, engineered for every journey.")}</h2>
-            <p className="mt-4 max-w-xl text-sm leading-7 text-neutral-600">{sectionText(content.home_video_banner, "bodyText", promotion.description)}</p>
-            <ul className="mt-6 grid gap-x-6 gap-y-3 sm:grid-cols-2">
-              {promotion.features.map((feature) => <li key={feature} className="flex items-center gap-3 text-sm text-neutral-700"><span className="h-1.5 w-1.5 shrink-0 bg-[#2563EB]" />{feature}</li>)}
-            </ul>
-            <Link href={sectionText(content.home_video_banner, "buttonHref", "/contact")} className="mt-8 inline-flex h-12 w-fit items-center gap-3 rounded-none border border-[#E5E5E5] bg-white px-5 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#0F0F0F] transition-colors hover:border-[#2563EB] hover:bg-[#2563EB] hover:text-white active:border-[#2563EB] active:bg-[#2563EB] active:text-white">
-              {sectionText(content.home_video_banner, "buttonLabel", "Get started")} <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
+      
 
       <section className="bg-white py-20 font-sans tracking-normal md:py-28">
         <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">

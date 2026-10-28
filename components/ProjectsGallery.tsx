@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
 import { ArrowRight, MapPin } from "lucide-react";
 import Link from "next/link";
@@ -8,15 +7,11 @@ import type { ProjectData } from "@/lib/project-data";
 
 export type ProjectItem = ProjectData;
 
-const categories = ["All Projects", "Residential", "Commercial", "Public / Transit"];
-
 type ProjectsGalleryProps = {
   initialProjects: ProjectItem[];
   badge?: string;
   title?: string;
   description?: string;
-  buttonLabel?: string;
-  buttonHref?: string;
 };
 
 export default function ProjectsGallery({
@@ -24,16 +19,7 @@ export default function ProjectsGallery({
   badge = "Flagship Portfolio",
   title = "Landmark Developments.",
   description = "Explore our completed and active vertical transportation projects across East Africa.",
-  buttonLabel = "Discuss a project",
-  buttonHref = "/contact",
 }: ProjectsGalleryProps) {
-  const [activeCategory, setActiveCategory] = useState("All Projects");
-
-  const filteredProjects =
-    activeCategory === "All Projects"
-      ? initialProjects
-      : initialProjects.filter((p) => p.category.toLowerCase().includes(activeCategory.toLowerCase()) || (activeCategory.includes("Residential") && p.projectType.toLowerCase().includes("residential")) || (activeCategory.includes("Commercial") && p.projectType.toLowerCase().includes("commercial")) || (activeCategory.includes("Public") && p.projectType.toLowerCase().includes("transit")));
-
   return (
     <section className="w-full min-h-screen py-32 md:py-48 bg-neutral-50 border-b border-neutral-200 flex items-center justify-center">
       <div className="w-full max-w-7xl mx-auto px-6 space-y-20 flex flex-col justify-center">
@@ -48,34 +34,11 @@ export default function ProjectsGallery({
           <p className="text-neutral-600 text-base md:text-lg font-light leading-relaxed text-center max-w-xl mx-auto">
             {description}
           </p>
-          <Link
-            href={buttonHref}
-            className="inline-flex min-h-11 items-center gap-2 border border-neutral-300 px-5 text-xs font-semibold uppercase tracking-wider text-neutral-800 transition-colors hover:border-blue-600 hover:bg-blue-600 hover:text-white"
-          >
-            {buttonLabel}
-            <ArrowRight aria-hidden="true" className="h-4 w-4" />
-          </Link>
-
-          {/* Filter Buttons Centered */}
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-4">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`text-xs px-6 py-3.5 rounded-none transition-colors border ${activeCategory === cat
-                    ? "bg-black text-white border-black font-semibold"
-                    : "bg-white text-neutral-600 border-neutral-200 hover:border-black hover:text-black"
-                  }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
         </div>
 
         {/* Grid Layout */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-7 lg:grid-cols-3">
-          {filteredProjects.map((proj) => (
+          {initialProjects.map((proj) => (
             <div
               key={proj.id}
               className="group rounded-none overflow-hidden bg-white border border-neutral-200 hover:border-blue-600/40 flex flex-col justify-between relative h-full transition-all duration-300 hover:shadow-xl"

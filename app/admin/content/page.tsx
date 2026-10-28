@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   CheckCircle,
@@ -635,9 +635,12 @@ export default function AdminContentPage() {
     let active = true;
     const requestedSection = new URLSearchParams(window.location.search).get("section");
     if (requestedSection && contentSections.some((section) => section.key === requestedSection)) {
+      // Read the query after hydration so the server and browser render the same initial accordion state.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setOpenSections(new Set([requestedSection]));
       const parentPage = pages.find((p) => p.sections.some((s) => s.key === requestedSection));
       if (parentPage) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setSelectedPage(parentPage.name);
       }
     }
