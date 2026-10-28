@@ -60,14 +60,14 @@ export default async function LiftServicesPage() {
       buttonHref: getContentValue(showcase, `service${pNum}ButtonHref`, `/contact?service=${service.slug}`),
       ...(index === 2
         ? {
-            partsTitle: getContentValue(showcase, "partsTitle", sectionText(content, "maintenancePartsTitle", service.partsTitle || "")),
-            partsDescription: getContentValue(showcase, "partsDescription", sectionText(content, "maintenancePartsDescription", service.partsDescription || "")),
-            partsFeatures: (service.partsFeatures || []).map((feature, featureIndex) =>
-              getContentValue(showcase, `partsFeature${featureIndex + 1}`, sectionText(content, `maintenancePartsFeature${featureIndex + 1}`, feature))
-            ),
-            partsButtonLabel: getContentValue(showcase, "partsButtonLabel", "Browse genuine components"),
-            partsButtonHref: getContentValue(showcase, "partsButtonHref", "/elevators#spare-parts"),
-          }
+          partsTitle: getContentValue(showcase, "partsTitle", sectionText(content, "maintenancePartsTitle", service.partsTitle || "")),
+          partsDescription: getContentValue(showcase, "partsDescription", sectionText(content, "maintenancePartsDescription", service.partsDescription || "")),
+          partsFeatures: (service.partsFeatures || []).map((feature, featureIndex) =>
+            getContentValue(showcase, `partsFeature${featureIndex + 1}`, sectionText(content, `maintenancePartsFeature${featureIndex + 1}`, feature))
+          ),
+          partsButtonLabel: getContentValue(showcase, "partsButtonLabel", "Browse genuine components"),
+          partsButtonHref: getContentValue(showcase, "partsButtonHref", "/elevators#spare-parts"),
+        }
         : {}),
     };
   });
@@ -77,7 +77,7 @@ export default async function LiftServicesPage() {
 
   return (
     <ScrollRevealPage className="min-h-screen bg-white text-neutral-950">
-      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-14 sm:py-16 md:py-20 text-center">
+      <section className="relative flex min-h-[100svh] md:min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-20 md:py-32 text-center">
         <div className="absolute inset-0 z-0">
           {hero?.videoUrl?.trim() ? (
             <video src={hero.videoUrl} autoPlay muted loop playsInline className="h-full w-full object-cover" />
