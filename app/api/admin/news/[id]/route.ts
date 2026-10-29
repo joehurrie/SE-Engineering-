@@ -65,14 +65,15 @@ export async function PUT(
     } catch {}
 
     return NextResponse.json({ success: true, article: updated });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string; code?: string; meta?: unknown; stack?: string } | null;
     console.error("Update news error:", error);
     return NextResponse.json(
       {
-        error: error?.message || "Failed to update news article",
-        code: error?.code,
-        meta: error?.meta,
-        stack: error?.stack,
+        error: err?.message || "Failed to update news article",
+        code: err?.code,
+        meta: err?.meta,
+        stack: err?.stack,
       },
       { status: 500 }
     );
@@ -126,10 +127,11 @@ export async function PATCH(
     } catch {}
 
     return NextResponse.json({ success: true, article: updated });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string } | null;
     console.error("Patch news error:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to update article status" },
+      { error: err?.message || "Failed to update article status" },
       { status: 500 }
     );
   }
@@ -162,10 +164,11 @@ export async function DELETE(
     } catch {}
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const err = error as { message?: string } | null;
     console.error("Delete news error:", error);
     return NextResponse.json(
-      { error: error?.message || "Failed to delete news article" },
+      { error: err?.message || "Failed to delete news article" },
       { status: 500 }
     );
   }

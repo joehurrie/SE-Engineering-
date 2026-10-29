@@ -124,35 +124,28 @@ export default async function AboutPage() {
   return (
     <ScrollRevealPage className="about-page min-h-screen bg-white text-neutral-900 selection:bg-blue-600 selection:text-white">
 
-      {/* ── 1. Hero: 70% View Height (matching Services and News) ── */}
-      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-14 sm:py-16 md:py-20 text-center">
+      {/* ── 1. Hero: Standardized Dimensions (100% on mobile, exactly 70vh on desktop) ── */}
+      <section className="relative flex min-h-[100svh] md:min-h-0 md:h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-12 md:py-16 text-center">
         <div className="absolute inset-0 z-0">
           <img
             src={heroImg}
             alt="Specialized Engineering team architectural skyline"
             className="h-full w-full object-cover"
           />
-          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 bg-black/55" />
         </div>
 
-        <div className="w-full max-w-4xl mx-auto px-6 relative z-10 flex flex-col items-center justify-center text-center my-auto">
-          <div className="mb-4 inline-flex items-center gap-2 border border-[#2563EB] bg-[#2563EB] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+        <div className="w-full max-w-3xl mx-auto px-4 sm:px-6 relative z-10 flex flex-col items-center justify-center text-center my-auto md:pt-[72px]">
+          <div className="mb-3 sm:mb-4 inline-flex items-center gap-2 border border-[#2563EB] bg-[#2563EB] px-3 py-1 text-[9px] sm:text-[10px] font-bold uppercase tracking-widest text-white">
             {subtitle}
           </div>
-          <h1 className="mb-4 text-center text-4xl font-bold uppercase tracking-tight text-white drop-shadow-lg sm:text-6xl md:text-7xl">
+          <h1 className="mb-3 sm:mb-4 text-center text-3xl sm:text-5xl md:text-5xl lg:text-6xl font-bold uppercase tracking-tight text-white drop-shadow-lg leading-tight">
             {title}
           </h1>
-          <div className="w-20 h-1 bg-blue-600 mx-auto mb-6" />
-          <p className="mx-auto max-w-xl text-center text-base font-light leading-relaxed text-white drop-shadow-lg md:text-lg">
+          <div className="w-16 sm:w-20 h-1 bg-blue-600 mx-auto mb-4 sm:mb-5" />
+          <p className="mx-auto max-w-xl text-center text-sm md:text-base font-light leading-relaxed text-white/95 drop-shadow-lg">
             {bodyText}
           </p>
-          <Link
-            href={getContentValue(hero, "buttonHref", "/contact")}
-            className="mt-3 inline-flex min-h-12 items-center gap-2 border border-white px-6 text-xs font-semibold uppercase tracking-wider text-white transition-colors hover:bg-blue-600"
-          >
-            {getContentValue(hero, "buttonLabel", "Contact Our Team")}
-            <ArrowRight aria-hidden="true" className="h-4 w-4" />
-          </Link>
         </div>
       </section>
 

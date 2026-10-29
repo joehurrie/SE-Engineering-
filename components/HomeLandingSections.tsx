@@ -296,15 +296,10 @@ export default function HomeLandingSections({
       window.matchMedia("(prefers-reduced-motion: reduce)").matches
     ) return;
     const intervalId = window.setInterval(() => {
-      setCurrentSlide((current) => current + 1);
+      setCurrentSlide((current) => (products.length > 0 ? (current + 1) % products.length : 0));
     }, 8000);
     return () => window.clearInterval(intervalId);
   }, [isCarouselPaused, isMobileViewport, products.length]);
-
-  useEffect(() => {
-    if (currentSlide !== products.length) return;
-    setCurrentSlide(0);
-  }, [currentSlide, products.length]);
 
   useEffect(() => {
     const standardItems = document.querySelectorAll<HTMLElement>("[data-home-reveal]:not([data-home-reveal-instant])");
@@ -349,7 +344,7 @@ export default function HomeLandingSections({
         <div className="flex flex-col">
           <div className="shrink-0 px-4 pt-8 pb-4 text-center sm:pt-10 sm:pb-5">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#2563EB]">{sectionText(systemsContent, "subtitle", "Vertical transport systems")}</p>
-            <h2 className="mt-2 text-2xl font-bold leading-tight tracking-tight text-[#0F0F0F] sm:text-3xl md:text-4xl">{sectionText(systemsContent, "title", "Engineered for every journey")}</h2>
+            <h2 className="mt-2 text-3xl font-bold leading-tight tracking-tight text-[#0F0F0F] sm:text-4xl md:text-5xl">{sectionText(systemsContent, "title", "Engineered for every journey")}</h2>
           </div>
           <div
             className="systems-carousel relative min-h-0 flex-1 overflow-hidden pb-8 sm:pb-12 pt-2"

@@ -711,8 +711,36 @@ export default function AdminContentPage() {
   const [values, setValues] = useState<Record<string, Record<string, string>>>(() =>
     Object.fromEntries(contentSections.map((section) => [section.key, getInitialValues(section)]))
   );
-  const [selectedPage, setSelectedPage] = useState("Home");
-  const [openSections, setOpenSections] = useState<Set<string>>(() => new Set(["home_hero"]));
+  const [selectedPage, setSelectedPage] = useState(() => {
+    if (typeof window === "undefined") return "Home";
+    const params = new URLSearchParams(window.location.search);
+    const requestedPage = params.get("page");
+    if (requestedPage) {
+      const pageMatch = pages.find((p) => p.name.toLowerCase() === requestedPage.toLowerCase());
+      if (pageMatch) return pageMatch.name;
+    }
+    const requestedSection = params.get("section");
+    if (requestedSection && contentSections.some((section) => section.key === requestedSection)) {
+      const parentPage = pages.find((p) => p.sections.some((s) => s.key === requestedSection));
+      if (parentPage) return parentPage.name;
+    }
+    return "Home";
+  });
+
+  const [openSections, setOpenSections] = useState<Set<string>>(() => {
+    if (typeof window === "undefined") return new Set(["home_hero"]);
+    const params = new URLSearchParams(window.location.search);
+    const requestedPage = params.get("page");
+    if (requestedPage) {
+      const pageMatch = pages.find((p) => p.name.toLowerCase() === requestedPage.toLowerCase());
+      if (pageMatch) return new Set(pageMatch.sections.map((s) => s.key));
+    }
+    const requestedSection = params.get("section");
+    if (requestedSection && contentSections.some((section) => section.key === requestedSection)) {
+      return new Set([requestedSection]);
+    }
+    return new Set(["home_hero"]);
+  });
   const [filterQuery, setFilterQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [savingKey, setSavingKey] = useState<string | null>(null);
@@ -725,23 +753,6 @@ export default function AdminContentPage() {
 
   useEffect(() => {
     let active = true;
-    const params = new URLSearchParams(window.location.search);
-    const requestedSection = params.get("section");
-    const requestedPage = params.get("page");
-
-    if (requestedPage) {
-      const pageMatch = pages.find((p) => p.name.toLowerCase() === requestedPage.toLowerCase());
-      if (pageMatch) {
-        setSelectedPage(pageMatch.name);
-        setOpenSections(new Set(pageMatch.sections.map((s) => s.key)));
-      }
-    } else if (requestedSection && contentSections.some((section) => section.key === requestedSection)) {
-      setOpenSections(new Set([requestedSection]));
-      const parentPage = pages.find((p) => p.sections.some((s) => s.key === requestedSection));
-      if (parentPage) {
-        setSelectedPage(parentPage.name);
-      }
-    }
 
     fetch("/api/admin/content")
       .then(async (res) => {

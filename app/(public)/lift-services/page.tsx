@@ -77,7 +77,7 @@ export default async function LiftServicesPage() {
 
   return (
     <ScrollRevealPage className="min-h-screen bg-white text-neutral-950">
-      <section className="relative flex min-h-[100svh] md:min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-20 md:py-32 text-center">
+      <section className="relative flex min-h-[100svh] md:min-h-0 md:h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-12 md:py-16 text-center">
         <div className="absolute inset-0 z-0">
           {hero?.videoUrl?.trim() ? (
             <video src={hero.videoUrl} autoPlay muted loop playsInline className="h-full w-full object-cover" />
@@ -97,7 +97,8 @@ export default async function LiftServicesPage() {
           <h1 className="mt-5 text-4xl font-semibold tracking-tight text-white drop-shadow-lg sm:text-6xl md:text-7xl">
             {getContentValue(hero, "title", "Lift services, end to end.")}
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-base leading-7 text-white drop-shadow-lg md:text-lg">
+          <div className="w-16 sm:w-20 h-1 bg-blue-600 mx-auto mt-6 mb-6" />
+          <p className="mx-auto max-w-2xl text-base leading-7 text-white drop-shadow-lg md:text-lg">
             {getContentValue(hero, "bodyText", "From choosing the right system to keeping it safe and dependable for years to come, one team is accountable throughout.")}
           </p>
           <Link
