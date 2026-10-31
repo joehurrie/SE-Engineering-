@@ -203,7 +203,7 @@ export default async function HomePage() {
     title: content.home_video_banner?.title || "Elevator solutions, engineered for every journey.",
     description: content.home_video_banner?.bodyText || "From a single home lift to high-capacity commercial systems, we tailor complete vertical transport solutions to the people and places they serve.",
     features: ["Curved glass capsules", "Low-pit shafts from 300 mm", "Smart destination dispatch"],
-    video: content.home_video_banner?.videoUrl || "/assets/video.mp4",
+    video: "/assets/video.mp4",
   };
   const homepageFaqs = faqs.map((faq, index) => ({
     q: content.home_faq?.[`question${index + 1}`] || faq.q,
