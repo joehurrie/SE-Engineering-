@@ -13,6 +13,7 @@ export default function HomeContactForm() {
     const data = {
       name: (form.elements.namedItem("name") as HTMLInputElement).value,
       email: (form.elements.namedItem("email") as HTMLInputElement).value,
+      phone: (form.elements.namedItem("phone") as HTMLInputElement)?.value || null,
       subject: "WEBSITE HOME INQUIRY",
       message: (form.elements.namedItem("message") as HTMLTextAreaElement).value,
     };
@@ -80,6 +81,19 @@ export default function HomeContactForm() {
         </div>
 
         <div className="space-y-1.5">
+          <label htmlFor="home-phone" className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">
+            Phone Number
+          </label>
+          <input
+            type="tel"
+            id="home-phone"
+            name="phone"
+            placeholder="+254 700 000 000"
+            className="h-11 w-full rounded-none border border-[#E5E5E5] bg-white px-3.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
+          />
+        </div>
+
+        <div className="space-y-1.5">
           <label htmlFor="home-message" className="block text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-600">
             Project Details *
           </label>
@@ -93,7 +107,7 @@ export default function HomeContactForm() {
           />
         </div>
 
-        <div className="pt-2">
+        <div className="pt-2 flex justify-end">
           <button
             type="submit"
             disabled={formStatus === "sending"}

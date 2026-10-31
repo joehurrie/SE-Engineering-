@@ -28,80 +28,6 @@ type ElevatorCatalogItem = {
   href?: string;
 };
 
-const defaultElevatorCategories: ElevatorCatalogItem[] = [
-  {
-    slug: "home-lift",
-    title: "Home Lift",
-    category: "Luxury Residential",
-    desc: "Tailored residential solutions for multi-story villas and private homes. Whisper-quiet, compact, and energy-efficient.",
-    img: "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&q=80&w=800",
-    num: "01",
-    spec: "Payload 250–400 kg · Single/3-Phase",
-  },
-  {
-    slug: "passenger-elevator",
-    title: "Passenger Elevator",
-    category: "Commercial High-Rise",
-    desc: "High-efficiency vertical transit for corporate towers and residential apartments with XIZI exclusive supply.",
-    img: "https://images.unsplash.com/photo-1517581177682-a085bb7ffb15?auto=format&fit=crop&q=80&w=800",
-    num: "02",
-    spec: "Speed up to 4.0 m/s · Group Dispatch",
-  },
-  {
-    slug: "escalator-moving-walk",
-    title: "Escalator & Moving Walk",
-    category: "Public & Transit",
-    desc: "Heavy-duty transit systems for shopping centers, airports, and public pedestrian transport nodes.",
-    img: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&q=80&w=800",
-    num: "03",
-    spec: "Inclination 30°/35° · Heavy Transit Duty",
-  },
-  {
-    slug: "panoramic-elevator",
-    title: "Panoramic Elevator",
-    category: "Observation Glass",
-    desc: "All-glass architectural observation elevators providing unobstructed atrium views and prestigious aesthetics.",
-    img: "https://images.unsplash.com/photo-1555529771-835f59fc5efe?auto=format&fit=crop&q=80&w=800",
-    num: "04",
-    spec: "Laminated Safety Glass · Custom Shapes",
-  },
-  {
-    slug: "hospital-elevator",
-    title: "Hospital Elevator",
-    category: "Medical Facilities",
-    desc: "Medical-grade cabins proportioned for smooth stretcher transit, delicate medical gear, and priority dispatch.",
-    img: "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&q=80&w=800",
-    num: "05",
-    spec: "Stretcher Optimized · Micro-Leveling",
-  },
-  {
-    slug: "freight-car-elevator",
-    title: "Freight Elevator & Car Elevator",
-    category: "Heavy Industrial",
-    desc: "Heavy-load capacity platforms with diamond-plate flooring for automobile storage towers and logistics centers.",
-    img: "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=80&w=800",
-    num: "06",
-    spec: "Payload up to 5,000 kg · Reinforced Sill",
-  },
-  {
-    slug: "dumbwaiter",
-    title: "Dumbwaiter",
-    category: "Hospitality & Food",
-    desc: "Stainless steel food-grade service lifts for restaurants, hotels, banks, and healthcare facilities.",
-    img: "https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&q=80&w=800",
-    num: "07",
-    spec: "50–300 kg · SS304 Hygiene Standard",
-  },
-  {
-    slug: "hydraulic-platform",
-    title: "Hydraulic Platform",
-    category: "Accessibility & Loading",
-    desc: "Versatile hydraulic lifting mechanisms for low-rise accessibility, loading docks, and mezzanine floors.",
-    img: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=800",
-    num: "08",
-    spec: "Low Pit Requirement · Smooth Hydraulic Drive",
-  },
-];
 
 type ElevatorsPageProps = {
   searchParams: Promise<{ category?: string }>;
@@ -151,19 +77,17 @@ export default async function ElevatorsPage({ searchParams }: ElevatorsPageProps
         href: `/elevators/spare-parts/${part.slug}`,
       }));
   const databaseElevators = dbProducts.filter((product) => product.category.trim().toLowerCase() !== "spare parts");
-  const elevatorProducts: ElevatorCatalogItem[] = databaseElevators.length
-    ? databaseElevators
-        .map((product, index) => ({
-          slug: String(product.id),
-          title: product.title,
-          category: product.category,
-          desc: product.description,
-          img: product.imageUrl,
-          num: String(index + 1).padStart(2, "0"),
-          spec: product.specifications || "",
-          href: `/elevators/product/${product.id}`,
-        }))
-    : defaultElevatorCategories;
+  const elevatorProducts: ElevatorCatalogItem[] = databaseElevators
+    .map((product, index) => ({
+      slug: String(product.id),
+      title: product.title,
+      category: product.category,
+      desc: product.description,
+      img: product.imageUrl,
+      num: String(index + 1).padStart(2, "0"),
+      spec: product.specifications || "",
+      href: `/elevators/product/${product.id}`,
+    }));
 
   const filteredProducts = elevatorProducts.filter((product) => {
     if (activeCategory === "all") return true;

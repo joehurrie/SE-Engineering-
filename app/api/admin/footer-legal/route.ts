@@ -76,6 +76,7 @@ export async function POST(request: Request) {
         contact: {
           phonePrimary: footer.contact?.phonePrimary ?? currentFooter.contact.phonePrimary,
           phoneSecondary: footer.contact?.phoneSecondary ?? currentFooter.contact.phoneSecondary,
+          whatsappNumber: footer.contact?.whatsappNumber ?? currentFooter.contact.whatsappNumber,
           emailPrimary: footer.contact?.emailPrimary ?? currentFooter.contact.emailPrimary,
           emailSupport: footer.contact?.emailSupport ?? currentFooter.contact.emailSupport,
           officeAddress: footer.contact?.officeAddress ?? currentFooter.contact.officeAddress,

@@ -331,6 +331,28 @@ export default function AdminFooterLegalPage() {
               <div>
                 <label className={labelClass}>
                   <span className="flex items-center gap-1.5">
+                    <Phone className="h-3.5 w-3.5 text-emerald-600" />
+                    WhatsApp Business Chat Number
+                  </span>
+                </label>
+                <input
+                  type="text"
+                  value={footer.contact.whatsappNumber || ""}
+                  onChange={(e) =>
+                    setFooter({
+                      ...footer,
+                      contact: { ...footer.contact, whatsappNumber: e.target.value },
+                    })
+                  }
+                  placeholder="+254 713 104907"
+                  className={inputClass}
+                />
+                <span className="text-[11px] text-[#64748B] mt-1 block">Direct WhatsApp chat link number (opens on mobile &amp; desktop)</span>
+              </div>
+
+              <div>
+                <label className={labelClass}>
+                  <span className="flex items-center gap-1.5">
                     <Mail className="h-3.5 w-3.5 text-[#2563EB]" />
                     General Inquiries Email
                   </span>

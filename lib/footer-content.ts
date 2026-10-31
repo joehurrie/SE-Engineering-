@@ -16,6 +16,7 @@ export interface FooterSocialLinks {
 export interface FooterContactInfo {
   phonePrimary: string;
   phoneSecondary: string;
+  whatsappNumber?: string;
   emailPrimary: string;
   emailSupport: string;
   officeAddress: string;
@@ -60,6 +61,7 @@ export const defaultFooterSettings: FooterSettingsData = {
   contact: {
     phonePrimary: "+254 (0)116 000100",
     phoneSecondary: "+254 (0)713 104907",
+    whatsappNumber: "+254 713 104907",
     emailPrimary: "specializedengineeringltd@gmail.com",
     emailSupport: "info@specializedengineering.co.ke",
     officeAddress: "Kilimani Business Hub, Nairobi, Kenya",
@@ -139,6 +141,7 @@ export async function getFooterSettings(): Promise<FooterSettingsData> {
       contact: {
         phonePrimary: parsed.contact?.phonePrimary || defaultFooterSettings.contact.phonePrimary,
         phoneSecondary: parsed.contact?.phoneSecondary || defaultFooterSettings.contact.phoneSecondary,
+        whatsappNumber: parsed.contact?.whatsappNumber || defaultFooterSettings.contact.whatsappNumber,
         emailPrimary: parsed.contact?.emailPrimary || defaultFooterSettings.contact.emailPrimary,
         emailSupport: parsed.contact?.emailSupport || defaultFooterSettings.contact.emailSupport,
         officeAddress: parsed.contact?.officeAddress || defaultFooterSettings.contact.officeAddress,

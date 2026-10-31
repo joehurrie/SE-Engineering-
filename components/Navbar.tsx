@@ -124,7 +124,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
               className={`text-sm font-medium transition-colors ${
                 pathname === "/"
                   ? "text-[#2563EB] font-semibold"
-                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
+                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-[#2563EB]"
               }`}
             >
               Home
@@ -135,7 +135,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
               className={`text-sm font-medium transition-colors ${
                 isActive("/projects")
                   ? "text-[#2563EB] font-semibold"
-                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
+                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-[#2563EB]"
               }`}
             >
               Projects
@@ -154,7 +154,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                   className={`text-sm font-medium transition-colors ${
                     isActive("/elevators")
                       ? "text-[#2563EB] font-semibold"
-                      : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
+                      : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-[#2563EB]"
                   }`}
                 >
                   Elevators
@@ -164,7 +164,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                   onClick={() => (elevatorsOpen ? closeElevatorsMenu() : openElevatorsMenu())}
                   aria-label="Toggle elevator categories menu"
                   aria-expanded={elevatorsOpen}
-                  className={`transition-colors ${scrolled ? "text-neutral-500 hover:text-[#2563EB]" : "text-white/60 hover:text-white"}`}
+                  className={`transition-colors ${scrolled ? "text-neutral-500 hover:text-[#2563EB]" : "text-white/60 hover:text-[#2563EB]"}`}
                 >
                   <ChevronDown
                     className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -218,7 +218,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                   className={`text-sm font-medium transition-colors ${
                     isActive("/lift-services")
                       ? "text-[#2563EB] font-semibold"
-                      : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
+                      : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-[#2563EB]"
                   }`}
                 >
                   Services
@@ -227,7 +227,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
                   type="button"
                   onClick={() => setServicesOpen(!servicesOpen)}
                   aria-label="Toggle lift services menu"
-                  className={`transition-colors ${scrolled ? "text-neutral-500 hover:text-[#2563EB]" : "text-white/60 hover:text-white"}`}
+                  className={`transition-colors ${scrolled ? "text-neutral-500 hover:text-[#2563EB]" : "text-white/60 hover:text-[#2563EB]"}`}
                 >
                   <ChevronDown
                     className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -271,7 +271,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
               className={`text-sm font-medium transition-colors ${
                 isActive("/about")
                   ? "text-[#2563EB] font-semibold"
-                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
+                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-[#2563EB]"
               }`}
             >
               About
@@ -282,7 +282,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
               className={`text-sm font-medium transition-colors ${
                 isActive("/news")
                   ? "text-[#2563EB] font-semibold"
-                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
+                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-[#2563EB]"
               }`}
             >
               News
@@ -293,7 +293,7 @@ function NavbarContent({ pathname }: { pathname: string }) {
               className={`text-sm font-medium transition-colors ${
                 isActive("/contact")
                   ? "text-[#2563EB] font-semibold"
-                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-white"
+                  : scrolled ? "text-neutral-900 hover:text-[#2563EB]" : "text-white/90 hover:text-[#2563EB]"
               }`}
             >
               Contact

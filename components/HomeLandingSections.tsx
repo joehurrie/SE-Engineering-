@@ -45,7 +45,6 @@ export type HomeProduct = {
   desc: string;
   specs: string;
   image: string;
-  fallbackImage?: string;
   href: string;
 };
 
@@ -242,7 +241,7 @@ export default function HomeLandingSections({
     image: sectionText(systemsContent, `product${index + 1}Image`, product.image),
     href: sectionText(systemsContent, `product${index + 1}Href`, product.href),
   }));
-  const featuredProjects = projects.filter((p) => Boolean(p.imageUrl && p.imageUrl.trim())).slice(0, 6);
+  const featuredProjects = projects.filter((p) => Boolean(p.imageUrl && p.imageUrl.trim()) && p.featured).slice(0, 6);
   const projectsHeading = sectionText(content.home_projects, "title", "Our Projects") === "Projects in motion"
     ? "Our Projects"
     : sectionText(content.home_projects, "title", "Our Projects");
@@ -340,7 +339,7 @@ export default function HomeLandingSections({
 
   return (
     <>
-      <section id="systems" className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-white mb-28 md:mb-40 lg:mb-48 pb-12 sm:pb-16 md:pb-20 font-sans tracking-normal border-b border-neutral-200">
+      <section id="systems" className="relative left-1/2 w-screen -translate-x-1/2 overflow-hidden bg-white py-16 sm:py-20 md:py-24 font-sans tracking-normal border-b border-neutral-200">
         <div className="flex flex-col">
           <div className="shrink-0 px-4 pt-8 pb-4 text-center sm:pt-10 sm:pb-5">
             <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#2563EB]">{sectionText(systemsContent, "subtitle", "Vertical transport systems")}</p>

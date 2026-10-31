@@ -3,7 +3,6 @@ import Image from "next/image";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { categoryToSlug } from "@/lib/slugs";
-import { getElevatorProductAsset } from "@/lib/elevator-product-assets";
 import HomeContactForm from "@/components/HomeContactForm";
 import bespokeFallbackImage from "./Assets/design.jpg";
 import HomeLandingSections, {
@@ -24,7 +23,6 @@ const defaultSystems: HomeProduct[] = [
     desc: "Ultra-quiet residential hydraulic and traction home lift engineered for private villas.",
     specs: "{\"capacity\":\"630kg\",\"speed\":\"1.0m/s\",\"stops\":\"2-5\"}",
     image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1791926331777-design2.webp",
-    fallbackImage: getElevatorProductAsset("Prestige Villa Home Lift", "Passenger Elevator").src,
     href: "/elevators/home-lift",
   },
   {
@@ -33,7 +31,6 @@ const defaultSystems: HomeProduct[] = [
     desc: "High-capacity, smooth-ride passenger lifts engineered for commercial towers, hotels, and luxury multi-family developments with intelligent group dispatching.",
     specs: "{\"capacity\":\"630kg - 1600kg (8-21 Passengers)\",\"speed\":\"1.0m/s - 4.0m/s\",\"drive\":\"Permanent Magnet Synchronous Machine (PMSM)\",\"control\":\"Microprocessor VVVF Full Collective Group Control\"}",
     image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1791836306273-dsc01710.webp",
-    fallbackImage: getElevatorProductAsset("Commercial High-Rise Passenger Elevator", "Passenger Elevator").src,
     href: "/elevators/passenger-elevator",
   },
   {
@@ -42,7 +39,6 @@ const defaultSystems: HomeProduct[] = [
     desc: "Spacious, micro-leveling precision elevators designed specifically for medical facilities, hospital beds, delicate equipment, and intensive care transport.",
     specs: "{\"capacity\":\"1600kg - 2500kg\",\"speed\":\"1.0m/s - 2.0m/s\",\"doorClearance\":\"1200mm - 1500mm Telescopic / Center Open\",\"features\":\"Antibacterial finishes, Priority Medical Emergency Dispatch\"}",
     image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1791836420088-dsc01729.webp",
-    fallbackImage: getElevatorProductAsset("Medical Stretcher & Bed Hospital Elevator", "Hospital Elevator").src,
     href: "/elevators/hospital-elevator",
   },
   {
@@ -50,8 +46,7 @@ const defaultSystems: HomeProduct[] = [
     title: "Escalators",
     desc: "High-capacity people movement for retail, hospitality, and public transport environments.",
     specs: "Public spaces · Heavy transit duty",
-    image: getElevatorProductAsset("Escalators", "Public spaces").src,
-    fallbackImage: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&q=85&w=1400",
+    image: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&q=85&w=1400",
     href: "/elevators/escalator-moving-walk",
   },
   {
@@ -60,7 +55,6 @@ const defaultSystems: HomeProduct[] = [
     desc: "Architectural observation lift with laminated safety curved glass walls, circular or diamond car profile, offering 180° to 360° exterior city and atrium views.",
     specs: "{\"capacity\":\"800kg - 1350kg (10-18 Passengers)\",\"speed\":\"1.0m/s - 2.5m/s\",\"carStyle\":\"Curved Glass / Hexagonal / Diamond\",\"illumination\":\"Ambient LED Concealed Lighting\"}",
     image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1791836382007-dsc01833.webp",
-    fallbackImage: getElevatorProductAsset("Scenic Curved Glass Panoramic Elevator", "Panoramic Elevator").src,
     href: "/elevators/panoramic-elevator",
   },
   {
@@ -69,7 +63,6 @@ const defaultSystems: HomeProduct[] = [
     desc: "Stainless steel grade 304 food and service dumbwaiters for restaurants, hotels, banks, and healthcare facilities with heating and multi-shelf configurations.",
     specs: "{\"capacity\":\"100kg - 300kg\",\"speed\":\"0.4m/s\",\"material\":\"Food-Grade Stainless Steel SUS304\",\"doors\":\"Bi-parting Vertical Sliding Shutter\"}",
     image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1791836473398-dsc01709.webp",
-    fallbackImage: getElevatorProductAsset("Commercial & Hospitality Service Dumbwaiter", "Dumbwaiter").src,
     href: "/elevators/dumbwaiter",
   },
   {
@@ -78,7 +71,6 @@ const defaultSystems: HomeProduct[] = [
     desc: "Description goes here",
     specs: "max capacity 300kgs",
     image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1791883873151-dsc01702.webp",
-    fallbackImage: getElevatorProductAsset("3-1 Lift", "Hydraulic Platform").src,
     href: "/elevators/hydraulic-platform",
   },
 ];
@@ -151,23 +143,32 @@ export default async function HomePage() {
   const heroTitle = heroContent?.title || heroFallback.title;
   const heroBody = heroContent?.bodyText || heroFallback.bodyText;
 
-  const databaseSystems: HomeProduct[] = dbElevators
-    .filter((elevator) => elevator.category.trim().toLowerCase() !== "spare parts")
-    .map((elevator) => ({
-      series: `SRS · ${elevator.category}`,
-      title: elevator.title,
-      desc: elevator.description,
-      specs: elevator.specifications || "Engineered precision specification",
-      image: elevator.imageUrl,
-      fallbackImage: getElevatorProductAsset(elevator.title, elevator.category).src,
-      href: `/elevators/${categoryToSlug(elevator.category)}`,
-    }));
-  const systems: HomeProduct[] = dbElevators.length > 0
-    ? databaseSystems
-    : defaultSystems;
-  const projects: HomeProject[] = dbProjects
-    .filter((project) => Boolean(project.imageUrl && project.imageUrl.trim()))
-    .map((project) => ({
+  const featuredDbElevators = dbElevators.filter(
+    (elevator) => elevator.category.trim().toLowerCase() !== "spare parts" && elevator.featured
+  );
+  const eligibleElevators = featuredDbElevators.length > 0
+    ? featuredDbElevators
+    : dbElevators.filter((elevator) => elevator.category.trim().toLowerCase() !== "spare parts");
+
+  const databaseSystems: HomeProduct[] = eligibleElevators.map((elevator) => ({
+    series: `SRS · ${elevator.category}`,
+    title: elevator.title,
+    desc: elevator.description,
+    specs: elevator.specifications || "Engineered precision specification",
+    image: elevator.imageUrl,
+    href: `/elevators/${categoryToSlug(elevator.category)}`,
+    featured: elevator.featured,
+  }));
+  const systems: HomeProduct[] = databaseSystems.length > 0 ? databaseSystems : defaultSystems;
+
+  const featuredDbProjects = dbProjects.filter(
+    (project) => project.featured && Boolean(project.imageUrl && project.imageUrl.trim())
+  );
+  const eligibleProjects = featuredDbProjects.length > 0
+    ? featuredDbProjects
+    : dbProjects.filter((project) => Boolean(project.imageUrl && project.imageUrl.trim()));
+
+  const projects: HomeProject[] = eligibleProjects.map((project) => ({
     projectName: project.projectName,
     imageUrl: project.imageUrl,
     projectType: project.projectType,
@@ -196,13 +197,13 @@ export default async function HomePage() {
   return (
     <div className="font-sans tracking-normal text-[#0F0F0F]">
       {/* Hero */}
-      <section className="relative h-screen w-full overflow-hidden bg-[#0F0F0F]">
+      <section className="relative min-h-[100svh] w-full overflow-hidden bg-[#0F0F0F] flex items-center">
         <div className="absolute inset-0">
           <Image src={heroImage} alt="" fill priority sizes="100vw" className="object-cover object-center" />
           <div className="absolute inset-0 bg-black/40" />
         </div>
-        <div className="relative z-10 mx-auto grid h-full w-full max-w-[1280px] grid-cols-1 items-center px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl overflow-hidden">
+        <div className="relative z-10 mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8 pt-28 pb-16 sm:pt-32 sm:pb-20 md:pt-36 md:pb-24 flex items-center">
+          <div className="max-w-3xl overflow-hidden my-auto">
             <p className="mb-5 inline-flex items-center gap-2 border border-white/40 bg-white/20 px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-white shadow-sm backdrop-blur-sm">
               <span className="h-1.5 w-1.5 bg-white" />
               {heroBadge}

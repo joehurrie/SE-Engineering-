@@ -182,10 +182,10 @@ export default function ContactPage() {
               </p>
             </div>
 
-            {/* Right — clean minimal form (zero bulky wrappers) */}
-            <div className="lg:col-span-8">
+            {/* Right — form with clean grey background for enhanced visibility */}
+            <div className="lg:col-span-8 bg-[#F5F5F3] border border-neutral-200 p-6 sm:p-8 md:p-10 shadow-sm">
               {/* Form heading */}
-              <div className="mb-8 border-b border-neutral-100 pb-6">
+              <div className="mb-8 border-b border-neutral-200 pb-6">
                 <span className="text-[10px] tracking-widest text-[#2563EB] uppercase font-semibold block mb-2">
                   {value(details, "formBadge", "Inquiry Portal")}
                 </span>
