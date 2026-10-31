@@ -118,7 +118,7 @@ export default async function AboutPage() {
   const certifications = pageContent.about_certifications;
   const careers = pageContent.about_careers;
   const cta = pageContent.about_cta;
-  const heroImg = getContentValue(hero, "imageUrl", aboutContent?.imageUrl || "https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&q=80&w=1600");
+  const heroImg = getContentValue(hero, "imageUrl", aboutContent?.imageUrl || "/assets/about.jpg");
   const title = getContentValue(hero, "title", aboutContent?.title || "About Specialized Engineering.");
   const subtitle = getContentValue(hero, "subtitle", aboutContent?.subtitle || "CORPORATE PROFILE");
   const bodyText = getContentValue(hero, "bodyText", aboutContent?.bodyText || "Kenya's trusted vertical transportation engineering firm since 2016. Delivering international ISO safety, direct factory supply, and unwavering reliability.");

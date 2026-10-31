@@ -4,7 +4,7 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 import prisma from "@/lib/prisma";
 import { categoryToSlug } from "@/lib/slugs";
 import HomeContactForm from "@/components/HomeContactForm";
-import bespokeFallbackImage from "./Assets/design.jpg";
+
 import HomeLandingSections, {
   HomeMetricTransition,
   type HomeProduct,
@@ -156,7 +156,7 @@ export default async function HomePage() {
 
   const content = getHomeContentMap(homeContentRecords);
   const heroContent = content.home_hero;
-  const heroImage = heroContent?.imageUrl || "/uploads/hero1.jpg";
+  const heroImage = heroContent?.imageUrl || "/assets/home.jpeg";
   const heroBadge = heroContent?.subtitle || heroFallback.subtitle;
   const heroTitle = heroContent?.title || heroFallback.title;
   const heroBody = heroContent?.bodyText || heroFallback.bodyText;
@@ -179,12 +179,10 @@ export default async function HomePage() {
   }));
   const systems: HomeProduct[] = databaseSystems.length > 0 ? databaseSystems : defaultSystems;
 
-  const featuredDbProjects = dbProjects.filter(
-    (project) => project.featured && Boolean(project.imageUrl && project.imageUrl.trim())
+  // Selected projects should strictly only show featured projects
+  const eligibleProjects = dbProjects.filter(
+    (project) => Boolean(project.featured) && Boolean(project.imageUrl && project.imageUrl.trim())
   );
-  const eligibleProjects = featuredDbProjects.length > 0
-    ? featuredDbProjects
-    : dbProjects.filter((project) => Boolean(project.imageUrl && project.imageUrl.trim()));
 
   const projects: HomeProject[] = eligibleProjects.map((project) => ({
     projectName: project.projectName,
@@ -206,7 +204,6 @@ export default async function HomePage() {
     description: content.home_video_banner?.bodyText || "From a single home lift to high-capacity commercial systems, we tailor complete vertical transport solutions to the people and places they serve.",
     features: ["Curved glass capsules", "Low-pit shafts from 300 mm", "Smart destination dispatch"],
     video: content.home_video_banner?.videoUrl || "/assets/video.mp4",
-    image: bespokeFallbackImage.src,
   };
   const homepageFaqs = faqs.map((faq, index) => ({
     q: content.home_faq?.[`question${index + 1}`] || faq.q,
@@ -249,7 +246,6 @@ export default async function HomePage() {
         promotion={promotion}
         projects={projects}
         content={content}
-        commitmentBackground={bespokeFallbackImage.src}
       />
 
       <section className="bg-white py-20 font-sans tracking-normal md:py-28">

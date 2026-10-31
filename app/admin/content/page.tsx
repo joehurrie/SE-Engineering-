@@ -216,15 +216,15 @@ const homeSections: HomeSection[] = [
   },
   {
     key: "home_testimonials",
-    label: "Testimonials",
+    label: "Lead Engineers",
     fields: [
-      text("subtitle", "Eyebrow label", "CLIENT PERSPECTIVES"),
-      text("title", "Section heading", "Trusted by professionals"),
+      text("subtitle", "Eyebrow label", "EXPERT-LED VERTICAL TRANSPORTATION SOLUTIONS"),
+      text("title", "Section heading", "Our Lead Engineers"),
       ...[1, 2, 3].flatMap((number) => [
-        paragraph(`quote${number}`, `Testimonial ${number} quote`),
-        text(`name${number}`, `Testimonial ${number} name`),
-        text(`role${number}`, `Testimonial ${number} role`),
-        image(`image${number}`, `Testimonial ${number} photo`),
+        text(`role${number}`, `Engineer ${number} position`),
+        text(`name${number}`, `Engineer ${number} name`),
+        paragraph(`quote${number}`, `Engineer ${number} brief of experience`),
+        image(`image${number}`, `Engineer ${number} photo`),
       ]),
     ],
   },

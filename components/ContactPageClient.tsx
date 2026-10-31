@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowRight, Phone, Mail, MapPin, Clock, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
+import { ArrowRight, Phone, Mail, MapPin, Clock, CheckCircle2, AlertCircle, Loader2, ChevronDown } from "lucide-react";
 
 const contacts = [
   { icon: Phone,  label: "Managing Director (Alan)",  value: "+254 (0)116 000100",                   href: "tel:+254116000100" },
@@ -12,8 +12,9 @@ const contacts = [
 ];
 
 const serviceCategories = [
-  "Home Lift",
+  "General Inquiry",
   "Passenger Elevator",
+  "Home Lift",
   "Escalator & Moving Walk",
   "Panoramic Elevator",
   "Hospital Elevator",
@@ -23,7 +24,6 @@ const serviceCategories = [
   "Spare Parts Supply",
   "Lift Modernization",
   "Solution Customization",
-  "General Inquiry",
 ];
 
 const inputClass =
@@ -31,7 +31,7 @@ const inputClass =
 
 
 export default function ContactPageClient() {
-  const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "General Inquiry", message: "" });
   const [status, setStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
   const [content, setContent] = useState<Record<string, Record<string, string>>>({});
@@ -104,7 +104,7 @@ export default function ContactPageClient() {
       }
 
       setStatus("success");
-      setForm({ name: "", email: "", phone: "", subject: "", message: "" });
+      setForm({ name: "", email: "", phone: "", subject: "General Inquiry", message: "" });
       setTimeout(() => setStatus("idle"), 5000);
     } catch (error) {
       console.error("Failed to submit contact inquiry:", error);
@@ -128,7 +128,7 @@ export default function ContactPageClient() {
             <video src={hero.videoUrl} autoPlay muted loop playsInline className="h-full w-full object-cover" />
           ) : (
             <img
-              src={value(hero, "imageUrl", "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1600")}
+              src={value(hero, "imageUrl", "/assets/contact.jpg")}
               alt="Nairobi High-Rise Architecture"
               className="w-full h-full object-cover"
             />
@@ -290,34 +290,27 @@ export default function ContactPageClient() {
                   />
                 </div>
 
-                {/* Service category chips — refined */}
-                <div className="space-y-2.5">
-                  <label className="text-[10px] uppercase tracking-widest text-neutral-500 font-semibold flex items-center justify-between">
-                    <span>Service Category</span>
-                    {form.subject && (
-                      <span className="text-[#2563EB] normal-case text-[10px] font-semibold">
-                        ✓ {form.subject}
-                      </span>
-                    )}
+                {/* Service category dropdown */}
+                <div className="space-y-1.5">
+                  <label htmlFor="contact-category" className="text-[10px] uppercase tracking-widest text-neutral-500 font-semibold block">
+                    Service Category
                   </label>
-                  <div className="flex flex-wrap gap-2 sm:flex-nowrap sm:overflow-x-auto sm:pb-1 md:flex-wrap md:overflow-visible">
-                    {serviceCategories.map((cat) => {
-                      const isSelected = form.subject === cat;
-                      return (
-                        <button
-                          type="button"
-                          key={cat}
-                          onClick={() => setForm({ ...form, subject: cat })}
-                          className={`text-[11px] px-3.5 py-2 rounded-none transition-colors border font-medium ${
-                            isSelected
-                              ? "bg-[#2563EB] border-[#2563EB] text-white"
-                              : "bg-white border-neutral-200 text-neutral-600 hover:border-[#2563EB] hover:text-[#2563EB]"
-                          }`}
-                        >
+                  <div className="relative">
+                    <select
+                      id="contact-category"
+                      value={form.subject || "General Inquiry"}
+                      onChange={(e) => setForm({ ...form, subject: e.target.value })}
+                      className={`${inputClass} appearance-none cursor-pointer pr-10`}
+                    >
+                      {serviceCategories.map((cat) => (
+                        <option key={cat} value={cat}>
                           {cat}
-                        </button>
-                      );
-                    })}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-neutral-500">
+                      <ChevronDown className="h-4 w-4" />
+                    </div>
                   </div>
                 </div>
 
@@ -337,27 +330,29 @@ export default function ContactPageClient() {
                   />
                 </div>
 
-                {/* Submit */}
-                <button
-                  type="submit"
-                  id="contact-submit-btn"
-                  disabled={status === "sending" || status === "success"}
-                  className={`w-full font-semibold rounded-none uppercase tracking-wider text-xs transition-colors flex items-center justify-center gap-3 py-4 mt-2 ${
-                    status === "success"
-                      ? "bg-emerald-600 text-white cursor-default"
-                      : status === "sending"
-                      ? "bg-neutral-300 text-neutral-500 cursor-not-allowed"
-                      : "bg-[#2563EB] hover:bg-[#1D4ED8] active:bg-[#1D4ED8] text-white"
-                  }`}
-                >
-                  {status === "success" ? (
-                    <><span>Message Submitted</span><CheckCircle2 className="w-4 h-4" /></>
-                  ) : status === "sending" ? (
-                    <><Loader2 className="w-4 h-4 animate-spin" /><span>Submitting…</span></>
-                  ) : (
-                    <><span>{value(details, "submitLabel", "Submit Inquiry")}</span><ArrowRight className="w-4 h-4" /></>
-                  )}
-                </button>
+                {/* Submit: smaller and aligned to the right */}
+                <div className="flex justify-end pt-2">
+                  <button
+                    type="submit"
+                    id="contact-submit-btn"
+                    disabled={status === "sending" || status === "success"}
+                    className={`inline-flex h-11 w-auto px-7 font-semibold rounded-none uppercase tracking-wider text-xs transition-colors items-center justify-center gap-2.5 ${
+                      status === "success"
+                        ? "bg-emerald-600 text-white cursor-default"
+                        : status === "sending"
+                        ? "bg-neutral-300 text-neutral-500 cursor-not-allowed"
+                        : "bg-[#2563EB] hover:bg-[#1D4ED8] active:bg-[#1D4ED8] text-white"
+                    }`}
+                  >
+                    {status === "success" ? (
+                      <><span>Message Submitted</span><CheckCircle2 className="w-4 h-4" /></>
+                    ) : status === "sending" ? (
+                      <><Loader2 className="w-4 h-4 animate-spin" /><span>Submitting…</span></>
+                    ) : (
+                      <><span>{value(details, "submitLabel", "Submit Inquiry")}</span><ArrowRight className="w-4 h-4" /></>
+                    )}
+                  </button>
+                </div>
               </form>
             </div>
           </div>

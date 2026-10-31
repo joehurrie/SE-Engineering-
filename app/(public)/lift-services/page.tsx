@@ -91,7 +91,7 @@ export default async function LiftServicesPage() {
             <video src={hero.videoUrl} autoPlay muted loop playsInline className="h-full w-full object-cover" />
           ) : (
             <img
-              src={getContentValue(hero, "imageUrl", "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&q=85&w=1800")}
+              src={getContentValue(hero, "imageUrl", "/assets/services.jpg")}
               alt=""
               className="h-full w-full object-cover"
             />

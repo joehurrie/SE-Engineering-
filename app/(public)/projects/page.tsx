@@ -71,7 +71,7 @@ export default async function ProjectsPage() {
 
   const hero = content.projects_hero;
   const gallery = content.projects_gallery;
-  const heroImg = getContentValue(hero, "imageUrl", projectList[0]?.img || "/uploads/hero1.jpg");
+  const heroImg = getContentValue(hero, "imageUrl", "/assets/projects.jpg");
   const videoUrl = hero?.videoUrl?.trim();
 
   return (

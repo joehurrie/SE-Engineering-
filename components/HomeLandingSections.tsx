@@ -53,7 +53,7 @@ export type HomePromotion = {
   description: string;
   features: string[];
   video: string;
-  image: string;
+  image?: string;
 };
 
 function ElevatorProductImage({ product, isClone }: { product: HomeProduct; isClone: boolean }) {
@@ -114,24 +114,24 @@ const processSteps = servicePillars.map((service, index) => ({
   Icon: [PackageCheck, Wrench, Settings][index] || PackageCheck,
 }));
 
-const testimonials = [
+const leadEngineers = [
   {
-    quote: "Specialized Engineering installed 12 high-speed passenger elevators at Alina Harbor Towers on time. Their technical alignment and ride quality are world-class.",
-    name: "Amit Kumar",
-    role: "Commercial developer, Kilimani",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=160&h=160&q=80",
+    position: "Head of Maintenance",
+    name: "Feng XVI",
+    experience: "7+ Years of lift repairs and maintenance.",
+    image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1793370531275-feng.webp",
   },
   {
-    quote: "As an architect, I need reliability in shaft dimensions and bespoke panoramic cabin finishes. The team delivers exactly what is specified in our drawings.",
-    name: "Sarah Jenkins",
-    role: "Principal architect, Nairobi",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=160&h=160&q=80",
+    position: "Head of Installation",
+    name: "Mr Liu",
+    experience: "10+ Years of precision elevator installation and shaft engineering.",
+    image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1793370685485-feng-2.webp",
   },
   {
-    quote: "The custom glass home lift in our Karen villa operates quietly and fits seamlessly with the double-height living room. The installation was carefully managed.",
-    name: "Rajesh M.",
-    role: "Private villa owner, Karen",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=160&h=160&q=80",
+    position: "Head of Supply",
+    name: "Mr Xiong",
+    experience: "10+ Years of elevator equipment, supply chain and genuine spare parts.",
+    image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1793370556114-screenshot-2026-10-30-172523.webp",
   },
 ];
 
@@ -220,13 +220,12 @@ export default function HomeLandingSections({
   projects,
   promotion,
   content,
-  commitmentBackground,
 }: {
   systems: HomeProduct[];
   projects: HomeProject[];
   promotion: HomePromotion;
   content: HomeContentMap;
-  commitmentBackground: string;
+  commitmentBackground?: string;
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isCarouselPaused, setIsCarouselPaused] = useState(false);
@@ -241,7 +240,7 @@ export default function HomeLandingSections({
     image: sectionText(systemsContent, `product${index + 1}Image`, product.image),
     href: sectionText(systemsContent, `product${index + 1}Href`, product.href),
   }));
-  const featuredProjects = projects.filter((p) => Boolean(p.imageUrl && p.imageUrl.trim()) && p.featured).slice(0, 6);
+  const featuredProjects = projects.filter((p) => Boolean(p.imageUrl && p.imageUrl.trim()) && Boolean(p.featured)).slice(0, 6);
   const projectsHeading = sectionText(content.home_projects, "title", "Our Projects") === "Projects in motion"
     ? "Our Projects"
     : sectionText(content.home_projects, "title", "Our Projects");
@@ -420,7 +419,7 @@ export default function HomeLandingSections({
 
       <section className="commitment-section relative isolate flex min-h-[60vh] items-center overflow-hidden bg-[#F5F5F3] py-20 font-sans tracking-normal md:h-[80vh] md:min-h-0 md:py-0 border-b border-neutral-200">
         <div data-home-reveal data-home-reveal-instant className="home-reveal relative z-10 mx-auto w-full max-w-[1100px] px-4 text-center sm:px-6 lg:px-8">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#0F0F0F]">{sectionText(content.home_commitment, "subtitle", "Our commitment")}</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#2563EB]">{sectionText(content.home_commitment, "subtitle", "Our commitment")}</p>
           <blockquote aria-label={sectionText(content.home_commitment, "bodyText", commitmentQuote)} className="commitment-quote mx-auto mt-7 max-w-[1000px] text-3xl font-medium leading-[1.25] tracking-normal text-[#0F0F0F] sm:text-4xl md:text-5xl lg:text-6xl">
             {renderCommitmentQuote(sectionText(content.home_commitment, "bodyText", commitmentQuote))}
           </blockquote>
@@ -434,11 +433,11 @@ export default function HomeLandingSections({
           <video
             className="absolute inset-0 h-full w-full object-cover"
             src={promotion.video}
-            poster={promotion.image}
             autoPlay
             muted
             loop
             playsInline
+            preload="auto"
             aria-hidden="true"
           />
           <div className="home-reveal relative z-10 w-full max-w-2xl border border-white/70 bg-white/90 p-6 shadow-lg backdrop-blur-sm sm:p-9 md:p-12">
@@ -640,31 +639,75 @@ export default function HomeLandingSections({
         </div>
       </section>
 
-      <section className="bg-[#F5F5F3] py-24 font-sans tracking-normal md:py-32">
+      <section className="bg-[#F5F5F3] py-24 font-sans tracking-normal md:py-32 border-b border-neutral-200">
         <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
           <div data-home-reveal className="home-reveal mx-auto mb-16 max-w-3xl text-center md:mb-20">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#2563EB]">{sectionText(content.home_testimonials, "subtitle", "Client perspectives")}</p>
-            <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-normal text-[#0F0F0F] sm:text-4xl md:text-5xl">{sectionText(content.home_testimonials, "title", "Trusted by professionals")}</h2>
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#2563EB]">
+              {sectionText(content.home_testimonials, "subtitle", "Expert-led vertical transportation solutions")}
+            </p>
+            <h2 className="mt-3 text-3xl font-bold leading-tight tracking-tight text-[#0F0F0F] sm:text-4xl md:text-5xl">
+              {sectionText(content.home_testimonials, "title", "Our Lead Engineers")}
+            </h2>
+            <div className="mt-4 mx-auto h-1 w-16 bg-[#2563EB]" />
           </div>
-          <div className="grid gap-6 md:grid-cols-3 md:gap-8">
-            {testimonials.map((testimonial, index) => (
-              <article key={sectionText(content.home_testimonials, `name${index + 1}`, testimonial.name)} data-home-reveal className="home-reveal rounded-none border border-[#E5E5E5] bg-white p-7 md:p-10" style={{ transitionDelay: `${index * 100}ms` }}>
-                <p className="text-base leading-7 text-neutral-700">{sectionText(content.home_testimonials, `quote${index + 1}`, testimonial.quote)}</p>
-                <div className="mt-7 flex items-center gap-4 border-t border-[#E5E5E5] pt-5">
-                  <Image
-                    src={sectionText(content.home_testimonials, `image${index + 1}`, testimonial.image)}
-                    alt=""
-                    width={56}
-                    height={56}
-                    className="h-14 w-14 shrink-0 rounded-none border border-[#E5E5E5] object-cover"
-                  />
+          <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 md:gap-8">
+            {leadEngineers.map((engineer, index) => {
+              const position = sectionText(content.home_testimonials, `role${index + 1}`, engineer.position);
+              const name = sectionText(content.home_testimonials, `name${index + 1}`, engineer.name);
+              const experience = sectionText(
+                content.home_testimonials,
+                `quote${index + 1}`,
+                engineer.experience
+              );
+              const imageSrc = sectionText(content.home_testimonials, `image${index + 1}`, engineer.image);
+
+              return (
+                <article
+                  key={`${name}-${index}`}
+                  data-home-reveal
+                  className="home-reveal group flex h-full flex-col justify-between border border-[#E5E5E5] bg-white p-7 md:p-8 transition-all duration-300 hover:border-blue-600/40 hover:shadow-lg"
+                  style={{ transitionDelay: `${index * 100}ms` }}
+                >
                   <div>
-                    <p className="text-sm font-semibold text-[#0F0F0F]">{sectionText(content.home_testimonials, `name${index + 1}`, testimonial.name)}</p>
-                    <p className="mt-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-neutral-500">{sectionText(content.home_testimonials, `role${index + 1}`, testimonial.role)}</p>
+                    {/* Header: Smaller image thumbnail as in previous design with Position & Name */}
+                    <div className="flex items-center gap-4 mb-5">
+                      <div className="relative h-16 w-16 shrink-0 overflow-hidden border border-[#E5E5E5] bg-neutral-100">
+                        <Image
+                          src={imageSrc}
+                          alt={name}
+                          fill
+                          sizes="64px"
+                          className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        {/* 1. Position */}
+                        <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#2563EB] truncate">
+                          {position}
+                        </p>
+                        {/* 2. Name */}
+                        <h3 className="mt-1 text-lg sm:text-xl font-bold tracking-tight text-[#0F0F0F] transition-colors group-hover:text-[#2563EB]">
+                          {name}
+                        </h3>
+                      </div>
+                    </div>
+
+                    {/* Accent divider line */}
+                    <div className="mb-4 h-0.5 w-8 bg-[#2563EB]/40 transition-all duration-300 group-hover:w-12 group-hover:bg-[#2563EB]" />
+
+                    {/* 3. Brief of experience */}
+                    <p className="text-sm leading-relaxed text-neutral-600 font-normal">
+                      {experience}
+                    </p>
                   </div>
-                </div>
-              </article>
-            ))}
+
+                  <div className="mt-6 border-t border-neutral-100 pt-4 flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.14em] text-neutral-400">
+                    <span>Specialized Engineering</span>
+                    <span className="text-[#2563EB]">Lead Team</span>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>

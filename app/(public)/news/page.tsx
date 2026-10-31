@@ -85,7 +85,7 @@ export default async function NewsPage() {
               src={getContentValue(
                 content.news_hero,
                 "imageUrl",
-                "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=1600"
+                "/assets/news.jpg"
               )}
               alt="Engineering News & Insights"
               className="w-full h-full object-cover"

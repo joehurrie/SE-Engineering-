@@ -117,7 +117,7 @@ export default async function ElevatorsPage({ searchParams }: ElevatorsPageProps
       ]),
     ).entries(),
   );
-  const heroImg = getContentValue(content.elevators_hero, "imageUrl", elevatorProducts[0]?.img || "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=1600");
+  const heroImg = getContentValue(content.elevators_hero, "imageUrl", "/assets/elevators.jpg");
   const heroVideo = content.elevators_hero?.videoUrl?.trim();
 
   return (
