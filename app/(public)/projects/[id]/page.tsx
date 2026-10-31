@@ -11,6 +11,8 @@ type ProjectPageProps = {
   params: Promise<{ id: string }>;
 };
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.specializedengineeringltd.co.ke";
+
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const { id } = await params;
   const projectId = Number(id);
@@ -25,11 +27,36 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
   } catch (error) {
     console.error("Failed to load project metadata:", error);
   }
+
+  const title = project
+    ? `${project.projectName} | Specialized Engineering Kenya Ltd.`
+    : "Project | Specialized Engineering Kenya Ltd.";
+  const description =
+    project?.description ||
+    project?.projectType ||
+    "Elevator installation and engineering project by Specialized Engineering Kenya Ltd.";
+  const imageUrl = project?.imageUrl
+    ? project.imageUrl.startsWith("http")
+      ? project.imageUrl
+      : `${SITE_URL}${project.imageUrl}`
+    : `${SITE_URL}/og-image.jpeg`;
+
   return {
-    title: project
-      ? `${project.projectName} | Specialized Engineering Kenya Ltd.`
-      : "Project | Specialized Engineering Kenya Ltd.",
-    description: project?.description || project?.projectType,
+    title,
+    description,
+    alternates: { canonical: `${SITE_URL}/projects/${projectId}` },
+    openGraph: {
+      url: `${SITE_URL}/projects/${projectId}`,
+      title,
+      description,
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: project?.projectName ?? "Project" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
   };
 }
 
@@ -89,8 +116,37 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
     .filter((item) => item.id !== project.id)
     .slice(0, 3);
 
+  const projectSchema = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    name: project.projectName,
+    description: project.description || `Elevator installation project: ${project.projectName}`,
+    image: project.img
+      ? project.img.startsWith("http")
+        ? project.img
+        : `${SITE_URL}${project.img}`
+      : `${SITE_URL}/og-image.jpeg`,
+    provider: {
+      "@type": "Organization",
+      name: "Specialized Engineering Kenya Ltd.",
+      url: SITE_URL,
+    },
+    ...(project.location
+      ? {
+          locationCreated: {
+            "@type": "Place",
+            name: project.location,
+          },
+        }
+      : {}),
+  };
+
   return (
     <ScrollRevealPage>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(projectSchema) }}
+      />
       <ProjectDetailView project={project} relatedProjects={relatedProjects} />
     </ScrollRevealPage>
   );

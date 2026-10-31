@@ -5,17 +5,35 @@ import { AlertCircle, ArrowRight, CheckCircle2 } from "lucide-react";
 
 export default function HomeContactForm() {
   const [formStatus, setFormStatus] = useState<"idle" | "sending" | "success" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleContactSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setFormStatus("sending");
     const form = e.currentTarget;
+    const name = ((form.elements.namedItem("name") as HTMLInputElement)?.value || "").trim();
+    const email = ((form.elements.namedItem("email") as HTMLInputElement)?.value || "").trim();
+    const rawPhone = ((form.elements.namedItem("phone") as HTMLInputElement)?.value || "").trim();
+    const message = ((form.elements.namedItem("message") as HTMLTextAreaElement)?.value || "").trim();
+
+    // Client-side phone data validation (if entered, must be 7 to 15 digits)
+    if (rawPhone) {
+      const digitsOnly = rawPhone.replace(/[\s\-\(\)\.]/g, "");
+      if (!/^\+?[0-9]{7,15}$/.test(digitsOnly)) {
+        setErrorMessage("Please enter a valid phone number with 7 to 15 digits (e.g. +254 700 000 000).");
+        setFormStatus("error");
+        return;
+      }
+    }
+
+    setFormStatus("sending");
+    setErrorMessage("");
+
     const data = {
-      name: (form.elements.namedItem("name") as HTMLInputElement).value,
-      email: (form.elements.namedItem("email") as HTMLInputElement).value,
-      phone: (form.elements.namedItem("phone") as HTMLInputElement)?.value || null,
+      name,
+      email,
+      phone: rawPhone || null,
       subject: "WEBSITE HOME INQUIRY",
-      message: (form.elements.namedItem("message") as HTMLTextAreaElement).value,
+      message,
     };
 
     try {
@@ -24,13 +42,23 @@ export default function HomeContactForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
-      if (!response.ok) throw new Error("Inquiry submission failed");
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || "Inquiry submission failed");
+      }
+
       setFormStatus("success");
       form.reset();
       setTimeout(() => setFormStatus("idle"), 4000);
-    } catch {
+    } catch (err) {
+      setErrorMessage(
+        err instanceof Error
+          ? err.message
+          : "We could not send your inquiry. Please try again or contact our team directly."
+      );
       setFormStatus("error");
-      setTimeout(() => setFormStatus("idle"), 5000);
+      setTimeout(() => setFormStatus("idle"), 6000);
     }
   };
 
@@ -45,7 +73,7 @@ export default function HomeContactForm() {
       {formStatus === "error" && (
         <div role="alert" className="mb-6 flex items-center gap-3 border border-red-200 bg-red-50 p-4 text-sm text-red-800">
           <AlertCircle className="h-5 w-5 shrink-0 text-red-600" />
-          <span>We could not send your inquiry. Please try again or contact our team directly.</span>
+          <span>{errorMessage || "We could not send your inquiry. Please try again or contact our team directly."}</span>
         </div>
       )}
 
@@ -86,8 +114,12 @@ export default function HomeContactForm() {
           </label>
           <input
             type="tel"
+            inputMode="tel"
+            autoComplete="tel"
             id="home-phone"
             name="phone"
+            pattern="^(\+?[0-9\s\-\(\)\.]{7,20})$"
+            title="Please enter a valid phone number with 7 to 15 digits (e.g. +254 700 000 000)"
             placeholder="+254 700 000 000"
             className="h-11 w-full rounded-none border border-[#E5E5E5] bg-white px-3.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-blue-600 focus:outline-none"
           />

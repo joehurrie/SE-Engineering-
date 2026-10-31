@@ -12,9 +12,27 @@ import HomeLandingSections, {
   type HomePromotion,
 } from "@/components/HomeLandingSections";
 import type { ElevatorProduct, Project, SiteContent } from "@prisma/client";
+import type { Metadata } from "next";
 import { getHomeContentMap } from "@/lib/home-content";
 
 export const dynamic = "force-dynamic";
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://www.specializedengineeringltd.co.ke";
+
+export const metadata: Metadata = {
+  title: "Elevator & Lift Solutions in Kenya | Specialized Engineering",
+  description:
+    "Kenya's leading elevator company. 200+ installations since 2016. Passenger elevators, home lifts, hospital elevators, escalators, and modernization — Nairobi & East Africa.",
+  alternates: { canonical: SITE_URL },
+  openGraph: {
+    url: SITE_URL,
+    title: "Specialized Engineering Kenya Ltd. | Elevator & Lift Solutions",
+    description:
+      "200+ elevators installed since 2016. Passenger elevators, home lifts, escalators, hospital lifts, and lift modernization across Kenya and East Africa.",
+    images: [{ url: `${SITE_URL}/og-image.jpeg`, width: 1200, height: 630 }],
+  },
+};
 
 const defaultSystems: HomeProduct[] = [
   {

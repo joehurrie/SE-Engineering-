@@ -16,9 +16,17 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Supply, Installation & Maintenance",
+  title: "Elevator Supply, Installation & Maintenance Services | Specialized Engineering Kenya",
   description:
-    "End-to-end elevator supply, precision installation and proactive maintenance from Specialized Engineering Kenya Ltd.",
+    "End-to-end elevator supply, precision installation, lift modernization, and proactive maintenance contracts. Specialized Engineering Kenya — Nairobi's trusted vertical transport engineers.",
+  keywords: [
+    "elevator installation Kenya", "lift maintenance Nairobi", "elevator supply",
+    "lift modernization Kenya", "elevator service contract", "vertical transport solutions",
+  ],
+  openGraph: {
+    title: "Lift Services — Supply, Installation & Maintenance | Specialized Engineering Kenya",
+    description: "Precision elevator installation, maintenance, modernization, and OEM spare parts across Kenya and East Africa.",
+  },
 };
 
 const sectionText = (section: HomeContentSection, key: string, fallback: string) =>

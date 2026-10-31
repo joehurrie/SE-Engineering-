@@ -9,9 +9,17 @@ import { getContentValue, loadSiteContentMap } from "@/lib/home-content";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "News & Insights",
+  title: "News & Insights — Elevator Industry Updates | Specialized Engineering Kenya",
   description:
-    "Latest news, industry insights, and engineering updates from Specialized Engineering Kenya Ltd.",
+    "Latest news, engineering insights, elevator industry updates, and project announcements from Specialized Engineering Kenya Ltd. — East Africa's vertical transport leader.",
+  keywords: [
+    "elevator news Kenya", "lift industry insights", "engineering updates Kenya",
+    "Specialized Engineering news", "vertical transport East Africa",
+  ],
+  openGraph: {
+    title: "News & Engineering Insights | Specialized Engineering Kenya",
+    description: "Stay up to date with the latest elevator industry news, project completions, and engineering insights from Specialized Engineering Kenya.",
+  },
 };
 
 type DbNewsItem = {

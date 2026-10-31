@@ -227,13 +227,33 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://www.specializedengineeringltd.co.ke";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const data = elevatorData[slug];
   if (!data) return { title: "Not Found" };
   return {
-    title: data.title,
-    description: data.description,
+    title: `${data.title} in Kenya — Supply & Installation | Specialized Engineering`,
+    description: `${data.description.slice(0, 155)}…`,
+    keywords: [
+      `${data.title} Kenya`,
+      `${data.title} installation Nairobi`,
+      "elevator Kenya",
+      "lift solutions East Africa",
+      "Specialized Engineering Kenya",
+    ],
+    alternates: { canonical: `${SITE_URL}/elevators/${slug}` },
+    openGraph: {
+      url: `${SITE_URL}/elevators/${slug}`,
+      title: `${data.title} — Elevator Solutions | Specialized Engineering Kenya`,
+      description: data.description.slice(0, 155),
+      images: data.heroImg
+        ? [{ url: data.heroImg, width: 1200, height: 630, alt: data.title }]
+        : [{ url: `${SITE_URL}/og-image.jpeg`, width: 1200, height: 630 }],
+    },
   };
 }
 
@@ -284,8 +304,34 @@ export default async function ElevatorDetailPage({ params }: Props) {
     ].filter((image): image is string => typeof image === "string" && image.trim().length > 0))),
   };
 
+  const serviceSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: data.title,
+    description: data.description,
+    image: [data.heroImg],
+    brand: {
+      "@type": "Brand",
+      name: "Specialized Engineering Kenya Ltd.",
+    },
+    offers: {
+      "@type": "AggregateOffer",
+      priceCurrency: "KES",
+      availability: "https://schema.org/InStock",
+      seller: {
+        "@type": "Organization",
+        name: "Specialized Engineering Kenya Ltd.",
+        url: SITE_URL,
+      },
+    },
+  };
+
   return (
     <ScrollRevealPage className="bg-white text-[#111111] min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+      />
       {/* ── 1. Hero: 50vh View Height ───────────────────────── */}
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
       <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-32">

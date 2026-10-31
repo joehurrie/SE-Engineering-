@@ -9,6 +9,8 @@ type ProductPageProps = {
   params: Promise<{ id: string }>;
 };
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.specializedengineeringltd.co.ke";
+
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
   const { id } = await params;
   const productId = Number(id);
@@ -21,17 +23,46 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   if (!product) {
     const sparePart = await prisma.sparePartProduct.findUnique({ where: { id: productId } });
     if (sparePart) {
+      const spareTitle = `${sparePart.title} | Specialized Engineering Kenya Ltd.`;
+      const spareDesc = sparePart.description ?? "Elevator spare part — Specialized Engineering Kenya Ltd.";
+      const spareImg = sparePart.imageUrl
+        ? sparePart.imageUrl.startsWith("http") ? sparePart.imageUrl : `${SITE_URL}${sparePart.imageUrl}`
+        : `${SITE_URL}/og-image.jpeg`;
       return {
-        title: `${sparePart.title} | Specialized Engineering Kenya Ltd.`,
-        description: sparePart.description,
+        title: spareTitle,
+        description: spareDesc,
+        alternates: { canonical: `${SITE_URL}/elevators/spare-parts/${sparePart.slug}` },
+        openGraph: { url: `${SITE_URL}/elevators/spare-parts/${sparePart.slug}`, title: spareTitle, description: spareDesc, images: [{ url: spareImg, width: 1200, height: 630, alt: sparePart.title }] },
+        twitter: { card: "summary_large_image", title: spareTitle, description: spareDesc, images: [spareImg] },
       };
     }
   }
+
+  const title = product
+    ? `${product.title} | Specialized Engineering Kenya Ltd.`
+    : "Elevator Product | Specialized Engineering Kenya Ltd.";
+  const description =
+    product?.description ?? "Elevator product — Specialized Engineering Kenya Ltd.";
+  const imageUrl = product?.imageUrl
+    ? product.imageUrl.startsWith("http") ? product.imageUrl : `${SITE_URL}${product.imageUrl}`
+    : `${SITE_URL}/og-image.jpeg`;
+
   return {
-    title: product
-      ? `${product.title} | Specialized Engineering Kenya Ltd.`
-      : "Elevator Product | Specialized Engineering Kenya Ltd.",
-    description: product?.description,
+    title,
+    description,
+    alternates: { canonical: `${SITE_URL}/elevators/product/${productId}` },
+    openGraph: {
+      url: `${SITE_URL}/elevators/product/${productId}`,
+      title,
+      description,
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: product?.title ?? "Elevator Product" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
   };
 }
 
@@ -72,5 +103,40 @@ export default async function ElevatorProductPage({ params }: ProductPageProps) 
       href: `/elevators/product/${item.id}`,
     }));
 
-  return <ElevatorProductDetailView product={product} relatedProducts={relatedProducts} />;
+  const productSchema = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.title,
+    description: product.description,
+    image: product.imageUrl
+      ? product.imageUrl.startsWith("http")
+        ? product.imageUrl
+        : `${SITE_URL}${product.imageUrl}`
+      : `${SITE_URL}/og-image.jpeg`,
+    category: product.category,
+    brand: {
+      "@type": "Brand",
+      name: "Specialized Engineering Kenya Ltd.",
+    },
+    offers: {
+      "@type": "AggregateOffer",
+      priceCurrency: "KES",
+      availability: "https://schema.org/InStock",
+      seller: {
+        "@type": "Organization",
+        name: "Specialized Engineering Kenya Ltd.",
+        url: SITE_URL,
+      },
+    },
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
+      <ElevatorProductDetailView product={product} relatedProducts={relatedProducts} />
+    </>
+  );
 }

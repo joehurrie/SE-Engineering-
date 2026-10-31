@@ -3,9 +3,18 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getTermsOfService } from "@/lib/footer-content";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.specializedengineeringltd.co.ke";
+
 export const metadata: Metadata = {
   title: "Terms of Service | Specialized Engineering Kenya Ltd.",
   description: "Terms of service and engineering mandate for Specialized Engineering Kenya Ltd.",
+  alternates: { canonical: `${SITE_URL}/terms` },
+  openGraph: {
+    url: `${SITE_URL}/terms`,
+    title: "Terms of Service | Specialized Engineering Kenya Ltd.",
+    description: "Terms of service and engineering mandate for Specialized Engineering Kenya Ltd.",
+    images: [{ url: `${SITE_URL}/og-image.jpeg`, width: 1200, height: 630, alt: "Specialized Engineering Kenya" }],
+  },
 };
 
 export default async function TermsPage() {

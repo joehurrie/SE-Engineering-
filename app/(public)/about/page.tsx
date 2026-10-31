@@ -13,10 +13,37 @@ import ScrollRevealPage from "@/components/ScrollRevealPage";
 
 export const dynamic = "force-dynamic";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.specializedengineeringltd.co.ke";
+
 export const metadata: Metadata = {
   title: "About Us | Specialized Engineering Kenya Ltd.",
   description:
-    "Learn about Specialized Engineering Kenya Ltd. — 54+ engineers, 10+ international manufacturing partners, and 500+ elevators installed.",
+    "Learn about Specialized Engineering Kenya Ltd. — 54+ engineers, 10+ international manufacturing partners, and 500+ elevators installed across Kenya and East Africa.",
+  keywords: [
+    "elevator company Kenya",
+    "Specialized Engineering about",
+    "Nairobi elevator engineers",
+    "vertical transport East Africa",
+    "lift installation Kenya",
+    "elevator maintenance Nairobi",
+    "XIZI elevator partner Kenya",
+  ],
+  alternates: {
+    canonical: `${SITE_URL}/about`,
+  },
+  openGraph: {
+    url: `${SITE_URL}/about`,
+    title: "About Us | Specialized Engineering Kenya Ltd.",
+    description:
+      "54+ engineers, 10+ international manufacturing partners, and 500+ elevators installed. Learn about Kenya's premier elevator engineering company.",
+    images: [{ url: `${SITE_URL}/og-image.jpeg`, width: 1200, height: 630, alt: "Specialized Engineering Kenya" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "About Us | Specialized Engineering Kenya Ltd.",
+    description: "54+ engineers, 10+ international manufacturing partners, and 500+ elevators installed.",
+    images: [`${SITE_URL}/og-image.jpeg`],
+  },
 };
 
 const milestones = [

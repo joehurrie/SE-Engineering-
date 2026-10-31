@@ -9,9 +9,17 @@ import { getContentValue, loadSiteContentMap } from "@/lib/home-content";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Projects Portfolio",
+  title: "Completed Projects — Elevator Installations Portfolio | Specialized Engineering Kenya",
   description:
-    "Explore 200+ vertical installations across residential high-rises, commercial headquarters, and private estates in Kenya and East Africa.",
+    "Explore 200+ vertical transportation installations across residential high-rises, commercial headquarters, hotels, hospitals, and private estates in Kenya and East Africa.",
+  keywords: [
+    "elevator installations Kenya", "lift projects Nairobi", "completed elevator projects",
+    "commercial elevator Kenya", "residential lift portfolio",
+  ],
+  openGraph: {
+    title: "Elevator Installations Portfolio | Specialized Engineering Kenya",
+    description: "200+ elevator and lift installations across Kenya and East Africa — residential, commercial, healthcare, and hospitality sectors.",
+  },
 };
 
 export default async function ProjectsPage() {

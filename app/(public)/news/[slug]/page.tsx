@@ -54,16 +54,45 @@ async function getArticle(slug: string): Promise<NewsArticleContent | null> {
   return null;
 }
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://www.specializedengineeringltd.co.ke";
+
 export async function generateMetadata({ params }: NewsArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
   const article = await getArticle(slug);
 
-  return article
-    ? {
-        title: `${article.title} | Specialized Engineering Kenya Ltd.`,
-        description: article.excerpt,
-      }
-    : { title: "Story | Specialized Engineering Kenya Ltd." };
+  if (!article) return { title: "Story | Specialized Engineering Kenya Ltd." };
+
+  const ogImage = article.img || `${SITE_URL}/og-image.jpeg`;
+
+  return {
+    title: `${article.title} | Specialized Engineering Kenya Ltd.`,
+    description: article.excerpt,
+    keywords: [
+      article.category || "Engineering News",
+      "elevator news Kenya",
+      "lift industry insights",
+      "Specialized Engineering",
+    ],
+    alternates: { canonical: `${SITE_URL}/news/${slug}` },
+    openGraph: {
+      type: "article",
+      url: `${SITE_URL}/news/${slug}`,
+      title: article.title,
+      description: article.excerpt || "",
+      publishedTime: article.publishedAt,
+      authors: ["Specialized Engineering Kenya Ltd."],
+      section: article.category || "Engineering",
+      images: [{ url: ogImage, width: 1200, height: 630, alt: article.title }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.excerpt || "",
+      images: [ogImage],
+    },
+  };
 }
 
 export default async function NewsArticlePage({ params }: NewsArticlePageProps) {
@@ -113,8 +142,42 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
 
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: article.title,
+    description: article.excerpt,
+    image: [article.img || `${SITE_URL}/og-image.jpeg`],
+    datePublished: article.publishedAt,
+    dateModified: article.publishedAt,
+    author: [
+      {
+        "@type": "Organization",
+        name: "Specialized Engineering Kenya Ltd.",
+        url: SITE_URL,
+      },
+    ],
+    publisher: {
+      "@type": "Organization",
+      name: "Specialized Engineering Kenya Ltd.",
+      url: SITE_URL,
+      logo: {
+        "@type": "ImageObject",
+        url: `${SITE_URL}/logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/news/${slug}`,
+    },
+  };
+
   return (
     <ScrollRevealPage>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
       <main className="min-h-screen bg-white text-neutral-900">
         <header className="relative flex min-h-[70vh] items-end overflow-hidden bg-[#F5F5F3] px-6 py-32 text-white">
           <Image

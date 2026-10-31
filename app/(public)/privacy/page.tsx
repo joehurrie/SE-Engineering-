@@ -3,9 +3,18 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { getPrivacyPolicy } from "@/lib/footer-content";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://www.specializedengineeringltd.co.ke";
+
 export const metadata: Metadata = {
   title: "Privacy Policy | Specialized Engineering Kenya Ltd.",
   description: "Privacy policy and compliance terms for Specialized Engineering Kenya Ltd.",
+  alternates: { canonical: `${SITE_URL}/privacy` },
+  openGraph: {
+    url: `${SITE_URL}/privacy`,
+    title: "Privacy Policy | Specialized Engineering Kenya Ltd.",
+    description: "Privacy policy and compliance terms for Specialized Engineering Kenya Ltd.",
+    images: [{ url: `${SITE_URL}/og-image.jpeg`, width: 1200, height: 630, alt: "Specialized Engineering Kenya" }],
+  },
 };
 
 export default async function PrivacyPage() {

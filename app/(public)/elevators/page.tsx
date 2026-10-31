@@ -12,9 +12,18 @@ import { getContentValue, loadSiteContentMap } from "@/lib/home-content";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Elevator Solutions",
+  title: "Elevator & Lift Solutions — Full Range | Specialized Engineering Kenya",
   description:
-    "Explore our full range of elevator solutions: home lifts, passenger elevators, escalators, hospital elevators, and more.",
+    "Browse our full range of elevator solutions: home lifts, passenger elevators, hospital lifts, escalators, panoramic elevators, dumbwaiters, and freight elevators. Engineered and installed across Kenya.",
+  keywords: [
+    "elevator solutions Kenya", "home lift Nairobi", "passenger elevator installation",
+    "hospital elevator Kenya", "escalator supply Kenya", "dumbwaiter installation",
+    "freight elevator", "hydraulic platform lift",
+  ],
+  openGraph: {
+    title: "Elevator & Lift Solutions | Specialized Engineering Kenya",
+    description: "Full range of commercial and residential elevator solutions. Installed across Kenya and East Africa since 2016.",
+  },
 };
 
 type ElevatorCatalogItem = {
