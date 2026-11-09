@@ -64,7 +64,7 @@ const defaultSystems: HomeProduct[] = [
     title: "Escalators",
     desc: "High-capacity people movement for retail, hospitality, and public transport environments.",
     specs: "Public spaces · Heavy transit duty",
-    image: "https://images.unsplash.com/photo-1508873696983-2df5293cb32f?auto=format&fit=crop&q=85&w=1400",
+    image: "https://exuu3jqec7sgqazh.public.blob.vercel-storage.com/uploads/1793880614377---1.webp",
     href: "/elevators/escalator-moving-walk",
   },
   {

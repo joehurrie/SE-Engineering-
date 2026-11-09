@@ -353,10 +353,7 @@ export default function AdminElevatorsPage() {
                       fill
                       sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                       className="object-cover group-hover:scale-105 transition duration-500"
-                      onError={(e) => {
-                        e.currentTarget.src =
-                          "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&w=800&q=80";
-                      }}
+
                     />
                     <div className="absolute top-3 left-3 flex gap-2">
                       <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-white/90 backdrop-blur-md text-[#0F172A] shadow-sm border border-slate-200/60">

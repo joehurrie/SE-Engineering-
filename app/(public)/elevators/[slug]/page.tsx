@@ -16,8 +16,6 @@ type ElevatorData = {
   description: string;
   features: string[];
   specs: { label: string; value: string }[];
-  heroImg: string;
-  galleryImgs: string[];
 };
 
 const elevatorData: Record<string, ElevatorData> = {
@@ -40,11 +38,6 @@ const elevatorData: Record<string, ElevatorData> = {
       { label: "Travel", value: "Up to 15 floors" },
       { label: "Drive", value: "Traction / Hydraulic / MRL" },
     ],
-    heroImg: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=1200",
-    galleryImgs: [
-      "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=600",
-      "https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&q=80&w=600",
-    ],
   },
   "passenger-elevator": {
     title: "Passenger Elevator",
@@ -64,11 +57,6 @@ const elevatorData: Record<string, ElevatorData> = {
       { label: "Speed", value: "1.0–6.0 m/s" },
       { label: "Travel", value: "Up to 80 floors" },
       { label: "Drive", value: "Gearless traction MRL" },
-    ],
-    heroImg: "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=1200",
-    galleryImgs: [
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=600",
-      "https://images.unsplash.com/photo-1531971589569-0d9370cbe1e5?auto=format&fit=crop&q=80&w=600",
     ],
   },
   "escalator-moving-walk": {
@@ -90,11 +78,6 @@ const elevatorData: Record<string, ElevatorData> = {
       { label: "Speed", value: "0.5 m/s" },
       { label: "Capacity", value: "Up to 9,000 persons/hour" },
     ],
-    heroImg: "https://images.unsplash.com/photo-1486325212027-8081e485255e?auto=format&fit=crop&q=80&w=1200",
-    galleryImgs: [
-      "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=600",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=600",
-    ],
   },
   "panoramic-elevator": {
     title: "Panoramic Elevator",
@@ -114,11 +97,6 @@ const elevatorData: Record<string, ElevatorData> = {
       { label: "Speed", value: "0.5–2.5 m/s" },
       { label: "Glass Type", value: "Tempered laminated safety glass" },
       { label: "Drive", value: "Gearless MRL traction" },
-    ],
-    heroImg: "https://images.unsplash.com/photo-1531971589569-0d9370cbe1e5?auto=format&fit=crop&q=80&w=1200",
-    galleryImgs: [
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=600",
-      "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=600",
     ],
   },
   "hospital-elevator": {
@@ -140,11 +118,6 @@ const elevatorData: Record<string, ElevatorData> = {
       { label: "Door Opening", value: "1200–1400 mm wide" },
       { label: "Cab Depth", value: "2400–2800 mm" },
     ],
-    heroImg: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=1200",
-    galleryImgs: [
-      "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=600",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=600",
-    ],
   },
   "freight-car-elevator": {
     title: "Freight Elevator & Car Elevator",
@@ -164,11 +137,6 @@ const elevatorData: Record<string, ElevatorData> = {
       { label: "Speed", value: "0.25–1.0 m/s" },
       { label: "Door Type", value: "Bi-parting / Roll-up" },
       { label: "Drive", value: "Geared traction / Hydraulic" },
-    ],
-    heroImg: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=1200",
-    galleryImgs: [
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=600",
-      "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=600",
     ],
   },
   "dumbwaiter": {
@@ -190,11 +158,6 @@ const elevatorData: Record<string, ElevatorData> = {
       { label: "Platform Size", value: "Custom to requirements" },
       { label: "Drive", value: "Traction / Hydraulic" },
     ],
-    heroImg: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&q=80&w=1200",
-    galleryImgs: [
-      "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=600",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=600",
-    ],
   },
   "hydraulic-platform": {
     title: "Hydraulic Platform",
@@ -215,11 +178,6 @@ const elevatorData: Record<string, ElevatorData> = {
       { label: "Travel", value: "Up to 6 floors" },
       { label: "Drive", value: "Hydraulic" },
     ],
-    heroImg: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=1200",
-    galleryImgs: [
-      "https://images.unsplash.com/photo-1545987796-200677ee1011?auto=format&fit=crop&q=80&w=600",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&q=80&w=600",
-    ],
   },
 };
 
@@ -233,14 +191,33 @@ const SITE_URL =
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const data = elevatorData[slug];
-  if (!data) return { title: "Not Found" };
+  const staticData = elevatorData[slug];
+
+  let dbItem = null;
+  try {
+    const categoryName = slugToCategory(slug);
+    dbItem = await prisma.elevatorProduct.findFirst({
+      where: {
+        OR: [
+          { category: { equals: categoryName, mode: "insensitive" } },
+          { title: { contains: categoryName, mode: "insensitive" } },
+        ],
+      },
+    });
+  } catch {
+    // ignore
+  }
+
+  const title = dbItem?.title || staticData?.title || slugToCategory(slug);
+  const description = dbItem?.description || staticData?.description || "Precision vertical transport.";
+  const heroImg = dbItem?.imageUrl && !dbItem.imageUrl.includes("unsplash.com") ? dbItem.imageUrl : "";
+
   return {
-    title: `${data.title} in Kenya — Supply & Installation | Specialized Engineering`,
-    description: `${data.description.slice(0, 155)}…`,
+    title: `${title} in Kenya — Supply & Installation | Specialized Engineering`,
+    description: `${description.slice(0, 155)}…`,
     keywords: [
-      `${data.title} Kenya`,
-      `${data.title} installation Nairobi`,
+      `${title} Kenya`,
+      `${title} installation Nairobi`,
       "elevator Kenya",
       "lift solutions East Africa",
       "Specialized Engineering Kenya",
@@ -248,10 +225,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: { canonical: `${SITE_URL}/elevators/${slug}` },
     openGraph: {
       url: `${SITE_URL}/elevators/${slug}`,
-      title: `${data.title} — Elevator Solutions | Specialized Engineering Kenya`,
-      description: data.description.slice(0, 155),
-      images: data.heroImg
-        ? [{ url: data.heroImg, width: 1200, height: 630, alt: data.title }]
+      title: `${title} — Elevator Solutions | Specialized Engineering Kenya`,
+      description: description.slice(0, 155),
+      images: heroImg
+        ? [{ url: heroImg, width: 1200, height: 630, alt: title }]
         : [{ url: `${SITE_URL}/og-image.jpeg`, width: 1200, height: 630 }],
     },
   };
@@ -282,6 +259,26 @@ export default async function ElevatorDetailPage({ params }: Props) {
 
   if (!staticData && !dbItem) notFound();
 
+  const heroImg =
+    dbItem?.imageUrl && !dbItem.imageUrl.includes("unsplash.com")
+      ? dbItem.imageUrl
+      : "";
+
+  const rawGallery = [
+    dbItem?.imageUrl,
+    ...(Array.isArray(dbItem?.galleryImages) ? dbItem.galleryImages : []),
+  ];
+  const galleryImgs = Array.from(
+    new Set(
+      rawGallery.filter(
+        (image): image is string =>
+          typeof image === "string" &&
+          image.trim().length > 0 &&
+          !image.includes("unsplash.com")
+      )
+    )
+  );
+
   const data = {
     title: dbItem?.title || staticData?.title || slugToCategory(slug),
     tagline: staticData?.tagline || dbItem?.category || "Precision Vertical Transport",
@@ -296,12 +293,8 @@ export default async function ElevatorDetailPage({ params }: Props) {
       { label: "Category", value: dbItem?.category || "Elevator System" },
       { label: "Specifications", value: dbItem?.specifications || "Standard Commercial" },
     ],
-    heroImg: dbItem?.imageUrl || staticData?.heroImg || "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f7?auto=format&fit=crop&q=80&w=1200",
-    galleryImgs: Array.from(new Set([
-      dbItem?.imageUrl,
-      ...(dbItem?.galleryImages || []),
-      ...(staticData?.galleryImgs || []),
-    ].filter((image): image is string => typeof image === "string" && image.trim().length > 0))),
+    heroImg,
+    galleryImgs,
   };
 
   const serviceSchema = {
@@ -309,7 +302,7 @@ export default async function ElevatorDetailPage({ params }: Props) {
     "@type": "Product",
     name: data.title,
     description: data.description,
-    image: [data.heroImg],
+    image: data.heroImg ? [data.heroImg] : [`${SITE_URL}/og-image.jpeg`],
     brand: {
       "@type": "Brand",
       name: "Specialized Engineering Kenya Ltd.",
@@ -332,19 +325,23 @@ export default async function ElevatorDetailPage({ params }: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
       />
-      {/* ── 1. Hero: 50vh View Height ───────────────────────── */}
       {/* ── 1. Hero: 50vh View Height (Centered) ───────────── */}
       <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden border-b border-neutral-200 bg-[#F5F5F3] px-6 py-32">
-        <div className="absolute inset-0 z-0">
-          <Image
-            src={data.heroImg}
-            alt={data.title}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-        </div>
+        {data.heroImg ? (
+          <div className="absolute inset-0 z-0">
+            <Image
+              src={data.heroImg}
+              alt={data.title}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover"
+            />
+            <div className="absolute inset-0 bg-neutral-900/60" />
+          </div>
+        ) : (
+          <div className="absolute inset-0 z-0 bg-neutral-900" />
+        )}
         <div className="max-w-4xl mx-auto px-6 relative z-10 w-full flex flex-col items-center justify-center text-center my-auto space-y-4">
           <Link
             href="/elevators"
@@ -386,12 +383,14 @@ export default async function ElevatorDetailPage({ params }: Props) {
             </div>
 
             {/* Gallery */}
-            <div>
-              <span className="text-xs font-semibold tracking-widest text-neutral-400 uppercase block font-mono mb-6">
-                Installation Gallery
-              </span>
-              <ElevatorProductGallery images={data.galleryImgs} productName={data.title} />
-            </div>
+            {data.galleryImgs.length > 0 && (
+              <div>
+                <span className="text-xs font-semibold tracking-widest text-neutral-400 uppercase block font-mono mb-6">
+                  Installation Gallery
+                </span>
+                <ElevatorProductGallery images={data.galleryImgs} productName={data.title} />
+              </div>
+            )}
           </div>
 
           {/* Specs + CTA */}

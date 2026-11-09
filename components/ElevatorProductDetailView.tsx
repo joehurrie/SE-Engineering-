@@ -33,7 +33,7 @@ export default function ElevatorProductDetailView({
   const images = Array.from(
     new Set(
       [product.imageUrl, ...(Array.isArray(product.galleryImages) ? product.galleryImages : [])]
-        .filter((image): image is string => typeof image === "string" && image.trim().length > 0),
+        .filter((image): image is string => typeof image === "string" && image.trim().length > 0 && !image.includes("unsplash.com")),
     ),
   );
   const parsedSpecs = (() => {

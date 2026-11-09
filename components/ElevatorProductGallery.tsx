@@ -10,15 +10,13 @@ export default function ElevatorProductGallery({
   images: string[];
   productName: string;
 }) {
-  const [activeImage, setActiveImage] = useState(images[0] || "");
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   if (images.length === 0) {
-    return (
-      <div className="flex aspect-[4/3] items-center justify-center bg-neutral-100 text-sm text-neutral-500">
-        Product images will be added soon.
-      </div>
-    );
+    return null;
   }
+
+  const activeImage = selectedImage && images.includes(selectedImage) ? selectedImage : images[0];
 
   return (
     <div>
@@ -38,7 +36,7 @@ export default function ElevatorProductGallery({
             <button
               key={`${image}-${index}`}
               type="button"
-              onClick={() => setActiveImage(image)}
+              onClick={() => setSelectedImage(image)}
               aria-label={`Show ${productName} image ${index + 1}`}
               aria-pressed={activeImage === image}
               className={`relative aspect-square overflow-hidden border-2 ${
