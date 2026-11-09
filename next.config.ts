@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    agentUpgrade: "security",
+  },
   turbopack: {
     rules: {
       "*.css": {
@@ -26,4 +29,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-
