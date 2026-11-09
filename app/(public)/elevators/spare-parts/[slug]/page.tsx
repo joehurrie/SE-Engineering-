@@ -16,14 +16,20 @@ export function generateStaticParams() {
   return defaultSpareParts.map(({ slug }) => ({ slug }));
 }
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://www.specializedengineeringltd.co.ke";
+
 export async function generateMetadata({ params }: SparePartPageProps): Promise<Metadata> {
   const { slug } = await params;
   let title: string | undefined;
   let description: string | undefined;
+  let imageUrl: string | undefined;
   try {
     const part = await prisma.sparePartProduct.findUnique({ where: { slug } });
     title = part?.title;
     description = part?.description;
+    imageUrl = part?.imageUrl;
   } catch (error) {
     console.error("Failed to load spare part metadata:", error);
   }
@@ -31,14 +37,33 @@ export async function generateMetadata({ params }: SparePartPageProps): Promise<
   const part = defaultSpareParts.find((item) => item.slug === slug);
   title ??= part?.title;
   description ??= part?.description;
-  return part
-    ? {
-        title: `${title} | Specialized Engineering Kenya Ltd.`,
-        description,
-      }
-    : title
-      ? { title: `${title} | Specialized Engineering Kenya Ltd.`, description }
-      : { title: "Spare Part | Specialized Engineering Kenya Ltd." };
+  imageUrl ??= part?.imageUrl;
+
+  const resolvedTitle = title
+    ? `${title} | Specialized Engineering Kenya Ltd.`
+    : "Elevator Spare Part | Specialized Engineering Kenya Ltd.";
+  const resolvedDesc = description ?? "Genuine elevator replacement spare parts by Specialized Engineering Kenya Ltd.";
+  const resolvedImg = imageUrl
+    ? imageUrl.startsWith("http") ? imageUrl : `${SITE_URL}${imageUrl}`
+    : `${SITE_URL}/og-image.jpeg`;
+
+  return {
+    title: resolvedTitle,
+    description: resolvedDesc,
+    alternates: { canonical: `${SITE_URL}/elevators/spare-parts/${slug}` },
+    openGraph: {
+      url: `${SITE_URL}/elevators/spare-parts/${slug}`,
+      title: resolvedTitle,
+      description: resolvedDesc,
+      images: [{ url: resolvedImg, width: 1200, height: 630, alt: title ?? "Elevator Spare Part" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: resolvedTitle,
+      description: resolvedDesc,
+      images: [resolvedImg],
+    },
+  };
 }
 
 export default async function SparePartDetailPage({ params }: SparePartPageProps) {

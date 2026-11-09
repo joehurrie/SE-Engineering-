@@ -147,6 +147,24 @@ const organizationSchema = {
   },
 };
 
+
+/** WebSite JSON-LD schema for Google sitelinks search and entity disambiguation */
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Specialized Engineering Kenya Ltd.",
+  alternateName: "Specialized Engineering",
+  url: SITE_URL,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${SITE_URL}/elevators?category={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -155,6 +173,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${manrope.className} scroll-smooth`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
+        <Script
+          id="schema-website"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        />
         <Script
           id="schema-organization"
           type="application/ld+json"

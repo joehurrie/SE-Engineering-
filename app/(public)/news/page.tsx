@@ -8,6 +8,10 @@ import { getContentValue, loadSiteContentMap } from "@/lib/home-content";
 
 export const dynamic = "force-dynamic";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://www.specializedengineeringltd.co.ke";
+
 export const metadata: Metadata = {
   title: "News & Insights — Elevator Industry Updates | Specialized Engineering Kenya",
   description:
@@ -16,9 +20,20 @@ export const metadata: Metadata = {
     "elevator news Kenya", "lift industry insights", "engineering updates Kenya",
     "Specialized Engineering news", "vertical transport East Africa",
   ],
+  alternates: {
+    canonical: `${SITE_URL}/news`,
+  },
   openGraph: {
     title: "News & Engineering Insights | Specialized Engineering Kenya",
     description: "Stay up to date with the latest elevator industry news, project completions, and engineering insights from Specialized Engineering Kenya.",
+    url: `${SITE_URL}/news`,
+    images: [{ url: `${SITE_URL}/og-image.jpeg`, width: 1200, height: 630, alt: "Elevator Industry News Kenya" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "News & Engineering Insights | Specialized Engineering Kenya",
+    description: "Stay up to date with the latest elevator industry news, project completions, and engineering insights from Specialized Engineering Kenya.",
+    images: [`${SITE_URL}/og-image.jpeg`],
   },
 };
 

@@ -15,6 +15,10 @@ import {
 
 export const dynamic = "force-dynamic";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://www.specializedengineeringltd.co.ke";
+
 export const metadata: Metadata = {
   title: "Elevator Supply, Installation & Maintenance Services | Specialized Engineering Kenya",
   description:
@@ -23,9 +27,20 @@ export const metadata: Metadata = {
     "elevator installation Kenya", "lift maintenance Nairobi", "elevator supply",
     "lift modernization Kenya", "elevator service contract", "vertical transport solutions",
   ],
+  alternates: {
+    canonical: `${SITE_URL}/lift-services`,
+  },
   openGraph: {
     title: "Lift Services — Supply, Installation & Maintenance | Specialized Engineering Kenya",
     description: "Precision elevator installation, maintenance, modernization, and OEM spare parts across Kenya and East Africa.",
+    url: `${SITE_URL}/lift-services`,
+    images: [{ url: `${SITE_URL}/og-image.jpeg`, width: 1200, height: 630, alt: "Elevator Services Kenya" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Lift Services — Supply, Installation & Maintenance | Specialized Engineering Kenya",
+    description: "Precision elevator installation, maintenance, modernization, and OEM spare parts across Kenya and East Africa.",
+    images: [`${SITE_URL}/og-image.jpeg`],
   },
 };
 

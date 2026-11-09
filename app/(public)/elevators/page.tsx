@@ -11,6 +11,10 @@ import { getContentValue, loadSiteContentMap } from "@/lib/home-content";
 
 export const dynamic = "force-dynamic";
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
+  "https://www.specializedengineeringltd.co.ke";
+
 export const metadata: Metadata = {
   title: "Elevator & Lift Solutions — Full Range | Specialized Engineering Kenya",
   description:
@@ -20,9 +24,20 @@ export const metadata: Metadata = {
     "hospital elevator Kenya", "escalator supply Kenya", "dumbwaiter installation",
     "freight elevator", "hydraulic platform lift",
   ],
+  alternates: {
+    canonical: `${SITE_URL}/elevators`,
+  },
   openGraph: {
     title: "Elevator & Lift Solutions | Specialized Engineering Kenya",
     description: "Full range of commercial and residential elevator solutions. Installed across Kenya and East Africa since 2016.",
+    url: `${SITE_URL}/elevators`,
+    images: [{ url: `${SITE_URL}/og-image.jpeg`, width: 1200, height: 630, alt: "Elevator & Lift Solutions Kenya" }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Elevator & Lift Solutions | Specialized Engineering Kenya",
+    description: "Full range of commercial and residential elevator solutions. Installed across Kenya and East Africa since 2016.",
+    images: [`${SITE_URL}/og-image.jpeg`],
   },
 };
 

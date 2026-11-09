@@ -1,6 +1,9 @@
 import type { MetadataRoute } from "next";
 import prisma from "@/lib/prisma";
 import { categoryToSlug } from "@/lib/slugs";
+import { defaultArticles } from "@/lib/news-data";
+import { defaultProjects } from "@/lib/project-data";
+import { defaultSpareParts } from "@/lib/default-spare-parts";
 
 const SITE_URL =
   process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ||
@@ -53,31 +56,31 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${SITE_URL}/projects`,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.7,
+      priority: 0.8,
     },
     {
       url: `${SITE_URL}/news`,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.7,
+      priority: 0.8,
     },
     {
       url: `${SITE_URL}/contact`,
       lastModified: now,
       changeFrequency: "monthly",
-      priority: 0.6,
+      priority: 0.7,
     },
     {
       url: `${SITE_URL}/privacy`,
       lastModified: now,
       changeFrequency: "yearly",
-      priority: 0.2,
+      priority: 0.3,
     },
     {
       url: `${SITE_URL}/terms`,
       lastModified: now,
       changeFrequency: "yearly",
-      priority: 0.2,
+      priority: 0.3,
     },
   ];
 
@@ -86,7 +89,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${SITE_URL}/elevators/${slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
-    priority: 0.8,
+    priority: 0.85,
   }));
 
   // ── Dynamic DB pages ──────────────────────────────────────────────────────
@@ -126,7 +129,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           url: `${SITE_URL}/elevators/${slug}`,
           lastModified: now,
           changeFrequency: "monthly",
-          priority: 0.75,
+          priority: 0.8,
         });
       }
     });
@@ -136,32 +139,77 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${SITE_URL}/elevators/product/${p.id}`,
       lastModified: now,
       changeFrequency: "monthly" as const,
-      priority: 0.7,
+      priority: 0.75,
     }));
 
-    // /news/[slug]
-    newsPages = newsArticles.map((a) => ({
-      url: `${SITE_URL}/news/${a.slug}`,
-      lastModified: a.publishedAt,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    }));
+    // /news/[slug] — DB articles + default fallback articles
+    const seenNewsSlugs = new Set<string>();
+    newsPages = newsArticles.map((a) => {
+      seenNewsSlugs.add(a.slug);
+      return {
+        url: `${SITE_URL}/news/${a.slug}`,
+        lastModified: a.publishedAt,
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      };
+    });
+    defaultArticles.forEach((a) => {
+      if (!seenNewsSlugs.has(a.slug)) {
+        seenNewsSlugs.add(a.slug);
+        newsPages.push({
+          url: `${SITE_URL}/news/${a.slug}`,
+          lastModified: new Date(a.publishedAt || now),
+          changeFrequency: "monthly" as const,
+          priority: 0.7,
+        });
+      }
+    });
 
-    // /projects/[id]
-    projectPages = projects.map((p) => ({
-      url: `${SITE_URL}/projects/${p.id}`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.6,
-    }));
+    // /projects/[id] — DB projects + default fallback projects
+    const seenProjectIds = new Set<number>();
+    projectPages = projects.map((p) => {
+      seenProjectIds.add(p.id);
+      return {
+        url: `${SITE_URL}/projects/${p.id}`,
+        lastModified: p.createdAt || now,
+        changeFrequency: "monthly" as const,
+        priority: 0.7,
+      };
+    });
+    defaultProjects.forEach((p) => {
+      if (!seenProjectIds.has(p.id)) {
+        seenProjectIds.add(p.id);
+        projectPages.push({
+          url: `${SITE_URL}/projects/${p.id}`,
+          lastModified: now,
+          changeFrequency: "monthly" as const,
+          priority: 0.7,
+        });
+      }
+    });
 
-    // /elevators/spare-parts/[slug]
-    sparePartPages = spareParts.map((s) => ({
-      url: `${SITE_URL}/elevators/spare-parts/${s.slug}`,
-      lastModified: now,
-      changeFrequency: "monthly" as const,
-      priority: 0.5,
-    }));
+    // /elevators/spare-parts/[slug] — DB parts + default fallback parts
+    const seenSpareSlugs = new Set<string>();
+    sparePartPages = spareParts.map((s) => {
+      seenSpareSlugs.add(s.slug);
+      return {
+        url: `${SITE_URL}/elevators/spare-parts/${s.slug}`,
+        lastModified: now,
+        changeFrequency: "monthly" as const,
+        priority: 0.6,
+      };
+    });
+    defaultSpareParts.forEach((s) => {
+      if (!seenSpareSlugs.has(s.slug)) {
+        seenSpareSlugs.add(s.slug);
+        sparePartPages.push({
+          url: `${SITE_URL}/elevators/spare-parts/${s.slug}`,
+          lastModified: now,
+          changeFrequency: "monthly" as const,
+          priority: 0.6,
+        });
+      }
+    });
   } catch (err) {
     console.error("[sitemap] Failed to fetch dynamic routes from DB:", err);
   }
@@ -175,4 +223,3 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ...sparePartPages,
   ];
 }
-

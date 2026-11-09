@@ -13,6 +13,16 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/admin/", "/api/"],
       },
       {
+        userAgent: "Googlebot",
+        allow: "/",
+        disallow: ["/admin/", "/api/"],
+      },
+      {
+        userAgent: "Googlebot-Image",
+        allow: "/",
+        disallow: ["/admin/", "/api/"],
+      },
+      {
         userAgent: [
           "GPTBot",
           "ChatGPT-User",
@@ -30,4 +40,3 @@ export default function robots(): MetadataRoute.Robots {
     host: SITE_URL,
   };
 }
-
